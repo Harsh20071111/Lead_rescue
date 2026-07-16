@@ -115,6 +115,14 @@ npm run watch:css
 python manage.py runserver
 ```
 
+To run the app over HTTPS locally, use the SSL server command:
+
+```bash
+python manage.py runsslserver 127.0.0.1:8000
+```
+
+Chrome will still show a certificate warning if you use the built-in self-signed cert. That is expected for local HTTPS unless you install a locally trusted cert such as one created with `mkcert`.
+
 Visit:
 - **Landing page**: http://localhost:8000/
 - **Admin panel**: http://localhost:8000/admin/

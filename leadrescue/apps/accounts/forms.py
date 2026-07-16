@@ -11,27 +11,31 @@ class SignupForm(UserCreationForm):
         max_length=255,
         label="Agency Name",
         widget=forms.TextInput(attrs={
-            'class': 'w-full px-4 py-3 rounded-md bg-[#F5F2EC] border border-[#E5DFD5] text-[#1C1C1A] focus:outline-none focus:border-[#B87333]'
+            'class': 'w-full px-4 py-3 rounded-md bg-[#FAF8F4] border border-[#E5DFD5] text-[#1C1C1A] placeholder-[#8B7355]/60 focus:outline-none focus:border-[#B87333] focus:ring-2 focus:ring-[#B87333]/15 transition',
+            'placeholder': 'Aarav Realty Partners'
         })
     )
     owner_name = forms.CharField(
         max_length=255,
         label="Owner Name",
         widget=forms.TextInput(attrs={
-            'class': 'w-full px-4 py-3 rounded-md bg-[#F5F2EC] border border-[#E5DFD5] text-[#1C1C1A] focus:outline-none focus:border-[#B87333]'
+            'class': 'w-full px-4 py-3 rounded-md bg-[#FAF8F4] border border-[#E5DFD5] text-[#1C1C1A] placeholder-[#8B7355]/60 focus:outline-none focus:border-[#B87333] focus:ring-2 focus:ring-[#B87333]/15 transition',
+            'placeholder': 'Priya Sharma'
         })
     )
     email = forms.EmailField(
         label="Email Address",
         widget=forms.EmailInput(attrs={
-            'class': 'w-full px-4 py-3 rounded-md bg-[#F5F2EC] border border-[#E5DFD5] text-[#1C1C1A] focus:outline-none focus:border-[#B87333]'
+            'class': 'w-full px-4 py-3 rounded-md bg-[#FAF8F4] border border-[#E5DFD5] text-[#1C1C1A] placeholder-[#8B7355]/60 focus:outline-none focus:border-[#B87333] focus:ring-2 focus:ring-[#B87333]/15 transition',
+            'placeholder': 'owner@agency.com'
         })
     )
     phone = forms.CharField(
         max_length=20,
         label="Phone Number",
         widget=forms.TextInput(attrs={
-            'class': 'w-full px-4 py-3 rounded-md bg-[#F5F2EC] border border-[#E5DFD5] text-[#1C1C1A] focus:outline-none focus:border-[#B87333]'
+            'class': 'w-full px-4 py-3 rounded-md bg-[#FAF8F4] border border-[#E5DFD5] text-[#1C1C1A] placeholder-[#8B7355]/60 focus:outline-none focus:border-[#B87333] focus:ring-2 focus:ring-[#B87333]/15 transition',
+            'placeholder': '+91 98765 43210'
         })
     )
 
@@ -46,10 +50,12 @@ class SignupForm(UserCreationForm):
         self.fields['username'].required = False
         # Style password fields to match the rest
         self.fields['password1'].widget.attrs.update({
-            'class': 'w-full px-4 py-3 rounded-md bg-[#F5F2EC] border border-[#E5DFD5] text-[#1C1C1A] focus:outline-none focus:border-[#B87333]'
+            'class': 'w-full px-4 py-3 rounded-md bg-[#FAF8F4] border border-[#E5DFD5] text-[#1C1C1A] placeholder-[#8B7355]/60 focus:outline-none focus:border-[#B87333] focus:ring-2 focus:ring-[#B87333]/15 transition',
+            'placeholder': 'Create a secure password'
         })
         self.fields['password2'].widget.attrs.update({
-            'class': 'w-full px-4 py-3 rounded-md bg-[#F5F2EC] border border-[#E5DFD5] text-[#1C1C1A] focus:outline-none focus:border-[#B87333]'
+            'class': 'w-full px-4 py-3 rounded-md bg-[#FAF8F4] border border-[#E5DFD5] text-[#1C1C1A] placeholder-[#8B7355]/60 focus:outline-none focus:border-[#B87333] focus:ring-2 focus:ring-[#B87333]/15 transition',
+            'placeholder': 'Repeat your password'
         })
         self.fields['password1'].label = "Password"
         self.fields['password2'].label = "Confirm Password"

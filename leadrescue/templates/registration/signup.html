@@ -3,54 +3,112 @@
 {% block title %}Create Workspace — LeadSathi{% endblock %}
 
 {% block content %}
-<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style="background-color: #FAF8F4;">
-    <div class="max-w-md w-full space-y-8 p-10 rounded-2xl shadow-xl" style="background-color: #1C1C1A;">
-        <div>
-            <h2 class="mt-6 text-center text-4xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">
-                Create Workspace
-            </h2>
-            <p class="mt-2 text-center text-sm" style="color: #C4A882; font-family: 'Inter', sans-serif;">
-                Set up your agency and start tracking leads
-            </p>
-        </div>
-        <form class="mt-8 space-y-4" method="POST">
-            {% csrf_token %}
-            
-            {% if form.non_field_errors %}
-            <div class="p-4 rounded bg-red-900/30 border border-red-500 text-red-200 text-sm">
-                {{ form.non_field_errors }}
-            </div>
-            {% endif %}
+<main class="min-h-screen bg-cream">
+    <section class="relative overflow-hidden px-5 py-8 sm:px-8 lg:px-10">
+        <div class="absolute inset-x-0 top-0 h-80 bg-charcoal"></div>
+        <div class="relative mx-auto max-w-7xl">
+            <nav class="mb-10 flex items-center justify-between">
+                <a href="/" class="text-3xl font-light tracking-tight text-cream" style="font-family: 'Cormorant Garamond', serif;">LeadSathi</a>
+                <a href="{% url 'accounts:login' %}" class="rounded-md border border-cream/35 px-4 py-2 text-sm font-medium text-cream transition hover:bg-cream hover:text-charcoal">
+                    Sign in
+                </a>
+            </nav>
 
-            {% for field in form %}
-            {% if field.is_hidden %}
-                {{ field }}
-            {% else %}
-            <div>
-                <label for="{{ field.id_for_label }}" class="block text-sm font-medium mb-1" style="color: #FAF8F4; font-family: 'Inter', sans-serif;">{{ field.label }}</label>
-                {{ field }}
-                {% if field.help_text %}
-                <p class="text-xs mt-1" style="color: #8B7355; font-family: 'Inter', sans-serif;">{{ field.help_text }}</p>
-                {% endif %}
-                {% if field.errors %}
-                <p class="text-red-400 text-xs mt-1">{{ field.errors.0 }}</p>
-                {% endif %}
-            </div>
-            {% endif %}
-            {% endfor %}
+            <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+                <div class="rounded-lg bg-charcoal p-8 text-cream shadow-2xl shadow-charcoal/20 sm:p-10 lg:sticky lg:top-8">
+                    <p class="text-sm font-medium uppercase tracking-[0.16em] text-copper-gold">Start free trial</p>
+                    <h1 class="mt-5 text-5xl font-light leading-tight sm:text-6xl" style="font-family: 'Cormorant Garamond', serif;">
+                        Build your lead desk in minutes.
+                    </h1>
+                    <p class="mt-5 max-w-lg text-base leading-7 text-cream/75">
+                        Create your agency workspace, invite your team later, and start tracking buyer inquiries without changing your WhatsApp-first workflow.
+                    </p>
 
-            <div class="pt-2">
-                <button type="submit" class="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-medium rounded-md transition-all duration-200 hover:-translate-y-0.5" style="background-color: #D4AF6A; color: #1C1C1A; font-family: 'Inter', sans-serif;">
-                    Create Account
-                </button>
+                    <div class="mt-10 space-y-4">
+                        <div class="flex gap-4 rounded-lg border border-cream/10 bg-cream/10 p-4">
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-copper-gold text-charcoal">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-normal" style="font-family: 'Cormorant Garamond', serif;">WhatsApp lead capture</h2>
+                                <p class="mt-1 text-sm leading-6 text-cream/65">Every inquiry can be organized, qualified, and routed from one workspace.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 rounded-lg border border-cream/10 bg-cream/10 p-4">
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-copper-gold text-charcoal">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-normal" style="font-family: 'Cormorant Garamond', serif;">Owner visibility</h2>
+                                <p class="mt-1 text-sm leading-6 text-cream/65">See response speed, missed follow-ups, and channel performance without manual reports.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 rounded-lg border border-cream/10 bg-cream/10 p-4">
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-copper-gold text-charcoal">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-normal" style="font-family: 'Cormorant Garamond', serif;">Follow-up discipline</h2>
+                                <p class="mt-1 text-sm leading-6 text-cream/65">Keep warm buyers from going cold with reminders built around sales urgency.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-lg border border-sand bg-white p-6 shadow-xl shadow-warm/10 sm:p-8 lg:p-10">
+                    <div class="mb-8 border-b border-sand pb-6">
+                        <p class="text-sm font-medium uppercase tracking-[0.16em] text-copper">Workspace setup</p>
+                        <h2 class="mt-3 text-4xl font-light leading-tight text-charcoal" style="font-family: 'Cormorant Garamond', serif;">Create your account</h2>
+                        <p class="mt-3 max-w-2xl text-sm leading-6 text-warm">
+                            Tell us who owns the workspace. You can add agents, listings, and automations after setup.
+                        </p>
+                    </div>
+
+                    <form class="space-y-5" method="POST">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                            {{ form.non_field_errors }}
+                        </div>
+                        {% endif %}
+
+                        <div class="grid gap-5 sm:grid-cols-2">
+                            {% for field in form %}
+                            {% if field.is_hidden %}
+                                {{ field }}
+                            {% else %}
+                            <div class="{% if field.name == 'email' or field.name == 'password1' or field.name == 'password2' %}sm:col-span-2{% endif %}">
+                                <label for="{{ field.id_for_label }}" class="mb-2 block text-sm font-medium text-charcoal">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                <p class="mt-2 text-xs leading-5 text-warm/80">{{ field.help_text }}</p>
+                                {% endif %}
+                                {% if field.errors %}
+                                <p class="mt-2 text-xs text-red-600">{{ field.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="rounded-lg bg-cream-dark px-4 py-3 text-sm leading-6 text-warm">
+                            By creating a workspace, your owner profile and agency record will be created together.
+                        </div>
+
+                        <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-md bg-copper-gold px-5 py-3.5 text-sm font-semibold text-charcoal shadow-lg shadow-copper-gold/25 transition hover:-translate-y-0.5 hover:bg-copper-light">
+                            Create workspace
+                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </button>
+                    </form>
+
+                    <p class="mt-6 text-center text-sm text-warm">
+                        Already managing leads with LeadSathi?
+                        <a href="{% url 'accounts:login' %}" class="font-semibold text-copper transition hover:text-charcoal">Sign in</a>
+                    </p>
+                </div>
             </div>
-        </form>
-        <div class="text-center">
-            <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">
-                Already have an account? 
-                <a href="{% url 'accounts:login' %}" class="font-medium hover:underline" style="color: #C4A882;">Sign In</a>
-            </p>
         </div>
-    </div>
-</div>
+    </section>
+</main>
 {% endblock %}

@@ -1,50 +1,102 @@
 {% extends "base.html" %}
 
-{% block title %}Login — LeadSathi{% endblock %}
+{% block title %}Sign In — LeadSathi{% endblock %}
 
 {% block content %}
-<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style="background-color: #FAF8F4;">
-    <div class="max-w-md w-full space-y-8 p-10 rounded-2xl shadow-xl" style="background-color: #1C1C1A;">
-        <div>
-            <h2 class="mt-6 text-center text-4xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">
-                Welcome Back
-            </h2>
-            <p class="mt-2 text-center text-sm" style="color: #C4A882; font-family: 'Inter', sans-serif;">
-                Sign in to manage your real estate pipeline
-            </p>
-        </div>
-        <form class="mt-8 space-y-6" method="POST">
-            {% csrf_token %}
-            
-            {% if form.errors %}
-            <div class="p-4 rounded bg-red-900/30 border border-red-500 text-red-200 text-sm">
-                Invalid email or password. Please try again.
-            </div>
-            {% endif %}
+<main class="min-h-screen overflow-hidden bg-cream">
+    <section class="grid min-h-screen lg:grid-cols-[0.95fr_1.05fr]">
+        <aside class="relative hidden overflow-hidden bg-charcoal px-10 py-10 lg:flex lg:flex-col lg:justify-between">
+            <div class="absolute inset-0 opacity-85" style="background: linear-gradient(145deg, rgba(28,28,26,0.96) 0%, rgba(74,63,51,0.92) 55%, rgba(139,115,85,0.78) 100%);"></div>
+            <div class="absolute -right-28 top-28 h-72 w-72 rounded-full border border-copper-light/25"></div>
+            <div class="absolute -bottom-24 left-12 h-80 w-80 rounded-full border border-cream/10"></div>
 
-            <div class="rounded-md shadow-sm space-y-4">
-                <div>
-                    <label for="id_username" class="block text-sm font-medium mb-2" style="color: #FAF8F4; font-family: 'Inter', sans-serif;">Email Address</label>
-                    <input id="id_username" name="username" type="email" required class="w-full px-4 py-3 rounded-md bg-[#2A2A28] border border-[#4A4A48] text-[#FAF8F4] focus:outline-none focus:border-[#B87333]" placeholder="name@agency.com">
-                </div>
-                <div>
-                    <label for="id_password" class="block text-sm font-medium mb-2" style="color: #FAF8F4; font-family: 'Inter', sans-serif;">Password</label>
-                    <input id="id_password" name="password" type="password" required class="w-full px-4 py-3 rounded-md bg-[#2A2A28] border border-[#4A4A48] text-[#FAF8F4] focus:outline-none focus:border-[#B87333]" placeholder="••••••••">
-                </div>
+            <div class="relative z-10">
+                <a href="/" class="inline-block text-3xl font-light tracking-tight text-cream" style="font-family: 'Cormorant Garamond', serif;">LeadSathi</a>
+                <p class="mt-4 max-w-sm text-sm leading-6 text-cream/70">
+                    Return to your agency command center and keep every buyer conversation moving.
+                </p>
             </div>
 
-            <div>
-                <button type="submit" class="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-medium rounded-md transition-all duration-200 hover:-translate-y-0.5" style="background-color: #D4AF6A; color: #1C1C1A; font-family: 'Inter', sans-serif;">
-                    Sign In
-                </button>
+            <div class="relative z-10 space-y-8">
+                <div>
+                    <p class="text-sm font-medium uppercase tracking-[0.18em] text-copper-gold">Today snapshot</p>
+                    <h1 class="mt-5 max-w-xl text-5xl font-light leading-tight text-cream" style="font-family: 'Cormorant Garamond', serif;">
+                        Pick up where your pipeline needs you most.
+                    </h1>
+                </div>
+
+                <div class="grid max-w-xl grid-cols-3 gap-4">
+                    <div class="rounded-lg border border-cream/10 bg-cream/10 p-5 backdrop-blur">
+                        <p class="text-3xl font-light text-cream" style="font-family: 'Cormorant Garamond', serif;">32</p>
+                        <p class="mt-1 text-xs leading-5 text-cream/65">New leads captured</p>
+                    </div>
+                    <div class="rounded-lg border border-cream/10 bg-cream/10 p-5 backdrop-blur">
+                        <p class="text-3xl font-light text-copper-gold" style="font-family: 'Cormorant Garamond', serif;">7</p>
+                        <p class="mt-1 text-xs leading-5 text-cream/65">Follow-ups due</p>
+                    </div>
+                    <div class="rounded-lg border border-cream/10 bg-cream/10 p-5 backdrop-blur">
+                        <p class="text-3xl font-light text-cream" style="font-family: 'Cormorant Garamond', serif;">2m</p>
+                        <p class="mt-1 text-xs leading-5 text-cream/65">Avg response time</p>
+                    </div>
+                </div>
             </div>
-        </form>
-        <div class="text-center">
-            <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">
-                Don't have an account? 
-                <a href="{% url 'accounts:signup' %}" class="font-medium hover:underline" style="color: #C4A882;">Create a workspace</a>
-            </p>
+        </aside>
+
+        <div class="flex min-h-screen items-center justify-center px-5 py-10 sm:px-8 lg:px-12">
+            <div class="w-full max-w-md">
+                <div class="mb-10 flex items-center justify-between">
+                    <a href="/" class="text-2xl font-light text-charcoal lg:hidden" style="font-family: 'Cormorant Garamond', serif;">LeadSathi</a>
+                    <a href="{% url 'accounts:signup' %}" class="ml-auto rounded-md border border-sand px-4 py-2 text-sm font-medium text-warm transition hover:border-copper hover:text-charcoal">
+                        Create workspace
+                    </a>
+                </div>
+
+                <div class="rounded-lg border border-sand bg-white/70 p-6 shadow-xl shadow-warm/10 backdrop-blur sm:p-8">
+                    <div class="mb-8">
+                        <p class="text-sm font-medium uppercase tracking-[0.16em] text-copper">Secure access</p>
+                        <h2 class="mt-3 text-4xl font-light leading-tight text-charcoal" style="font-family: 'Cormorant Garamond', serif;">
+                            Sign in to your dashboard
+                        </h2>
+                        <p class="mt-3 text-sm leading-6 text-warm">
+                            Manage WhatsApp leads, assignments, reminders, and owner reports from one focused workspace.
+                        </p>
+                    </div>
+
+                    <form class="space-y-5" method="POST">
+                        {% csrf_token %}
+
+                        {% if form.errors %}
+                        <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                            Invalid email or password. Please try again.
+                        </div>
+                        {% endif %}
+
+                        <div>
+                            <label for="id_username" class="mb-2 block text-sm font-medium text-charcoal">Email address</label>
+                            <input id="id_username" name="username" type="email" autocomplete="email" required class="w-full rounded-md border border-sand bg-cream px-4 py-3 text-charcoal placeholder-warm/60 transition focus:border-copper focus:outline-none focus:ring-2 focus:ring-copper/15" placeholder="owner@agency.com">
+                        </div>
+
+                        <div>
+                            <div class="mb-2 flex items-center justify-between gap-4">
+                                <label for="id_password" class="block text-sm font-medium text-charcoal">Password</label>
+                                <span class="text-xs text-warm">Agency owner access</span>
+                            </div>
+                            <input id="id_password" name="password" type="password" autocomplete="current-password" required class="w-full rounded-md border border-sand bg-cream px-4 py-3 text-charcoal placeholder-warm/60 transition focus:border-copper focus:outline-none focus:ring-2 focus:ring-copper/15" placeholder="Enter your password">
+                        </div>
+
+                        <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-md bg-charcoal px-5 py-3.5 text-sm font-semibold text-cream shadow-lg shadow-charcoal/15 transition hover:-translate-y-0.5 hover:bg-warm-muted">
+                            Sign in
+                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </button>
+                    </form>
+                </div>
+
+                <p class="mt-6 text-center text-sm text-warm">
+                    New to LeadSathi?
+                    <a href="{% url 'accounts:signup' %}" class="font-semibold text-copper transition hover:text-charcoal">Create your workspace</a>
+                </p>
+            </div>
         </div>
-    </div>
-</div>
+    </section>
+</main>
 {% endblock %}

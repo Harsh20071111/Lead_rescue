@@ -51,6 +51,12 @@ DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS", default=_default_hosts)
 
+_LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1"}
+_is_local_host = any(
+    host in _LOCAL_HOSTS or host.startswith("127.")
+    for host in ALLOWED_HOSTS
+)
+
 WSGI_APPLICATION = "config.wsgi.application"
 
 ASGI_APPLICATION = "config.asgi.application"
@@ -75,6 +81,7 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     "django_extensions",
+    "sslserver",
 ]
 
 LOCAL_APPS = [
@@ -241,7 +248,7 @@ EMAIL_BACKEND = env(
 # SECURITY (production overrides)
 # ==================================================
 
-if not DEBUG:
+if not DEBUG and not _is_local_host:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
