@@ -25,6 +25,12 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, ["localhost", "127.0.0.1"]),
 )
 
+# Auto-include Render's domain when deployed
+_is_render = os.environ.get("RENDER") is not None
+_default_hosts = ["localhost", "127.0.0.1"]
+if _is_render:
+    _default_hosts.append(".onrender.com")
+
 # Read .env file from project root (one level above leadrescue/)
 ENV_FILE = BASE_DIR.parent / ".env"
 if ENV_FILE.exists():
@@ -38,7 +44,7 @@ SECRET_KEY = env("SECRET_KEY", default="django-insecure-change-me-in-production"
 
 DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+ALLOWED_HOSTS = env("ALLOWED_HOSTS", default=_default_hosts)
 
 WSGI_APPLICATION = "config.wsgi.application"
 
