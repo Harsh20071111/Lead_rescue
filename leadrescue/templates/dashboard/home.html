@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — LeadSathi{% endblock %}
+
+{% block content %}
+<!-- Top Header / Navigation -->
+<nav class="border-b border-[#E5DFD5] bg-[#1C1C1A] text-[#FAF8F4] py-6 px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-6">
+            <span class="text-2xl font-light tracking-tight" style="font-family: 'Cormorant Garamond', serif;">LeadSathi</span>
+            <div class="h-6 w-px bg-[#4A4A48]"></div>
+            <span class="text-sm font-medium" style="font-family: 'Inter', sans-serif; color: #C4A882;">{{ agency_name }}</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <span class="text-sm" style="font-family: 'Inter', sans-serif;">Hello, {{ owner_name }}</span>
+            <form action="{% url 'accounts:logout' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="px-4 py-2 text-xs font-medium rounded-md border border-[#FAF8F4]/30 hover:bg-[#FAF8F4]/10 transition-all">
+                    Logout
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<!-- Dashboard Main Content -->
+<main class="max-w-7xl mx-auto px-6 lg:px-8 py-12" style="background-color: #FAF8F4;">
+    <!-- Welcome section -->
+    <div class="mb-12">
+        <h1 class="text-4xl font-light mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
+            Welcome to {{ agency_name }} Dashboard
+        </h1>
+        <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">
+            Overview of your agency pipeline and properties.
+        </p>
+    </div>
+
+    <!-- Stats Grid (Placeholders) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div class="p-6 rounded-lg border border-[#E5DFD5] bg-white shadow-sm">
+            <div class="text-sm font-medium" style="color: #8B7355; font-family: 'Inter', sans-serif;">Total Leads</div>
+            <div class="text-3xl font-light mt-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">{{ stats.total_leads }}</div>
+        </div>
+        <div class="p-6 rounded-lg border border-[#E5DFD5] bg-white shadow-sm">
+            <div class="text-sm font-medium" style="color: #8B7355; font-family: 'Inter', sans-serif;">New Leads</div>
+            <div class="text-3xl font-light mt-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">{{ stats.new_leads }}</div>
+        </div>
+        <div class="p-6 rounded-lg border border-[#E5DFD5] bg-white shadow-sm">
+            <div class="text-sm font-medium" style="color: #8B7355; font-family: 'Inter', sans-serif;">Active Properties</div>
+            <div class="text-3xl font-light mt-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">{{ stats.active_properties }}</div>
+        </div>
+        <div class="p-6 rounded-lg border border-[#E5DFD5] bg-white shadow-sm">
+            <div class="text-sm font-medium" style="color: #8B7355; font-family: 'Inter', sans-serif;">Converted Leads</div>
+            <div class="text-3xl font-light mt-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">{{ stats.converted_leads }}</div>
+        </div>
+    </div>
+
+    <!-- Info Notice (Production Ready Status) -->
+    <div class="p-6 rounded-lg border border-[#C4A882]/30 bg-[#F5F2EC] flex items-start gap-4">
+        <div class="p-2 rounded-full bg-[#FAF8F4] text-[#B87333]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        </div>
+        <div>
+            <h4 class="text-sm font-medium mb-1" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Phase 1 Completed Successfully</h4>
+            <p class="text-xs leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">
+                Multi-tenancy models, Django auth flow (signup/login/logout), and proper PostgreSQL environment routing are now fully ready. Seed demo data using <code>python manage.py seed_demo_data</code> to populate real listings.
+            </p>
+        </div>
+    </div>
+</main>
+{% endblock %}

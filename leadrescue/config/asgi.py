@@ -1,5 +1,5 @@
 """
-ASGI config for LeadRescue project.
+ASGI config for LeadSathi project.
 """
 
 import os

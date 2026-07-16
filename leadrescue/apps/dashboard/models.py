@@ -1,5 +1,5 @@
 """
-Dashboard models for LeadRescue.
+Dashboard models for LeadSathi.
 
 Dashboard widgets, saved views, and analytics preferences will be defined here.
 """

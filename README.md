@@ -1,8 +1,8 @@
-# LeadRescue
+# LeadSathi
 
 **AI-powered Real Estate Lead Management & Analytics** — built for Indian real estate agencies.
 
-LeadRescue ensures your team never loses track of a single lead — so every commission you've earned, stays earned.
+LeadSathi ensures your team never loses track of a single lead — so every commission you've earned, stays earned.
 
 ---
 

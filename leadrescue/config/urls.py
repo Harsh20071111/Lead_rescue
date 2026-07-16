@@ -1,5 +1,5 @@
 """
-Root URL configuration for LeadRescue.
+Root URL configuration for LeadSathi.
 """
 
 from django.conf import settings
@@ -9,6 +9,8 @@ from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("dashboard/", include("apps.dashboard.urls")),
+    path("", include("apps.accounts.urls")),
     path("", include("apps.core.urls")),
 ]
 

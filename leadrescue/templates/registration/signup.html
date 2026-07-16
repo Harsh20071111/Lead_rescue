@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Create Workspace — LeadSathi{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style="background-color: #FAF8F4;">
+    <div class="max-w-md w-full space-y-8 p-10 rounded-2xl shadow-xl" style="background-color: #1C1C1A;">
+        <div>
+            <h2 class="mt-6 text-center text-4xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">
+                Create Workspace
+            </h2>
+            <p class="mt-2 text-center text-sm" style="color: #C4A882; font-family: 'Inter', sans-serif;">
+                Set up your agency and start tracking leads
+            </p>
+        </div>
+        <form class="mt-8 space-y-4" method="POST">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="p-4 rounded bg-red-900/30 border border-red-500 text-red-200 text-sm">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            {% for field in form %}
+            {% if field.is_hidden %}
+                {{ field }}
+            {% else %}
+            <div>
+                <label for="{{ field.id_for_label }}" class="block text-sm font-medium mb-1" style="color: #FAF8F4; font-family: 'Inter', sans-serif;">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                <p class="text-xs mt-1" style="color: #8B7355; font-family: 'Inter', sans-serif;">{{ field.help_text }}</p>
+                {% endif %}
+                {% if field.errors %}
+                <p class="text-red-400 text-xs mt-1">{{ field.errors.0 }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+
+            <div class="pt-2">
+                <button type="submit" class="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-medium rounded-md transition-all duration-200 hover:-translate-y-0.5" style="background-color: #D4AF6A; color: #1C1C1A; font-family: 'Inter', sans-serif;">
+                    Create Account
+                </button>
+            </div>
+        </form>
+        <div class="text-center">
+            <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">
+                Already have an account? 
+                <a href="{% url 'accounts:login' %}" class="font-medium hover:underline" style="color: #C4A882;">Sign In</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

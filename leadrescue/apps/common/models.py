@@ -1,5 +1,5 @@
 """
-Shared base models and managers for LeadRescue.
+Shared base models and managers for LeadSathi.
 
 All app models should inherit from TimeStampedModel to get
 consistent created_at / updated_at timestamps.

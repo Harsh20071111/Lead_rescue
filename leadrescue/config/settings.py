@@ -1,5 +1,5 @@
 """
-Django settings for LeadRescue project.
+Django settings for LeadSathi project.
 
 AI-powered Real Estate Lead Management & Analytics platform
 built for Indian real estate agencies.
@@ -7,8 +7,13 @@ built for Indian real estate agencies.
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+from urllib.parse import urlparse, parse_qsl
 
 import environ
+
+# Load env variables
+load_dotenv(os.path.join(Path(__file__).resolve().parent.parent.parent, '.env'))
 
 # ==================================================
 # PATH CONFIGURATION
@@ -78,6 +83,7 @@ LOCAL_APPS = [
     "apps.agencies",
     "apps.leads",
     "apps.dashboard",
+    "apps.properties",
     "apps.notifications",
     "apps.reports",
     "apps.core",
@@ -124,12 +130,27 @@ TEMPLATES = [
 # DATABASE
 # ==================================================
 
-DATABASES = {
-    "default": env.db(
-        "DATABASE_URL",
-        default="sqlite:///db.sqlite3",
-    ),
-}
+db_url = os.getenv("DATABASE_URL", "sqlite:///db.sqlite3")
+if db_url.startswith("postgres"):
+    tmpPostgres = urlparse(db_url)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': tmpPostgres.path.replace('/', ''),
+            'USER': tmpPostgres.username,
+            'PASSWORD': tmpPostgres.password,
+            'HOST': tmpPostgres.hostname,
+            'PORT': 5432,
+            'OPTIONS': dict(parse_qsl(tmpPostgres.query)),
+        }
+    }
+else:
+    DATABASES = {
+        "default": env.db(
+            "DATABASE_URL",
+            default="sqlite:///db.sqlite3",
+        ),
+    }
 
 # ==================================================
 # AUTHENTICATION
@@ -144,8 +165,8 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-LOGIN_URL = "/accounts/login/"
-LOGIN_REDIRECT_URL = "/"
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/dashboard/"
 LOGOUT_REDIRECT_URL = "/"
 
 # ==================================================

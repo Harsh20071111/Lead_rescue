@@ -1,5 +1,5 @@
 """
-Notification models for LeadRescue.
+Notification models for LeadSathi.
 
 In-app, email, and push notification models will be defined here.
 """

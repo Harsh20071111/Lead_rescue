@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Login — LeadSathi{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style="background-color: #FAF8F4;">
+    <div class="max-w-md w-full space-y-8 p-10 rounded-2xl shadow-xl" style="background-color: #1C1C1A;">
+        <div>
+            <h2 class="mt-6 text-center text-4xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">
+                Welcome Back
+            </h2>
+            <p class="mt-2 text-center text-sm" style="color: #C4A882; font-family: 'Inter', sans-serif;">
+                Sign in to manage your real estate pipeline
+            </p>
+        </div>
+        <form class="mt-8 space-y-6" method="POST">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+            <div class="p-4 rounded bg-red-900/30 border border-red-500 text-red-200 text-sm">
+                Invalid email or password. Please try again.
+            </div>
+            {% endif %}
+
+            <div class="rounded-md shadow-sm space-y-4">
+                <div>
+                    <label for="id_username" class="block text-sm font-medium mb-2" style="color: #FAF8F4; font-family: 'Inter', sans-serif;">Email Address</label>
+                    <input id="id_username" name="username" type="email" required class="w-full px-4 py-3 rounded-md bg-[#2A2A28] border border-[#4A4A48] text-[#FAF8F4] focus:outline-none focus:border-[#B87333]" placeholder="name@agency.com">
+                </div>
+                <div>
+                    <label for="id_password" class="block text-sm font-medium mb-2" style="color: #FAF8F4; font-family: 'Inter', sans-serif;">Password</label>
+                    <input id="id_password" name="password" type="password" required class="w-full px-4 py-3 rounded-md bg-[#2A2A28] border border-[#4A4A48] text-[#FAF8F4] focus:outline-none focus:border-[#B87333]" placeholder="••••••••">
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" class="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-medium rounded-md transition-all duration-200 hover:-translate-y-0.5" style="background-color: #D4AF6A; color: #1C1C1A; font-family: 'Inter', sans-serif;">
+                    Sign In
+                </button>
+            </div>
+        </form>
+        <div class="text-center">
+            <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">
+                Don't have an account? 
+                <a href="{% url 'accounts:signup' %}" class="font-medium hover:underline" style="color: #C4A882;">Create a workspace</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

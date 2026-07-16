@@ -1,7 +1,10 @@
 from django.urls import path
+from . import views
 
 app_name = "accounts"
 
 urlpatterns = [
-    # Account URL patterns will be added here.
+    path("signup/", views.SignupView.as_view(), name="signup"),
+    path("login/", views.LoginView.as_view(), name="login"),
+    path("logout/", views.LogoutView.as_view(), name="logout"),
 ]

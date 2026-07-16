@@ -23,3 +23,6 @@ WeasyPrint>=63,<64
 
 # Development
 django-extensions>=3.2,<4.0
+Pillow>=10.0,<11.0
+python-dotenv>=1.0.0
+django-sslserver>=0.22

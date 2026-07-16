@@ -1,5 +1,5 @@
 """
-Celery configuration for LeadRescue.
+Celery configuration for LeadSathi.
 
 Initializes the Celery application and auto-discovers tasks
 from all installed Django apps.

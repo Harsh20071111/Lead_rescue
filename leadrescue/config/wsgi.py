@@ -1,5 +1,5 @@
 """
-WSGI config for LeadRescue project.
+WSGI config for LeadSathi project.
 """
 
 import os

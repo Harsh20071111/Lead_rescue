@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // LeadRescue design palette
+        // LeadSathi design palette
         cream: {
           DEFAULT: "#FAF8F4",
           dark: "#F5F2EC",

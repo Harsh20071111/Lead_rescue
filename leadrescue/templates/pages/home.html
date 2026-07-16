@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}LeadRescue — AI-Powered Real Estate Lead Management{% endblock %}
-{% block meta_description %}LeadRescue ensures your team never loses track of a single lead — so every commission you've earned, stays earned. Built for Indian real estate agencies.{% endblock %}
+{% block title %}LeadSathi — WhatsApp-Powered Real Estate Lead Management{% endblock %}
+{% block meta_description %}LeadSathi captures every WhatsApp inquiry, qualifies leads automatically, and ensures no lead goes cold. Built for Indian real estate agencies and channel partners.{% endblock %}
 
 {% block content %}
 
@@ -11,7 +11,7 @@
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
             <a href="/" class="text-2xl font-light tracking-tight navbar-brand" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">
-                LeadRescue
+                LeadSathi
             </a>
             <div class="hidden md:flex items-center gap-8">
                 <a href="#product" class="text-sm font-medium transition-opacity hover:opacity-70 navbar-link" style="color: rgba(250,248,244,0.85); font-family: 'Inter', sans-serif;">Product</a>
@@ -19,9 +19,9 @@
                 <a href="#about" class="text-sm font-medium transition-opacity hover:opacity-70 navbar-link" style="color: rgba(250,248,244,0.85); font-family: 'Inter', sans-serif;">About</a>
                 <a href="#contact" class="text-sm font-medium transition-opacity hover:opacity-70 navbar-link" style="color: rgba(250,248,244,0.85); font-family: 'Inter', sans-serif;">Contact</a>
             </div>
-            <button class="px-6 py-2.5 text-sm font-medium rounded-md transition-all hover:-translate-y-0.5 navbar-cta" style="background-color: rgba(250,248,244,0.15); color: #FAF8F4; border: 1.5px solid rgba(250,248,244,0.5); font-family: 'Inter', sans-serif;">
-                Book Demo
-            </button>
+            <a href="{% url 'accounts:signup' %}" class="px-6 py-2.5 text-sm font-medium rounded-md transition-all hover:-translate-y-0.5 navbar-cta inline-block" style="background-color: rgba(250,248,244,0.15); color: #FAF8F4; border: 1.5px solid rgba(250,248,244,0.5); font-family: 'Inter', sans-serif; text-decoration: none;">
+                Start Free Trial
+            </a>
         </div>
     </div>
 </nav>
@@ -40,47 +40,48 @@
             Every missed follow-up is<br>a lost commission.
         </h1>
         <p class="text-lg md:text-xl font-normal max-w-3xl mx-auto mb-12 leading-relaxed" style="font-family: 'Inter', sans-serif; color: rgba(245,242,236,0.92);">
-            LeadRescue ensures your team never loses track of a single lead — so every commission you've earned, stays earned.
+            LeadSathi captures every inquiry on WhatsApp, asks the right questions automatically, and makes sure no lead goes cold — without your team changing how they already work.
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button class="px-8 py-4 text-base font-medium rounded-md transition-all duration-200 hover:-translate-y-1 shadow-lg" style="background-color: #1C1C1A; color: #FAF8F4; font-family: 'Inter', sans-serif;">
-                Book Demo
-            </button>
-            <button class="px-8 py-4 text-base font-medium rounded-md transition-all duration-200 hover:-translate-y-1 flex items-center gap-2 border-2" style="border-color: #FAF8F4; color: #FAF8F4; background-color: rgba(250,248,244,0.08); font-family: 'Inter', sans-serif;">
-                <!-- Play icon (inline SVG matching lucide Play) -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
-                Watch Demo
-            </button>
+            <a href="{% url 'accounts:signup' %}" class="px-8 py-4 text-base font-medium rounded-md transition-all duration-200 hover:-translate-y-1 shadow-lg inline-block" style="background-color: #1C1C1A; color: #FAF8F4; font-family: 'Inter', sans-serif; text-decoration: none;">
+                Start Free Trial
+            </a>
+            <a href="#whatsapp-automation" class="px-8 py-4 text-base font-medium rounded-md transition-all duration-200 hover:-translate-y-1 flex items-center gap-2 border-2" style="border-color: #FAF8F4; color: #FAF8F4; background-color: rgba(250,248,244,0.08); font-family: 'Inter', sans-serif; text-decoration: none;">
+                <!-- Eye icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                See How It Works
+            </a>
         </div>
     </div>
 </section>
 
-<!-- ===== TRUSTED CLIENTS ===== -->
+<!-- ===== BUILT FOR ===== -->
 <section class="py-24 fade-in" style="background-color: #F5F2EC;">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <p class="text-center text-sm font-medium tracking-wider uppercase mb-16" style="color: #8B7355; font-family: 'Inter', sans-serif;">
-            Trusted by India's leading real estate developers
+            Built for the teams that power Indian real estate
         </p>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 lg:gap-12">
-            {% for client in "Lodha,Sobha,Prestige,DLF,Godrej Properties,Puravankara"|make_list %}
-            {% endfor %}
-            <div class="flex items-center justify-center text-center transition-all duration-300 hover:scale-105">
-                <span class="text-xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Lodha</span>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+            <div class="flex flex-col items-center text-center p-8 rounded-lg transition-all duration-300 hover:-translate-y-1" style="background-color: #FAF8F4;">
+                <div class="w-14 h-14 mb-5 rounded-full flex items-center justify-center" style="background-color: #F5F2EC;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B87333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                </div>
+                <h3 class="text-xl font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Independent Agencies</h3>
+                <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Small teams that need every lead tracked, not just the ones they remember.</p>
             </div>
-            <div class="flex items-center justify-center text-center transition-all duration-300 hover:scale-105">
-                <span class="text-xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Sobha</span>
+            <div class="flex flex-col items-center text-center p-8 rounded-lg transition-all duration-300 hover:-translate-y-1" style="background-color: #FAF8F4;">
+                <div class="w-14 h-14 mb-5 rounded-full flex items-center justify-center" style="background-color: #F5F2EC;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B87333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </div>
+                <h3 class="text-xl font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Channel Partners</h3>
+                <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Brokers managing multiple projects who can't afford to let inquiries slip through.</p>
             </div>
-            <div class="flex items-center justify-center text-center transition-all duration-300 hover:scale-105">
-                <span class="text-xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Prestige</span>
-            </div>
-            <div class="flex items-center justify-center text-center transition-all duration-300 hover:scale-105">
-                <span class="text-xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">DLF</span>
-            </div>
-            <div class="flex items-center justify-center text-center transition-all duration-300 hover:scale-105">
-                <span class="text-xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Godrej Properties</span>
-            </div>
-            <div class="flex items-center justify-center text-center transition-all duration-300 hover:scale-105">
-                <span class="text-xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Puravankara</span>
+            <div class="flex flex-col items-center text-center p-8 rounded-lg transition-all duration-300 hover:-translate-y-1" style="background-color: #FAF8F4;">
+                <div class="w-14 h-14 mb-5 rounded-full flex items-center justify-center" style="background-color: #F5F2EC;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B87333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                </div>
+                <h3 class="text-xl font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Growing Brokerages</h3>
+                <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Teams handling 50–500 leads a month who need systems, not spreadsheets.</p>
             </div>
         </div>
     </div>
@@ -99,21 +100,21 @@
         <div class="grid md:grid-cols-3 gap-12 lg:gap-16">
             <div class="text-center">
                 <div class="text-5xl md:text-6xl font-light mb-4" style="font-family: 'Cormorant Garamond', serif; color: #D4AF6A;">
-                    ₹<span class="countup" data-target="4.2" data-decimals="1">0</span>Cr
+                    1 in <span class="countup" data-target="4" data-decimals="0">0</span>
                 </div>
-                <p class="text-base leading-relaxed" style="color: #F5F2EC; font-family: 'Inter', sans-serif;">Average commission value lost per 100 leads</p>
+                <p class="text-base leading-relaxed" style="color: #F5F2EC; font-family: 'Inter', sans-serif;">Leads lost due to delayed or missed follow-up — an industry-wide pattern</p>
             </div>
             <div class="text-center">
                 <div class="text-5xl md:text-6xl font-light mb-4" style="font-family: 'Cormorant Garamond', serif; color: #D4AF6A;">
-                    <span class="countup" data-target="67" data-decimals="0">0</span>%
+                    <span class="countup" data-target="5" data-decimals="0">0</span> min
                 </div>
-                <p class="text-base leading-relaxed" style="color: #F5F2EC; font-family: 'Inter', sans-serif;">Of leads go cold after just 3 unanswered follow-ups</p>
+                <p class="text-base leading-relaxed" style="color: #F5F2EC; font-family: 'Inter', sans-serif;">The window in which a fast reply meaningfully increases your conversion odds</p>
             </div>
             <div class="text-center">
                 <div class="text-5xl md:text-6xl font-light mb-4" style="font-family: 'Cormorant Garamond', serif; color: #D4AF6A;">
-                    1 in <span class="countup" data-target="3" data-decimals="0">0</span>
+                    <span class="countup" data-target="24" data-decimals="0">0</span> hrs
                 </div>
-                <p class="text-base leading-relaxed" style="color: #F5F2EC; font-family: 'Inter', sans-serif;">Site visits never gets a second call</p>
+                <p class="text-base leading-relaxed" style="color: #F5F2EC; font-family: 'Inter', sans-serif;">Average time Indian buyers wait before contacting a competing agency</p>
             </div>
         </div>
     </div>
@@ -123,50 +124,55 @@
 <section class="py-32 fade-in" style="background-color: #FAF8F4;">
     <div class="max-w-6xl mx-auto px-6 lg:px-8">
         <h2 class="text-4xl md:text-5xl font-light leading-tight mb-20 text-center" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
-            LeadRescue changes the moment<br>a lead arrives.
+            How LeadSathi works —<br>from inquiry to site visit.
         </h2>
         <div class="relative">
             <div class="hidden md:block absolute top-10 left-[10%] right-[10%] h-px" style="background-color: #C4A882;"></div>
             <div class="grid md:grid-cols-5 gap-8">
-                <!-- Step 1: Lead Capture -->
+                <!-- Step 1: Inquiry Received -->
                 <div class="relative text-center group">
                     <div class="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110" style="background-color: #F5F2EC; border: 2px solid #C4A882;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8B7355" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
-                    </div>
-                    <h3 class="text-lg font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Lead Capture</h3>
-                    <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Instant capture from all channels</p>
-                </div>
-                <!-- Step 2: Assignment -->
-                <div class="relative text-center group">
-                    <div class="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110" style="background-color: #F5F2EC; border: 2px solid #C4A882;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8B7355" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                    </div>
-                    <h3 class="text-lg font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Assignment</h3>
-                    <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Auto-route to right team member</p>
-                </div>
-                <!-- Step 3: Smart Follow-up -->
-                <div class="relative text-center group">
-                    <div class="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110" style="background-color: #F5F2EC; border: 2px solid #C4A882;">
+                        <!-- WhatsApp icon -->
                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8B7355" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                     </div>
-                    <h3 class="text-lg font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Smart Follow-up</h3>
-                    <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Never miss a critical moment</p>
+                    <h3 class="text-lg font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Inquiry Received</h3>
+                    <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Every WhatsApp inquiry is captured instantly — no manual entry</p>
                 </div>
-                <!-- Step 4: AI Insights -->
+                <!-- Step 2: Instant Qualification -->
                 <div class="relative text-center group">
                     <div class="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110" style="background-color: #F5F2EC; border: 2px solid #C4A882;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8B7355" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 0 0-8 8c0 3.4 2.1 6.3 5 7.5V20h6v-2.5c2.9-1.2 5-4.1 5-7.5a8 8 0 0 0-8-8z"></path><path d="M9 22h6"></path></svg>
+                        <!-- Clipboard icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8B7355" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
                     </div>
-                    <h3 class="text-lg font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">AI Insights</h3>
-                    <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Know which leads need attention</p>
+                    <h3 class="text-lg font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Instant Qualification</h3>
+                    <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Automated conversation asks budget, BHK, and location — no forms</p>
                 </div>
-                <!-- Step 5: Closed Deal -->
+                <!-- Step 3: Property Match -->
                 <div class="relative text-center group">
                     <div class="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110" style="background-color: #F5F2EC; border: 2px solid #C4A882;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8B7355" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                        <!-- Home icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8B7355" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                     </div>
-                    <h3 class="text-lg font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Closed Deal</h3>
-                    <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Commission secured</p>
+                    <h3 class="text-lg font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Property Match Sent</h3>
+                    <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Matching listings sent back automatically, before a human could even open the chat</p>
+                </div>
+                <!-- Step 4: Lead Assigned -->
+                <div class="relative text-center group">
+                    <div class="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110" style="background-color: #F5F2EC; border: 2px solid #C4A882;">
+                        <!-- User icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8B7355" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <h3 class="text-lg font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Lead Assigned</h3>
+                    <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Lead with full conversation context is routed to the right agent instantly</p>
+                </div>
+                <!-- Step 5: Follow-Up Reminders -->
+                <div class="relative text-center group">
+                    <div class="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110" style="background-color: #F5F2EC; border: 2px solid #C4A882;">
+                        <!-- Bell icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8B7355" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    </div>
+                    <h3 class="text-lg font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Follow-Up Reminders</h3>
+                    <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">If a lead goes quiet, agents get a reminder before it goes cold</p>
                 </div>
             </div>
         </div>
@@ -180,37 +186,37 @@
             Built for the rhythm of<br>real estate sales.
         </h2>
         <div class="grid md:grid-cols-2 gap-12">
-            <!-- Feature 1 -->
-            <div class="p-10 rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl group" style="background-color: #FAF8F4;">
-                <div class="w-16 h-16 mb-6 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110" style="background-color: #F5F2EC;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B87333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                </div>
-                <h3 class="text-2xl font-normal mb-4" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Intelligent Lead Routing</h3>
-                <p class="text-base leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">Every lead reaches the right person within 60 seconds. No manual assignment, no confusion.</p>
-            </div>
-            <!-- Feature 2 -->
+            <!-- Feature 1: WhatsApp Auto-Qualification -->
             <div class="p-10 rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl group" style="background-color: #FAF8F4;">
                 <div class="w-16 h-16 mb-6 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110" style="background-color: #F5F2EC;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B87333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                 </div>
-                <h3 class="text-2xl font-normal mb-4" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">WhatsApp Automation</h3>
-                <p class="text-base leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">Your leads live on WhatsApp. LeadRescue meets them there with timely, contextual messages.</p>
+                <h3 class="text-2xl font-normal mb-4" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">WhatsApp Auto-Qualification</h3>
+                <p class="text-base leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">Capture and qualify every lead automatically, 24/7, without a single form. Leads answer questions naturally in WhatsApp — budget, BHK, location — all before your team even picks up the phone.</p>
             </div>
-            <!-- Feature 3 -->
+            <!-- Feature 2: Smart Property Matching -->
             <div class="p-10 rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl group" style="background-color: #FAF8F4;">
                 <div class="w-16 h-16 mb-6 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110" style="background-color: #F5F2EC;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B87333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 0 0-8 8c0 3.4 2.1 6.3 5 7.5V20h6v-2.5c2.9-1.2 5-4.1 5-7.5a8 8 0 0 0-8-8z"></path><path d="M9 22h6"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B87333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                 </div>
-                <h3 class="text-2xl font-normal mb-4" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">AI Lead Scoring</h3>
-                <p class="text-base leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">Know which leads are ready to buy, which need nurturing, and which to deprioritize.</p>
+                <h3 class="text-2xl font-normal mb-4" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Smart Property Matching</h3>
+                <p class="text-base leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">Leads get relevant property suggestions instantly, based on their budget and preferences. Often before a human could even open the chat.</p>
             </div>
-            <!-- Feature 4 -->
+            <!-- Feature 3: Follow-Up Reminders -->
+            <div class="p-10 rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl group" style="background-color: #FAF8F4;">
+                <div class="w-16 h-16 mb-6 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110" style="background-color: #F5F2EC;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B87333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                </div>
+                <h3 class="text-2xl font-normal mb-4" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Follow-Up Reminders</h3>
+                <p class="text-base leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">Agents are automatically reminded before a lead goes cold — no lead falls through the cracks. WhatsApp nudges your team at the right moment.</p>
+            </div>
+            <!-- Feature 4: Owner Dashboard -->
             <div class="p-10 rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl group" style="background-color: #FAF8F4;">
                 <div class="w-16 h-16 mb-6 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110" style="background-color: #F5F2EC;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B87333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
                 </div>
-                <h3 class="text-2xl font-normal mb-4" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Follow-up Intelligence</h3>
-                <p class="text-base leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">Never wonder when to reach out. AI tells you the perfect moment for each lead.</p>
+                <h3 class="text-2xl font-normal mb-4" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Owner Dashboard</h3>
+                <p class="text-base leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">See exactly how fast your team responds, which sources convert, and what's slipping through. Real numbers, not guesswork.</p>
             </div>
         </div>
     </div>
@@ -225,36 +231,56 @@
         <div class="p-10 lg:p-16 rounded-2xl shadow-2xl" style="background-color: #F5F2EC;">
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                 <div class="text-center">
-                    <div class="text-4xl font-light mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">247</div>
-                    <div class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Active Leads</div>
+                    <div class="text-4xl font-light mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">32</div>
+                    <div class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Leads Today</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-4xl font-light mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">38</div>
-                    <div class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Follow-ups Today</div>
+                    <div class="text-4xl font-light mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">187</div>
+                    <div class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Leads This Week</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-4xl font-light mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">14</div>
-                    <div class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Site Visits This Week</div>
+                    <div class="text-4xl font-light mb-2" style="font-family: 'Cormorant Garamond', serif; color: #B87333;">7</div>
+                    <div class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Follow-ups Missed</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-4xl font-light mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">₹127Cr</div>
-                    <div class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Pipeline Value</div>
+                    <div class="text-4xl font-light mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">2m 14s</div>
+                    <div class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Avg Response Time</div>
                 </div>
             </div>
             <div class="grid md:grid-cols-2 gap-8">
-                <!-- Chart: Lead Conversion Rate -->
+                <!-- Chart: Leads by Source -->
                 <div class="p-6 rounded-lg" style="background-color: #FAF8F4;">
-                    <h4 class="text-sm font-medium mb-4" style="color: #8B7355; font-family: 'Inter', sans-serif;">Lead Conversion Rate</h4>
-                    <svg viewBox="0 0 300 120" class="w-full">
-                        <polyline points="0,100 50,80 100,70 150,50 200,40 250,20 300,10" fill="none" stroke="#B87333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <circle cx="0" cy="100" r="4" fill="#B87333" />
-                        <circle cx="50" cy="80" r="4" fill="#B87333" />
-                        <circle cx="100" cy="70" r="4" fill="#B87333" />
-                        <circle cx="150" cy="50" r="4" fill="#B87333" />
-                        <circle cx="200" cy="40" r="4" fill="#B87333" />
-                        <circle cx="250" cy="20" r="4" fill="#B87333" />
-                        <circle cx="300" cy="10" r="4" fill="#B87333" />
-                    </svg>
+                    <h4 class="text-sm font-medium mb-4" style="color: #8B7355; font-family: 'Inter', sans-serif;">Leads by Source</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <div class="text-xs w-24" style="color: #8B7355; font-family: 'Inter', sans-serif;">WhatsApp</div>
+                            <div class="flex-1 h-2 rounded-full" style="background-color: #E5DFD5;">
+                                <div class="h-2 rounded-full" style="width: 52%; background-color: #25D366;"></div>
+                            </div>
+                            <div class="text-xs font-medium w-10 text-right" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">52%</div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="text-xs w-24" style="color: #8B7355; font-family: 'Inter', sans-serif;">99acres</div>
+                            <div class="flex-1 h-2 rounded-full" style="background-color: #E5DFD5;">
+                                <div class="h-2 rounded-full" style="width: 23%; background-color: #B87333;"></div>
+                            </div>
+                            <div class="text-xs font-medium w-10 text-right" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">23%</div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="text-xs w-24" style="color: #8B7355; font-family: 'Inter', sans-serif;">MagicBricks</div>
+                            <div class="flex-1 h-2 rounded-full" style="background-color: #E5DFD5;">
+                                <div class="h-2 rounded-full" style="width: 15%; background-color: #D4AF6A;"></div>
+                            </div>
+                            <div class="text-xs font-medium w-10 text-right" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">15%</div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="text-xs w-24" style="color: #8B7355; font-family: 'Inter', sans-serif;">Walk-ins</div>
+                            <div class="flex-1 h-2 rounded-full" style="background-color: #E5DFD5;">
+                                <div class="h-2 rounded-full" style="width: 10%; background-color: #8B7355;"></div>
+                            </div>
+                            <div class="text-xs font-medium w-10 text-right" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">10%</div>
+                        </div>
+                    </div>
                 </div>
                 <!-- Chart: Response Time Distribution -->
                 <div class="p-6 rounded-lg" style="background-color: #FAF8F4;">
@@ -296,13 +322,13 @@
 </section>
 
 <!-- ===== WHATSAPP AUTOMATION ===== -->
-<section class="py-32 fade-in" style="background-color: #EEF0EC;">
+<section id="whatsapp-automation" class="py-32 fade-in" style="background-color: #EEF0EC;">
     <div class="max-w-6xl mx-auto px-6 lg:px-8">
         <h2 class="text-4xl md:text-5xl font-light leading-tight mb-8 text-center" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
             Meet your leads where<br>they already are.
         </h2>
         <p class="text-center text-lg mb-16 max-w-2xl mx-auto" style="color: #8B7355; font-family: 'Inter', sans-serif;">
-            87% of Indian home buyers prefer WhatsApp for property inquiries. LeadRescue automates the conversation while keeping it personal.
+            87% of Indian home buyers prefer WhatsApp for property inquiries. LeadSathi automates the conversation while keeping it personal.
         </p>
         <div class="max-w-sm mx-auto">
             <div class="rounded-3xl shadow-2xl overflow-hidden" style="background-color: #0f1c14; border: 12px solid #1a2e1e;">
@@ -321,25 +347,28 @@
                     <!-- Lead message -->
                     <div class="flex justify-start">
                         <div class="max-w-[78%] px-4 py-2.5 text-sm leading-relaxed" style="background-color: #1e2e25; color: #d4e8d8; border-radius: 18px 18px 18px 4px; font-family: 'Inter', sans-serif;">
-                            Hi, I saw your 3BHK in Whitefield on your website.
+                            Hi, interested in 2BHK near Bopal
                         </div>
                     </div>
-                    <!-- Our reply -->
+                    <!-- Bot reply -->
                     <div class="flex justify-end">
                         <div class="max-w-[78%] px-4 py-2.5 text-sm leading-relaxed" style="background-color: #25D366; color: #fff; border-radius: 18px 18px 4px 18px; font-family: 'Inter', sans-serif;">
-                            Hi Ravi! Thank you for your interest. The Whitefield project has 3BHK units starting at ₹1.2Cr. Would you like to schedule a site visit?
+                            Thanks for reaching out! Quick questions to find the best match — what's your budget range?
                         </div>
                     </div>
-                    <!-- Lead message -->
+                    <!-- Lead taps button -->
                     <div class="flex justify-start">
                         <div class="max-w-[78%] px-4 py-2.5 text-sm leading-relaxed" style="background-color: #1e2e25; color: #d4e8d8; border-radius: 18px 18px 18px 4px; font-family: 'Inter', sans-serif;">
-                            Yes, this Saturday works?
+                            50L – 75L
                         </div>
                     </div>
-                    <!-- Our reply -->
+                    <!-- Bot reply with matches -->
                     <div class="flex justify-end">
-                        <div class="max-w-[78%] px-4 py-2.5 text-sm leading-relaxed" style="background-color: #25D366; color: #fff; border-radius: 18px 18px 4px 18px; font-family: 'Inter', sans-serif;">
-                            Perfect! I've booked you for Saturday at 11 AM. Our sales manager Priya will meet you. I'll send the location shortly.
+                        <div class="max-w-[85%] px-4 py-2.5 text-sm leading-relaxed" style="background-color: #25D366; color: #fff; border-radius: 18px 18px 4px 18px; font-family: 'Inter', sans-serif;">
+                            Got it! Here are 2 properties matching your budget and location:<br><br>
+                            🏠 Shivalik Residency — ₹58L<br>
+                            🏠 Greenview Heights — ₹72L<br><br>
+                            An agent will call you shortly to arrange a visit!
                         </div>
                     </div>
                 </div>
@@ -348,71 +377,30 @@
     </div>
 </section>
 
-<!-- ===== AI INSIGHTS ===== -->
+<!-- ===== ROADMAP TEASER ===== -->
 <section class="py-32 fade-in" style="background-color: #1C1C1A;">
     <div class="max-w-6xl mx-auto px-6 lg:px-8">
         <h2 class="text-4xl md:text-5xl font-light leading-tight mb-8 text-center" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">
-            Your AI sales manager,<br>working 24/7.
+            What's coming next.
         </h2>
         <p class="text-center text-lg mb-16 max-w-2xl mx-auto" style="color: #C4A882; font-family: 'Inter', sans-serif;">
-            LeadRescue analyses every interaction to surface the insights your team needs to close more deals.
+            As LeadSathi learns from your data, we're building predictive features that get smarter over time. Here's what's on the roadmap.
         </p>
         <div class="grid md:grid-cols-3 gap-8">
             <div class="p-8 rounded-lg transition-all duration-300 hover:-translate-y-1" style="background-color: #2A2A28;">
-                <div class="text-3xl font-light mb-3" style="font-family: 'Cormorant Garamond', serif; color: #B87333;">Hot</div>
-                <h3 class="text-xl font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">Lead Temperature</h3>
-                <p class="text-sm" style="color: #C4A882; font-family: 'Inter', sans-serif;">High engagement, opened brochure 3 times this week</p>
+                <div class="inline-block px-3 py-1 rounded-full text-xs font-medium mb-4" style="background-color: rgba(184,115,51,0.15); color: #B87333; font-family: 'Inter', sans-serif;">Coming Soon</div>
+                <h3 class="text-xl font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">Lead Scoring</h3>
+                <p class="text-sm" style="color: #C4A882; font-family: 'Inter', sans-serif;">Know which leads are ready to buy, which need nurturing, and which to deprioritize — based on real engagement patterns.</p>
             </div>
             <div class="p-8 rounded-lg transition-all duration-300 hover:-translate-y-1" style="background-color: #2A2A28;">
-                <div class="text-3xl font-light mb-3" style="font-family: 'Cormorant Garamond', serif; color: #D4AF6A;">6–7 PM</div>
-                <h3 class="text-xl font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">Best Time to Call</h3>
-                <p class="text-sm" style="color: #C4A882; font-family: 'Inter', sans-serif;">Historically most responsive in evenings</p>
+                <div class="inline-block px-3 py-1 rounded-full text-xs font-medium mb-4" style="background-color: rgba(184,115,51,0.15); color: #B87333; font-family: 'Inter', sans-serif;">Coming Soon</div>
+                <h3 class="text-xl font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">Smart Timing</h3>
+                <p class="text-sm" style="color: #C4A882; font-family: 'Inter', sans-serif;">Recommendations for the best time to call each lead, based on their past response patterns.</p>
             </div>
             <div class="p-8 rounded-lg transition-all duration-300 hover:-translate-y-1" style="background-color: #2A2A28;">
-                <div class="text-3xl font-light mb-3" style="font-family: 'Cormorant Garamond', serif; color: #7A8C7E;">Low</div>
-                <h3 class="text-xl font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">Drop-off Risk</h3>
-                <p class="text-sm" style="color: #C4A882; font-family: 'Inter', sans-serif;">Consistent engagement pattern maintained</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ===== TESTIMONIALS ===== -->
-<section class="py-32 fade-in" style="background-color: #FAF8F4;">
-    <div class="max-w-6xl mx-auto px-6 lg:px-8">
-        <h2 class="text-4xl md:text-5xl font-light leading-tight mb-20 text-center" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
-            The teams who use LeadRescue<br>don't go back.
-        </h2>
-        <div class="grid md:grid-cols-3 gap-12">
-            <!-- Testimonial 1 -->
-            <div class="relative">
-                <div class="text-7xl font-light mb-4 leading-none select-none" style="font-family: 'Cormorant Garamond', serif; color: #B87333; opacity: 0.25;">"</div>
-                <p class="text-lg leading-relaxed mb-8" style="font-family: 'Inter', sans-serif; color: #1C1C1A;">We've recovered ₹8.4 crores in pipeline value that would have been lost to poor follow-up. LeadRescue paid for itself in the first month.</p>
-                <div>
-                    <div class="font-medium mb-0.5" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Arjun Mehta</div>
-                    <div class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Head of Sales</div>
-                    <div class="text-sm" style="color: #C4A882; font-family: 'Inter', sans-serif;">Prestige Estates, Bangalore</div>
-                </div>
-            </div>
-            <!-- Testimonial 2 -->
-            <div class="relative">
-                <div class="text-7xl font-light mb-4 leading-none select-none" style="font-family: 'Cormorant Garamond', serif; color: #B87333; opacity: 0.25;">"</div>
-                <p class="text-lg leading-relaxed mb-8" style="font-family: 'Inter', sans-serif; color: #1C1C1A;">Our response time dropped from 47 minutes to under 90 seconds. That alone changed our conversion rate by 34%.</p>
-                <div>
-                    <div class="font-medium mb-0.5" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Kavita Reddy</div>
-                    <div class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">Sales Director</div>
-                    <div class="text-sm" style="color: #C4A882; font-family: 'Inter', sans-serif;">Lodha Group, Mumbai</div>
-                </div>
-            </div>
-            <!-- Testimonial 3 -->
-            <div class="relative">
-                <div class="text-7xl font-light mb-4 leading-none select-none" style="font-family: 'Cormorant Garamond', serif; color: #B87333; opacity: 0.25;">"</div>
-                <p class="text-lg leading-relaxed mb-8" style="font-family: 'Inter', sans-serif; color: #1C1C1A;">Finally, a CRM that understands how real estate actually works. The WhatsApp automation feels like having three extra team members.</p>
-                <div>
-                    <div class="font-medium mb-0.5" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Vikram Singh</div>
-                    <div class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">VP Sales</div>
-                    <div class="text-sm" style="color: #C4A882; font-family: 'Inter', sans-serif;">DLF Limited, Gurgaon</div>
-                </div>
+                <div class="inline-block px-3 py-1 rounded-full text-xs font-medium mb-4" style="background-color: rgba(184,115,51,0.15); color: #B87333; font-family: 'Inter', sans-serif;">Coming Soon</div>
+                <h3 class="text-xl font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">Drop-off Alerts</h3>
+                <p class="text-sm" style="color: #C4A882; font-family: 'Inter', sans-serif;">Get alerted when a lead shows signs of losing interest, so your team can act before it's too late.</p>
             </div>
         </div>
     </div>
@@ -422,17 +410,17 @@
 <section id="pricing" class="py-32 fade-in" style="background-color: #F5F2EC;">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <h2 class="text-4xl md:text-5xl font-light leading-tight mb-8 text-center" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
-            Transparent pricing for<br>serious sales operations.
+            Simple pricing that<br>grows with you.
         </h2>
         <p class="text-center text-lg mb-16 max-w-2xl mx-auto" style="color: #8B7355; font-family: 'Inter', sans-serif;">
-            No hidden fees. No per-lead charges. Just straightforward pricing that scales with your team.
+            No hidden fees. No per-lead charges. Start free and upgrade when you're ready.
         </p>
         <div class="grid md:grid-cols-3 gap-8">
             <!-- Starter -->
             <div class="relative p-10 rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" style="background-color: #FAF8F4;">
                 <h3 class="text-2xl font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Starter</h3>
                 <div class="mb-8">
-                    <span class="text-5xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">₹8,999</span>
+                    <span class="text-5xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">₹2,499</span>
                     <span class="text-sm ml-1" style="color: #8B7355; font-family: 'Inter', sans-serif;">/month</span>
                 </div>
                 <ul class="space-y-4 mb-10">
@@ -442,24 +430,24 @@
                     </li>
                     <li class="flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A8C7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">500 leads per month</span>
+                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">WhatsApp lead capture</span>
                     </li>
                     <li class="flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A8C7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">WhatsApp automation</span>
+                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Manual lead pipeline</span>
                     </li>
                     <li class="flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A8C7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Basic lead scoring</span>
+                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Basic dashboard</span>
                     </li>
                     <li class="flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A8C7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Email support</span>
                     </li>
                 </ul>
-                <button class="w-full px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 hover:-translate-y-0.5" style="background-color: transparent; color: #1C1C1A; border: 2px solid #1C1C1A; font-family: 'Inter', sans-serif;">
+                <a href="{% url 'accounts:signup' %}" class="w-full px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 hover:-translate-y-0.5 inline-block text-center" style="background-color: transparent; color: #1C1C1A; border: 2px solid #1C1C1A; font-family: 'Inter', sans-serif; text-decoration: none;">
                     Start Free Trial
-                </button>
+                </a>
             </div>
             <!-- Growth (Popular) -->
             <div class="relative p-10 rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" style="background-color: #FAF8F4; outline: 2px solid #B87333;">
@@ -468,7 +456,7 @@
                 </div>
                 <h3 class="text-2xl font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Growth</h3>
                 <div class="mb-8">
-                    <span class="text-5xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">₹22,999</span>
+                    <span class="text-5xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">₹6,499</span>
                     <span class="text-sm ml-1" style="color: #8B7355; font-family: 'Inter', sans-serif;">/month</span>
                 </div>
                 <ul class="space-y-4 mb-10">
@@ -478,28 +466,24 @@
                     </li>
                     <li class="flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A8C7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">2,000 leads per month</span>
+                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Auto-qualification bot</span>
                     </li>
                     <li class="flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A8C7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Advanced AI insights</span>
+                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Smart property matching</span>
                     </li>
                     <li class="flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A8C7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Custom automations</span>
+                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Follow-up reminders</span>
                     </li>
                     <li class="flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A8C7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Priority support</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A8C7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Dedicated success manager</span>
+                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Priority WhatsApp support</span>
                     </li>
                 </ul>
-                <button class="w-full px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 hover:-translate-y-0.5" style="background-color: #1C1C1A; color: #FAF8F4; font-family: 'Inter', sans-serif;">
+                <a href="{% url 'accounts:signup' %}" class="w-full px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 hover:-translate-y-0.5 inline-block text-center" style="background-color: #1C1C1A; color: #FAF8F4; font-family: 'Inter', sans-serif; text-decoration: none;">
                     Start Free Trial
-                </button>
+                </a>
             </div>
             <!-- Enterprise -->
             <div class="relative p-10 rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" style="background-color: #FAF8F4;">
@@ -515,15 +499,7 @@
                     </li>
                     <li class="flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A8C7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Unlimited leads</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A8C7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">White-label options</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A8C7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">API access</span>
+                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Multiple branches</span>
                     </li>
                     <li class="flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A8C7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -531,7 +507,11 @@
                     </li>
                     <li class="flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A8C7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">24/7 phone support</span>
+                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Priority support</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A8C7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span class="text-sm" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Dedicated onboarding</span>
                     </li>
                 </ul>
                 <button class="w-full px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 hover:-translate-y-0.5" style="background-color: transparent; color: #1C1C1A; border: 2px solid #1C1C1A; font-family: 'Inter', sans-serif;">
@@ -556,7 +536,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8B7355" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 transition-transform duration-300 faq-chevron"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </button>
                 <div class="faq-content overflow-hidden transition-all duration-300" style="max-height: 0;">
-                    <p class="px-8 pb-6 leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">Most teams are fully onboarded within 48 hours. We handle data migration, team training, and integration setup for you.</p>
+                    <p class="px-8 pb-6 leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">Setup typically takes 2–3 days. We'll help you import your existing lead data, set up your WhatsApp Business number, and configure your qualification flow. Your team can start receiving leads on day one, with the full automation live within the first week.</p>
                 </div>
             </div>
             <!-- FAQ 2 -->
@@ -566,7 +546,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8B7355" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 transition-transform duration-300 faq-chevron"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </button>
                 <div class="faq-content overflow-hidden transition-all duration-300" style="max-height: 0;">
-                    <p class="px-8 pb-6 leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">Yes. LeadRescue integrates with all major property portals (99acres, MagicBricks, Housing.com), Google Sheets, and can connect to your existing CRM via API.</p>
+                    <p class="px-8 pb-6 leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">Yes. LeadSathi integrates with all major property portals (99acres, MagicBricks, Housing.com), Google Sheets, and can connect to your existing CRM via API.</p>
                 </div>
             </div>
             <!-- FAQ 3 -->
@@ -582,21 +562,21 @@
             <!-- FAQ 4 -->
             <div class="rounded-lg overflow-hidden faq-item" style="background-color: #F5F2EC;">
                 <button class="w-full px-8 py-6 flex items-center justify-between text-left faq-toggle">
-                    <span class="text-lg font-normal pr-4" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Is WhatsApp automation compliant?</span>
+                    <span class="text-lg font-normal pr-4" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Does it use AI?</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8B7355" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 transition-transform duration-300 faq-chevron"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </button>
                 <div class="faq-content overflow-hidden transition-all duration-300" style="max-height: 0;">
-                    <p class="px-8 pb-6 leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">Absolutely. We use WhatsApp Business API with full GDPR and Indian data protection compliance. All messages require prior opt-in.</p>
+                    <p class="px-8 pb-6 leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">LeadSathi automates lead capture and follow-up using WhatsApp automation and smart property matching. We're building predictive AI features — like lead scoring and smart timing — as we grow. Reach out if you'd like to know what's on the roadmap.</p>
                 </div>
             </div>
             <!-- FAQ 5 -->
             <div class="rounded-lg overflow-hidden faq-item" style="background-color: #F5F2EC;">
                 <button class="w-full px-8 py-6 flex items-center justify-between text-left faq-toggle">
-                    <span class="text-lg font-normal pr-4" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Can we customise the AI responses?</span>
+                    <span class="text-lg font-normal pr-4" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Is WhatsApp automation compliant?</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8B7355" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 transition-transform duration-300 faq-chevron"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </button>
                 <div class="faq-content overflow-hidden transition-all duration-300" style="max-height: 0;">
-                    <p class="px-8 pb-6 leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">Yes. Every automated message is fully customisable to match your brand voice, and you can set custom triggers and conditions.</p>
+                    <p class="px-8 pb-6 leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">Absolutely. We use WhatsApp Business API with full GDPR and Indian data protection compliance. All messages require prior opt-in.</p>
                 </div>
             </div>
             <!-- FAQ 6 -->
@@ -606,7 +586,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8B7355" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 transition-transform duration-300 faq-chevron"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </button>
                 <div class="faq-content overflow-hidden transition-all duration-300" style="max-height: 0;">
-                    <p class="px-8 pb-6 leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">All plans include email support. Growth plans get priority response and a dedicated success manager. Enterprise plans have 24/7 phone support.</p>
+                    <p class="px-8 pb-6 leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">All plans include email support. Growth plans get priority WhatsApp support. Enterprise plans include dedicated onboarding and priority phone support.</p>
                 </div>
             </div>
         </div>
@@ -617,15 +597,15 @@
 <section class="py-32 fade-in" style="background-color: #1C1C1A;">
     <div class="max-w-4xl mx-auto px-6 lg:px-8 text-center">
         <h2 class="text-4xl md:text-5xl lg:text-6xl font-light leading-tight mb-8" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">
-            Stop leaving commissions<br>on the table.
+            Stop losing leads to<br>slow follow-up.
         </h2>
         <p class="text-lg mb-12 max-w-2xl mx-auto" style="color: #C4A882; font-family: 'Inter', sans-serif;">
-            Join India's leading developers who've chosen to rescue every lead, close every opportunity, and secure every commission.
+            Start your free trial — no credit card needed. See how LeadSathi works with your team in under 10 minutes.
         </p>
-        <button class="px-10 py-4 text-lg font-medium rounded-md transition-all duration-200 hover:-translate-y-1 shadow-xl inline-flex items-center gap-2" style="background-color: #D4AF6A; color: #1C1C1A; font-family: 'Inter', sans-serif;">
-            Book Your Demo
+        <a href="{% url 'accounts:signup' %}" class="px-10 py-4 text-lg font-medium rounded-md transition-all duration-200 hover:-translate-y-1 shadow-xl inline-flex items-center gap-2" style="background-color: #D4AF6A; color: #1C1C1A; font-family: 'Inter', sans-serif; text-decoration: none;">
+            Start Free Trial
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        </button>
+        </a>
     </div>
 </section>
 
@@ -634,9 +614,9 @@
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <div class="grid md:grid-cols-4 gap-12 mb-16">
             <div>
-                <div class="text-2xl font-light mb-4" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">LeadRescue</div>
+                <div class="text-2xl font-light mb-4" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">LeadSathi</div>
                 <p class="text-sm leading-relaxed" style="color: #6B5D4A; font-family: 'Inter', sans-serif;">
-                    Rescuing lost commissions for India's premium real estate developers.
+                    WhatsApp-powered lead capture, qualification, and follow-up — built for Indian real estate agencies.
                 </p>
             </div>
             <div>
@@ -644,17 +624,15 @@
                 <ul class="space-y-2">
                     <li><a href="#product" class="text-sm transition-colors hover:text-amber-400" style="color: #6B5D4A; font-family: 'Inter', sans-serif;">Features</a></li>
                     <li><a href="#pricing" class="text-sm transition-colors hover:text-amber-400" style="color: #6B5D4A; font-family: 'Inter', sans-serif;">Pricing</a></li>
-                    <li><a href="#" class="text-sm transition-colors hover:text-amber-400" style="color: #6B5D4A; font-family: 'Inter', sans-serif;">Integrations</a></li>
-                    <li><a href="#" class="text-sm transition-colors hover:text-amber-400" style="color: #6B5D4A; font-family: 'Inter', sans-serif;">API</a></li>
+                    <li><a href="#whatsapp-automation" class="text-sm transition-colors hover:text-amber-400" style="color: #6B5D4A; font-family: 'Inter', sans-serif;">WhatsApp Automation</a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="text-sm font-medium mb-4" style="color: #FAF8F4; font-family: 'Inter', sans-serif;">Company</h4>
                 <ul class="space-y-2">
                     <li><a href="#about" class="text-sm transition-colors hover:text-amber-400" style="color: #6B5D4A; font-family: 'Inter', sans-serif;">About</a></li>
-                    <li><a href="#" class="text-sm transition-colors hover:text-amber-400" style="color: #6B5D4A; font-family: 'Inter', sans-serif;">Careers</a></li>
                     <li><a href="#" class="text-sm transition-colors hover:text-amber-400" style="color: #6B5D4A; font-family: 'Inter', sans-serif;">Blog</a></li>
-                    <li><a href="#" class="text-sm transition-colors hover:text-amber-400" style="color: #6B5D4A; font-family: 'Inter', sans-serif;">Press</a></li>
+                    <li><a href="#" class="text-sm transition-colors hover:text-amber-400" style="color: #6B5D4A; font-family: 'Inter', sans-serif;">Privacy Policy</a></li>
                 </ul>
             </div>
             <div id="about">
@@ -672,7 +650,7 @@
             </div>
         </div>
         <div class="pt-8 border-t text-center text-sm" style="border-color: #2A2A28; color: #4A3F33; font-family: 'Inter', sans-serif;">
-            © 2025 LeadRescue. All rights reserved.
+            © 2025 LeadSathi. All rights reserved.
         </div>
     </div>
 </footer>

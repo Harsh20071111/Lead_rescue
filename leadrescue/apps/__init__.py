@@ -1,1 +1,1 @@
-# LeadRescue apps package
+# LeadSathi apps package

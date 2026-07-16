@@ -1,5 +1,5 @@
 /**
- * LeadRescue — Main JavaScript
+ * LeadSathi — Main JavaScript
  *
  * Handles:
  * - Intersection Observer fade-in animations
