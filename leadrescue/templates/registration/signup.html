@@ -26,9 +26,14 @@
         <div class="relative mx-auto max-w-7xl">
             <nav class="mb-10 flex items-center justify-between">
                 <a href="/" class="text-3xl font-light tracking-tight text-cream" style="font-family: 'Cormorant Garamond', serif;">LeadSathi</a>
-                <a href="{% url 'accounts:login' %}" class="rounded-md border border-cream/35 px-4 py-2 text-sm font-medium text-cream transition hover:bg-cream hover:text-charcoal">
-                    Sign in
-                </a>
+                <div class="flex items-center gap-3">
+                    <a href="/" class="rounded-md border border-cream/35 px-4 py-2 text-sm font-medium text-cream transition hover:bg-cream hover:text-charcoal">
+                        Home
+                    </a>
+                    <a href="{% url 'accounts:login' %}" class="rounded-md border border-cream/35 px-4 py-2 text-sm font-medium text-cream transition hover:bg-cream hover:text-charcoal">
+                        Sign in
+                    </a>
+                </div>
             </nav>
 
             <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">

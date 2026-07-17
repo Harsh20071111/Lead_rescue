@@ -126,7 +126,7 @@ Chrome will still show a certificate warning if you use the built-in self-signed
 Visit:
 - **Landing page**: http://localhost:8000/
 - **Admin panel**: http://localhost:8000/admin/
-- **Health check**: http://localhost:8000/health/
+- **Health check**: 
 
 ---
 
