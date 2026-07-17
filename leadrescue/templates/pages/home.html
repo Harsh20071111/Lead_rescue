@@ -4,6 +4,14 @@
 {% block title %}LeadSathi — WhatsApp-Powered Real Estate Lead Management{% endblock %}
 {% block meta_description %}LeadSathi captures every WhatsApp inquiry, qualifies leads automatically, and ensures no lead goes cold. Built for Indian real estate agencies and channel partners.{% endblock %}
 
+{% block extra_css %}
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 
 <!-- ===== NAVBAR ===== -->
@@ -14,6 +22,7 @@
                 LeadSathi
             </a>
             <div class="hidden md:flex items-center gap-8">
+                <a href="#" class="text-sm font-medium transition-opacity hover:opacity-70 navbar-link" style="color: rgba(250,248,244,0.85); font-family: 'Inter', sans-serif;">Home</a>
                 <a href="#product" class="text-sm font-medium transition-opacity hover:opacity-70 navbar-link" style="color: rgba(250,248,244,0.85); font-family: 'Inter', sans-serif;">Product</a>
                 <a href="#pricing" class="text-sm font-medium transition-opacity hover:opacity-70 navbar-link" style="color: rgba(250,248,244,0.85); font-family: 'Inter', sans-serif;">Pricing</a>
                 <a href="#about" class="text-sm font-medium transition-opacity hover:opacity-70 navbar-link" style="color: rgba(250,248,244,0.85); font-family: 'Inter', sans-serif;">About</a>
