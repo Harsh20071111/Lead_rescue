@@ -3,17 +3,15 @@
 {% block title %}Dashboard — LeadSathi{% endblock %}
 
 {% block content %}
-{% block navbar %}
-{% if request.path != "/" %}
+<!-- Top Header / Navigation -->
 <nav class="border-b border-[#E5DFD5] bg-[#1C1C1A] text-[#FAF8F4] py-6 px-6 lg:px-8">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
         <div class="flex items-center gap-6">
-            <a href="/" class="text-2xl font-light tracking-tight hover:text-[#C4A882] transition-colors" style="font-family: 'Cormorant Garamond', serif;">LeadSathi</a>
+            <span class="text-2xl font-light tracking-tight" style="font-family: 'Cormorant Garamond', serif;">LeadSathi</span>
             <div class="h-6 w-px bg-[#4A4A48]"></div>
             <span class="text-sm font-medium" style="font-family: 'Inter', sans-serif; color: #C4A882;">{{ agency_name }}</span>
         </div>
         <div class="flex items-center gap-4">
-            <a href="/" class="text-sm px-3 py-2 rounded-md border border-[#FAF8F4]/30 hover:bg-[#FAF8F4]/10 transition-all">Home</a>
             <span class="text-sm" style="font-family: 'Inter', sans-serif;">Hello, {{ owner_name }}</span>
             <form action="{% url 'accounts:logout' %}" method="POST">
                 {% csrf_token %}
@@ -24,8 +22,6 @@
         </div>
     </div>
 </nav>
-{% endif %}
-{% endblock %}
 
 <!-- Dashboard Main Content -->
 <main class="max-w-7xl mx-auto px-6 lg:px-8 py-12" style="background-color: #FAF8F4;">

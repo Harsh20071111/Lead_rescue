@@ -20,17 +20,6 @@
 </head>
 <body class="antialiased" style="font-family: 'Inter', sans-serif; background-color: #FAF8F4;">
 
-    {% block navbar %}
-    {% if request.path != "/" %}
-    <nav class="border-b border-[#E5DFD5] bg-[#1C1C1A] py-3 px-6 lg:px-8">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <a href="/" class="text-xl font-light tracking-tight text-[#FAF8F4] hover:text-[#C4A882] transition-colors" style="font-family: 'Cormorant Garamond', serif;">LeadSathi</a>
-            <a href="/" class="text-sm px-4 py-1.5 rounded-md border border-[#FAF8F4]/30 text-[#FAF8F4] hover:bg-[#FAF8F4]/10 transition-all">Home</a>
-        </div>
-    </nav>
-    {% endif %}
-    {% endblock %}
-
     {% block content %}{% endblock %}
 
     <!-- HTMX -->
