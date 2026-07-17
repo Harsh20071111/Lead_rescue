@@ -77,11 +77,16 @@ DJANGO_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
+    "django.contrib.sites",
 ]
 
 THIRD_PARTY_APPS = [
     "django_extensions",
     "sslserver",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
 ]
 
 LOCAL_APPS = [
@@ -110,6 +115,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
@@ -162,6 +168,47 @@ else:
 # ==================================================
 # AUTHENTICATION
 # ==================================================
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+SITE_ID = 1
+
+# allauth account config (modern syntax for v65+)
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+# Adapters — custom logic for Agency creation + account linking
+ACCOUNT_ADAPTER = "apps.accounts.adapters.CustomAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "apps.accounts.adapters.CustomSocialAccountAdapter"
+
+# Skip allauth's intermediate "Continue to Google?" confirmation page
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+# Auto-link Google accounts to existing users with the same verified email
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
+        "APP": {
+            "client_id": env("GOOGLE_CLIENT_ID", default=""),
+            "secret": env("GOOGLE_CLIENT_SECRET", default=""),
+            "key": ""
+        }
+    }
+}
 
 AUTH_USER_MODEL = "accounts.User"
 
@@ -264,9 +311,9 @@ if not DEBUG and not _is_local_host:
 # SESSION SECURITY
 # ==================================================
 
-SESSION_COOKIE_AGE = 60 * 60 * 24  # 24 hours
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 7 days — persistent "remember me" sessions
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SESSION_SAVE_EVERY_REQUEST = False
+SESSION_SAVE_EVERY_REQUEST = True  # refresh expiry on every request
 
 # ==================================================
 # SSL SERVER (local development with HTTPS)
@@ -276,6 +323,8 @@ if DEBUG:
     SSL_CERTIFICATE = BASE_DIR / "adhoc.crt"
     SSL_PRIVATE_KEY = BASE_DIR / "adhoc.key"
 
-    SESSION_COOKIE_SECURE = False
-    CSRF_COOKIE_SECURE = False
+    # We run local dev over HTTPS (runserver_plus --cert-file adhoc),
+    # so cookies should be Secure to match.
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
     SECURE_SSL_REDIRECT = False
