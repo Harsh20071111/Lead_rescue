@@ -259,3 +259,23 @@ if not DEBUG and not _is_local_host:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)
+
+# ==================================================
+# SESSION SECURITY
+# ==================================================
+
+SESSION_COOKIE_AGE = 60 * 60 * 24  # 24 hours
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_SAVE_EVERY_REQUEST = False
+
+# ==================================================
+# SSL SERVER (local development with HTTPS)
+# ==================================================
+
+if DEBUG:
+    SSL_CERTIFICATE = BASE_DIR / "adhoc.crt"
+    SSL_PRIVATE_KEY = BASE_DIR / "adhoc.key"
+
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = False

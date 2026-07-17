@@ -2,6 +2,23 @@
 
 {% block title %}Create Workspace — LeadSathi{% endblock %}
 
+{% block extra_css %}
+<style>
+  .password-help-text ul {
+      list-style-type: disc !important;
+      margin-left: 1.25rem !important;
+      margin-top: 0.25rem !important;
+      margin-bottom: 0.25rem !important;
+  }
+  .password-help-text li {
+      font-size: 12px !important;
+      color: #C4A882 !important;
+      line-height: 1.4 !important;
+      margin-bottom: 0.125rem !important;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <main class="min-h-screen bg-cream">
     <section class="relative overflow-hidden px-5 py-8 sm:px-8 lg:px-10">
@@ -68,7 +85,7 @@
                         {% csrf_token %}
 
                         {% if form.non_field_errors %}
-                        <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        <div class="rounded bg-red-50 border border-red-200 px-3 py-1.5 text-[11px] leading-4 text-red-600 mb-4">
                             {{ form.non_field_errors }}
                         </div>
                         {% endif %}
@@ -81,11 +98,23 @@
                             <div class="{% if field.name == 'email' or field.name == 'password1' or field.name == 'password2' %}sm:col-span-2{% endif %}">
                                 <label for="{{ field.id_for_label }}" class="mb-2 block text-sm font-medium text-charcoal">{{ field.label }}</label>
                                 {{ field }}
-                                {% if field.help_text %}
-                                <p class="mt-2 text-xs leading-5 text-warm/80">{{ field.help_text }}</p>
+                                {% if field.name == 'password1' or field.name == 'password2' %}
+                                <div class="mt-2 flex items-center gap-2">
+                                    <input id="show_password_{{ field.name }}" type="checkbox" class="h-3.5 w-3.5 rounded border-sand text-copper focus:ring-copper/15" onclick="togglePasswordVisibility('{{ field.id_for_label }}')">
+                                    <label for="show_password_{{ field.name }}" class="text-[12px] select-none cursor-pointer text-[#C4A882]">Show password</label>
+                                </div>
+                                {% endif %}
+                                {% if field.help_text and field.name != 'password1' %}
+                                <div class="mt-1.5 password-help-text" style="font-size: 12px; color: #C4A882; line-height: 1.4;">
+                                    {{ field.help_text }}
+                                </div>
                                 {% endif %}
                                 {% if field.errors %}
-                                <p class="mt-2 text-xs text-red-600">{{ field.errors.0 }}</p>
+                                <div class="mt-1" style="font-size: 12px; color: #EF4444; line-height: 1.4;">
+                                    {% for error in field.errors %}
+                                        <p class="mt-0.5">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
                                 {% endif %}
                             </div>
                             {% endif %}
@@ -101,6 +130,17 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
                         </button>
                     </form>
+                    
+                    <script>
+                    function togglePasswordVisibility(id) {
+                        const input = document.getElementById(id);
+                        if (input.type === "password") {
+                            input.type = "text";
+                        } else {
+                            input.type = "password";
+                        }
+                    }
+                    </script>
 
                     <p class="mt-6 text-center text-sm text-warm">
                         Already managing leads with LeadSathi?

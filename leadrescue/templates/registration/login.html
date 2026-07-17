@@ -62,14 +62,16 @@
                         </p>
                     </div>
 
-                    <form class="space-y-5" method="POST">
-                        {% csrf_token %}
+                    {% if messages %}
+                    <div class="mb-4 space-y-1.5">
+                        {% for message in messages %}
+                        <p class="rounded bg-amber-50 px-3 py-1.5 text-[11px] leading-4 text-amber-700">{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
 
-                        {% if form.errors %}
-                        <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                            Invalid email or password. Please try again.
-                        </div>
-                        {% endif %}
+                    <form class="space-y-5" method="POST" action="{% url 'accounts:login' %}">
+                        {% csrf_token %}
 
                         <div>
                             <label for="id_username" class="mb-2 block text-sm font-medium text-charcoal">Email address</label>
@@ -82,6 +84,10 @@
                                 <span class="text-xs text-warm">Agency owner access</span>
                             </div>
                             <input id="id_password" name="password" type="password" autocomplete="current-password" required class="w-full rounded-md border border-sand bg-cream px-4 py-3 text-charcoal placeholder-warm/60 transition focus:border-copper focus:outline-none focus:ring-2 focus:ring-copper/15" placeholder="Enter your password">
+                            <div class="mt-2 flex items-center gap-2">
+                                <input id="show_password" type="checkbox" class="h-3.5 w-3.5 rounded border-sand text-copper focus:ring-copper/15" onclick="togglePasswordVisibility('id_password')">
+                                <label for="show_password" class="text-xs text-warm select-none cursor-pointer">Show password</label>
+                            </div>
                         </div>
 
                         <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-md bg-charcoal px-5 py-3.5 text-sm font-semibold text-cream shadow-lg shadow-charcoal/15 transition hover:-translate-y-0.5 hover:bg-warm-muted">
@@ -89,6 +95,17 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
                         </button>
                     </form>
+                    
+                    <script>
+                    function togglePasswordVisibility(id) {
+                        const input = document.getElementById(id);
+                        if (input.type === "password") {
+                            input.type = "text";
+                        } else {
+                            input.type = "password";
+                        }
+                    }
+                    </script>
                 </div>
 
                 <p class="mt-6 text-center text-sm text-warm">
