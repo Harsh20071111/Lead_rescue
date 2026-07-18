@@ -44,6 +44,12 @@ staticfiles/
 
 # Environment variables
 .env
+.env.*
+
+# Test/onboarding scripts (may contain keys)
+test_*.py
+*_onboarding.py
+cloudinary_onboarding.py
 
 # IDE
 .vscode/
