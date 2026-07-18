@@ -1,0 +1,9 @@
+{% if is_paginated %}
+<nav class="mt-6 flex items-center justify-between text-sm">
+    <div class="text-[#8B7355]">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</div>
+    <div class="flex gap-2">
+        {% if page_obj.has_previous %}<a class="rounded-md border border-[#D8CBB8] px-3 py-2" href="?page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
+        {% if page_obj.has_next %}<a class="rounded-md border border-[#D8CBB8] px-3 py-2" href="?page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+    </div>
+</nav>
+{% endif %}

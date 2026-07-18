@@ -1,0 +1,10 @@
+Hello from LeadSathi,
+
+Please confirm that {{ email }} is your email address by clicking on the link below:
+
+{{ activate_url }}
+
+If you have not created an account, you can safely ignore this email.
+
+Thanks,
+The LeadSathi Team

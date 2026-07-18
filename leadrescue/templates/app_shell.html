@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<nav class="border-b border-[#E5DFD5] bg-[#1C1C1A] text-[#FAF8F4] px-6 py-4">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-6">
+        <div class="flex items-center gap-6">
+            <a href="{% url 'dashboard:home' %}" class="text-2xl font-light text-[#FAF8F4]" style="font-family: 'Cormorant Garamond', serif; text-decoration: none;">LeadSathi</a>
+            <div class="hidden items-center gap-4 text-sm text-[#D8CBB8] md:flex">
+                <a href="{% url 'dashboard:home' %}" class="hover:text-[#C4A882]">Dashboard</a>
+                <a href="{% url 'leads:list' %}" class="hover:text-[#C4A882]">Leads</a>
+                <a href="{% url 'properties:list' %}" class="hover:text-[#C4A882]">Properties</a>
+                <a href="{% url 'leads:tasks' %}" class="hover:text-[#C4A882]">Follow-ups</a>
+            </div>
+        </div>
+        <div class="flex items-center gap-3 text-sm">
+            <span class="hidden text-[#C4A882] sm:inline">{{ request.user.agent_profile.agency.name }}</span>
+            <form action="{% url 'accounts:logout' %}" method="post">
+                {% csrf_token %}
+                <button class="rounded-md border border-[#FAF8F4]/30 px-3 py-2 text-xs hover:bg-[#FAF8F4]/10">Logout</button>
+            </form>
+        </div>
+    </div>
+</nav>
+<main class="mx-auto max-w-7xl px-6 py-8 lg:px-8">
+    {% if messages %}
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+                <div class="rounded-md border border-[#D8CBB8] bg-[#F5F2EC] px-4 py-3 text-sm text-[#5C4A33]">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% block app_content %}{% endblock %}
+</main>
+{% endblock %}

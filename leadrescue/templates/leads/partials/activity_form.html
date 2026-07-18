@@ -1,0 +1,5 @@
+<form method="post" action="{% url 'leads:add_activity' lead.pk %}" hx-post="{% url 'leads:add_activity' lead.pk %}" hx-target="#activity-timeline" hx-swap="innerHTML" class="space-y-3">
+    {% csrf_token %}
+    {{ activity_form.as_p }}
+    <button class="rounded-md bg-[#8B5E34] px-4 py-2 text-sm font-medium text-white">Add activity</button>
+</form>

@@ -1,0 +1,10 @@
+<section class="mb-6 rounded-md border border-[#E5DFD5] bg-white">
+    <h2 class="border-b border-[#EFE7DA] px-4 py-3 text-lg font-semibold text-[#1C1C1A]">{{ title }}</h2>
+    <div class="divide-y divide-[#EFE7DA]">
+        {% for task in tasks %}
+            {% include "leads/partials/task_row.html" %}
+        {% empty %}
+            <p class="px-4 py-5 text-sm text-[#8B7355]">No follow-ups.</p>
+        {% endfor %}
+    </div>
+</section>

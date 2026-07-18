@@ -1,0 +1,14 @@
+<div class="space-y-3">
+    {% for activity in activities %}
+        <article class="rounded-md border border-[#EFE7DA] bg-[#FAF8F4] p-3 text-sm">
+            <div class="flex items-center justify-between gap-3">
+                <strong class="text-[#1C1C1A]">{{ activity.get_activity_type_display }}</strong>
+                <time class="text-xs text-[#8B7355]">{{ activity.created_at|date:"M j, Y H:i" }}</time>
+            </div>
+            <p class="mt-1 text-[#5C4A33]">{{ activity.content }}</p>
+            <p class="mt-2 text-xs text-[#8B7355]">{{ activity.agent.user.email }}</p>
+        </article>
+    {% empty %}
+        <p class="text-sm text-[#8B7355]">No activity yet.</p>
+    {% endfor %}
+</div>

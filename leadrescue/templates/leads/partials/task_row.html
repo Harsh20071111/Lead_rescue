@@ -1,0 +1,15 @@
+<div id="task-{{ task.pk }}" class="flex flex-col justify-between gap-3 px-4 py-3 text-sm md:flex-row md:items-center">
+    <div>
+        <a href="{% url 'leads:detail' task.lead.pk %}" class="font-medium text-[#1C1C1A]">{{ task.lead.name }}</a>
+        <div class="text-xs text-[#8B7355]">{{ task.due_date|date:"M j, Y H:i" }} · {{ task.assigned_agent.user.email }}</div>
+        {% if task.note %}<p class="mt-1 text-[#5C4A33]">{{ task.note }}</p>{% endif %}
+    </div>
+    {% if not task.is_completed %}
+    <form method="post" action="{% url 'leads:complete_task' task.pk %}" hx-post="{% url 'leads:complete_task' task.pk %}" hx-target="#task-{{ task.pk }}" hx-swap="outerHTML">
+        {% csrf_token %}
+        <button class="rounded-md border border-[#8B5E34] px-3 py-2 text-xs text-[#5C4A33]">Mark complete</button>
+    </form>
+    {% else %}
+    <span class="rounded-md bg-[#F5F2EC] px-3 py-2 text-xs text-[#8B7355]">Completed</span>
+    {% endif %}
+</div>

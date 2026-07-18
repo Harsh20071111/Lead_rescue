@@ -1,0 +1,20 @@
+{% extends "emails/base_email.html" %}
+{% load account %}
+
+{% block subject %}Please Confirm Your Email Address{% endblock %}
+
+{% block content %}
+<h2>Confirm Your Email</h2>
+
+<p>Hello from LeadSathi,</p>
+
+<p>Please confirm that <a href="mailto:{{ email }}">{{ email }}</a> is your email address by clicking on the button below:</p>
+
+<div class="button-container">
+    <a href="{{ activate_url }}" class="button">Confirm Email</a>
+</div>
+
+<p>If you have not created an account, you can safely ignore this email.</p>
+
+<p>Thanks,<br>The LeadSathi Team</p>
+{% endblock %}

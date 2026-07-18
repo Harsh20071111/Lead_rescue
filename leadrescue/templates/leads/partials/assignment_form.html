@@ -1,0 +1,5 @@
+<form method="post" action="{% url 'leads:assign' lead.pk %}" hx-post="{% url 'leads:assign' lead.pk %}" hx-target="this" hx-swap="outerHTML">
+    {% csrf_token %}
+    {{ form.assigned_agent }}
+    <p class="mt-2 text-xs text-[#8B7355]">Current: {{ lead.assigned_agent.user.email|default:"Unassigned" }}</p>
+</form>

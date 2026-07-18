@@ -1,31 +1,56 @@
-# Core
-Django>=5.2,<5.3
-psycopg2-binary>=2.9,<3.0
-
-# Configuration
-django-environ>=0.12,<1.0
-
-# Server
-gunicorn>=23.0,<24.0
-
-# Static files (production)
-whitenoise>=6.8,<7.0
-
-# Background tasks
-celery>=5.5,<6.0
-redis>=5.0,<6.0
-
-# Data processing
-pandas>=2.2,<3.0
-
-# PDF generation
-WeasyPrint>=63,<64
-
-# Development
-django-extensions>=3.2,<4.0
-Pillow>=10.0,<11.0
-python-dotenv>=1.0.0
-django-sslserver>=0.22
-django-allauth>=64.0.0
-cryptography>=42.0.0
-requests>=2.31.0
+amqp==5.3.1
+asgiref==3.12.1
+billiard==4.2.4
+brotli==1.2.0
+celery==5.6.3
+certifi==2026.6.17
+cffi==2.1.0
+charset-normalizer==3.4.9
+click==8.4.2
+click-didyoumean==0.3.1
+click-plugins==1.1.1.2
+click-repl==0.3.0
+cryptography==49.0.0
+cssselect2==0.9.0
+Django==5.2.16
+django-allauth==65.18.0
+django-environ==0.14.0
+django-extensions==3.2.3
+django-sslserver==0.22
+fonttools==4.63.0
+gunicorn==23.0.0
+idna==3.18
+kombu==5.6.2
+MarkupSafe==3.0.3
+numpy==2.5.1
+packaging==26.2
+pandas==2.3.3
+pillow==10.4.0
+prompt_toolkit==3.0.52
+psycopg2-binary==2.9.12
+pycparser==3.0
+pydyf==0.12.1
+PyJWT==2.13.0
+pyOpenSSL==26.3.0
+pyphen==0.17.2
+python-dateutil==2.9.0.post0
+python-dotenv==1.2.2
+pytz==2026.2
+redis==5.3.1
+requests==2.34.2
+resend==2.34.0
+six==1.17.0
+sqlparse==0.5.5
+tinycss2==1.5.1
+tinyhtml5==2.1.0
+typing_extensions==4.16.0
+tzdata==2026.3
+tzlocal==5.4.4
+urllib3==2.7.0
+vine==5.1.0
+wcwidth==0.8.2
+weasyprint==63.1
+webencodings==0.5.1
+Werkzeug==3.1.8
+whitenoise==6.12.0
+zopfli==0.4.3

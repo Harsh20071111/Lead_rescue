@@ -99,6 +99,7 @@ LOCAL_APPS = [
     "apps.notifications",
     "apps.reports",
     "apps.core",
+    "apps.matching",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -288,10 +289,17 @@ CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes
 # EMAIL
 # ==================================================
 
-EMAIL_BACKEND = env(
-    "EMAIL_BACKEND",
-    default="django.core.mail.backends.console.EmailBackend",
-)
+EMAIL_PROVIDER = env("EMAIL_PROVIDER", default="console")
+RESEND_API_KEY = env("RESEND_API_KEY", default="")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@leadsathi.in")
+
+if EMAIL_PROVIDER == "resend":
+    EMAIL_BACKEND = "apps.core.email_backend.ResendEmailBackend"
+else:
+    EMAIL_BACKEND = env(
+        "EMAIL_BACKEND",
+        default="django.core.mail.backends.console.EmailBackend",
+    )
 
 # ==================================================
 # SECURITY (production overrides)

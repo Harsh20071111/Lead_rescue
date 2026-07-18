@@ -1,0 +1,26 @@
+{% extends "app_shell.html" %}
+
+{% block title %}Follow-ups - LeadSathi{% endblock %}
+
+{% block app_content %}
+<div class="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+    <div>
+        <h1 class="text-4xl font-light text-[#1C1C1A]" style="font-family: 'Cormorant Garamond', serif;">Follow-ups</h1>
+        <p class="text-sm text-[#8B7355]">Grouped by overdue, today, and upcoming work.</p>
+    </div>
+    {% if is_owner %}
+    <form method="get">
+        <select name="assigned_agent" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm" onchange="this.form.submit()">
+            <option value="">Team-wide</option>
+            {% for agent in agents %}<option value="{{ agent.pk }}" {% if request.GET.assigned_agent == agent.pk|stringformat:"s" %}selected{% endif %}>{{ agent.user.email }}</option>{% endfor %}
+        </select>
+    </form>
+    {% endif %}
+</div>
+
+{% include "leads/partials/task_group.html" with title="Overdue" tasks=overdue_tasks %}
+{% include "leads/partials/task_group.html" with title="Today" tasks=today_tasks %}
+{% include "leads/partials/task_group.html" with title="Upcoming" tasks=upcoming_tasks %}
+{% include "leads/partials/task_group.html" with title="Completed" tasks=completed_tasks %}
+{% include "partials/pagination.html" %}
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "app_shell.html" %}
+
+{% block title %}Leads - LeadSathi{% endblock %}
+
+{% block app_content %}
+<div class="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+    <div>
+        <h1 class="text-4xl font-light text-[#1C1C1A]" style="font-family: 'Cormorant Garamond', serif;">Leads</h1>
+        <p class="text-sm text-[#8B7355]">Qualified enquiries, assignments, and pipeline status.</p>
+    </div>
+    <a href="{% url 'leads:create' %}" class="rounded-md border-2 border-[#8B5E34] bg-white px-5 py-2 text-base font-semibold text-[#8B5E34] shadow-sm">Create lead</a>
+</div>
+
+<form method="get" class="mb-6 grid gap-3 rounded-md border border-[#E5DFD5] bg-white p-4 md:grid-cols-5">
+    <input name="q" value="{{ filters.q }}" placeholder="Search name, phone, email" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm">
+    <select name="status" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm">
+        <option value="">All statuses</option>
+        {% for value,label in status_choices %}<option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <select name="source" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm">
+        <option value="">All sources</option>
+        {% for value,label in source_choices %}<option value="{{ value }}" {% if filters.source == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    {% if is_owner %}
+    <select name="assigned_agent" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm">
+        <option value="">All agents</option>
+        {% for agent in agents %}<option value="{{ agent.pk }}" {% if filters.assigned_agent == agent.pk|stringformat:"s" %}selected{% endif %}>{{ agent.user.email }}</option>{% endfor %}
+    </select>
+    {% endif %}
+    <button class="rounded-md border border-[#8B5E34] px-4 py-2 text-sm text-[#5C4A33]">Filter</button>
+</form>
+
+<div class="overflow-hidden rounded-md border border-[#E5DFD5] bg-white">
+    <table class="w-full text-left text-sm">
+        <thead class="bg-[#F5F2EC] text-xs uppercase tracking-wide text-[#8B7355]">
+            <tr><th class="p-3">Lead</th><th class="p-3">Status</th><th class="p-3">Budget</th><th class="p-3">Preference</th><th class="p-3">Agent</th><th class="p-3"></th></tr>
+        </thead>
+        <tbody class="divide-y divide-[#EFE7DA]">
+            {% for lead in leads %}
+            <tr>
+                <td class="p-3"><a class="font-medium text-[#1C1C1A]" href="{% url 'leads:detail' lead.pk %}">{{ lead.name }}</a><div class="text-xs text-[#8B7355]">{{ lead.phone }} {{ lead.email }}</div></td>
+                <td class="p-3">{{ lead.get_status_display }}</td>
+                <td class="p-3">{{ lead.budget_min|default:"-" }} - {{ lead.budget_max|default:"-" }}</td>
+                <td class="p-3">{{ lead.preferred_location|default:"-" }} {{ lead.get_preferred_bhk_display }}</td>
+                <td class="p-3">{{ lead.assigned_agent.user.email|default:"Unassigned" }}</td>
+                <td class="p-3 text-right"><a class="text-[#8B5E34]" href="{% url 'leads:edit' lead.pk %}">Edit</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="p-6 text-center text-[#8B7355]">No leads found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% include "partials/pagination.html" %}
+{% endblock %}

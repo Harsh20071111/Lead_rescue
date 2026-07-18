@@ -84,7 +84,7 @@
                         <div>
                             <div class="mb-2 flex items-center justify-between gap-4">
                                 <label for="id_password" class="block text-sm font-medium text-charcoal">Password</label>
-                                <span class="text-xs text-warm">Agency owner access</span>
+                                <a href="{% url 'account_reset_password' %}" class="text-xs font-medium text-copper transition hover:text-charcoal">Forgot password?</a>
                             </div>
                             <input id="id_password" name="password" type="password" autocomplete="current-password" required class="w-full rounded-md border border-sand bg-cream px-4 py-3 text-charcoal placeholder-warm/60 transition focus:border-copper focus:outline-none focus:ring-2 focus:ring-copper/15" placeholder="Enter your password">
                             <div class="mt-2 flex items-center gap-2">

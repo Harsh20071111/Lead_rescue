@@ -110,7 +110,7 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
                 city="N/A",
             )
 
-            AgentProfile.objects.create(
+            agent_profile = AgentProfile.objects.create(
                 user=user,
                 agency=agency,
                 role="owner",
@@ -122,6 +122,15 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
                 agency.name,
                 user.email,
             )
+
+            try:
+                if not agent_profile.welcome_email_sent:
+                    from apps.accounts.services.email_service import send_welcome_email
+                    if send_welcome_email(user):
+                        agent_profile.welcome_email_sent = True
+                        agent_profile.save(update_fields=['welcome_email_sent'])
+            except Exception as e:
+                logger.error("Welcome email failed for social user %s: %s", user.email, e, exc_info=True)
 
         return user
 

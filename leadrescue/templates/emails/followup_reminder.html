@@ -1,0 +1,27 @@
+{% extends "emails/base_email.html" %}
+
+{% block subject %}Upcoming Follow-up Reminder: {{ task.title }}{% endblock %}
+
+{% block content %}
+<h2>Reminder: Upcoming Follow-up</h2>
+
+<p>Hi {{ agent.first_name|default:"Agent" }},</p>
+
+<p>This is a reminder for an upcoming task on your LeadSathi dashboard:</p>
+
+<div style="background-color: #FAFAF8; padding: 16px; border-radius: 6px; border: 1px solid #E5DFD5; margin-bottom: 24px;">
+    <p style="margin: 0 0 8px;"><strong>Task:</strong> {{ task.title }}</p>
+    <p style="margin: 0 0 8px;"><strong>Due Date:</strong> {{ task.due_date|date:"F j, Y, g:i a" }}</p>
+    {% if lead %}
+    <p style="margin: 0;"><strong>Lead:</strong> {{ lead.name }}</p>
+    {% endif %}
+</div>
+
+<div class="button-container">
+    <a href="{{ task_url }}" class="button">View Task</a>
+</div>
+
+<p>Good luck with your follow-up!</p>
+
+<p>Best,<br>The LeadSathi Team</p>
+{% endblock %}

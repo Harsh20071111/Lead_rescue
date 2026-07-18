@@ -8,15 +8,26 @@ class User(AbstractUser):
 
 
 class AgentProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='agent_profile')
-    agency = models.ForeignKey(Agency, on_delete=models.CASCADE, related_name='agents')
+    class Role(models.TextChoices):
+        OWNER = "owner", "Owner"
+        AGENT = "agent", "Agent"
+        ADMIN = "admin", "Admin"
 
-    ROLE_CHOICES = (
-        ('owner', 'Owner'),
-        ('agent', 'Agent'),
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="agent_profile"
     )
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='agent')
+    agency = models.ForeignKey(
+        Agency, on_delete=models.CASCADE, related_name="agents"
+    )
+    role = models.CharField(
+        max_length=20, choices=Role.choices, default=Role.AGENT
+    )
     phone = models.CharField(max_length=20)
+    avatar = models.ImageField(
+        upload_to="agent_avatars/", blank=True, null=True
+    )
+    is_active = models.BooleanField(default=True)
+    welcome_email_sent = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.user.username} ({self.get_role_display()})"
+        return f"{self.user.email} ({self.get_role_display()})"

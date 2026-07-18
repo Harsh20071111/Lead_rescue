@@ -1,73 +1,80 @@
-{% extends "base.html" %}
+{% extends "app_shell.html" %}
 
-{% block title %}Dashboard — LeadSathi{% endblock %}
+{% block title %}Dashboard - LeadSathi{% endblock %}
 
-{% block content %}
-<nav class="border-b border-[#E5DFD5] bg-[#1C1C1A] text-[#FAF8F4] py-6 px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
-        <div class="flex items-center gap-6">
-            <a href="/" class="text-2xl font-light tracking-tight hover:text-[#C4A882] transition-colors" style="font-family: 'Cormorant Garamond', serif; text-decoration: none;">LeadSathi</a>
-            <div class="h-6 w-px bg-[#4A4A48]"></div>
-            <span class="text-sm font-medium" style="font-family: 'Inter', sans-serif; color: #C4A882;">{{ agency_name }}</span>
+{% block app_content %}
+<div class="mb-8">
+    <h1 class="text-4xl font-light text-[#1C1C1A]" style="font-family: 'Cormorant Garamond', serif;">{{ agency_name }} Dashboard</h1>
+    <p class="text-sm text-[#8B7355]">Pipeline, follow-ups, and recent movement for {{ owner_name }}.</p>
+</div>
+
+<div class="mb-8 grid gap-4 md:grid-cols-3 lg:grid-cols-6">
+    <a href="{% url 'leads:list' %}" class="rounded-md border border-[#E5DFD5] bg-white p-4"><div class="text-xs text-[#8B7355]">Total Leads</div><div class="text-3xl font-light text-[#1C1C1A]">{{ stats.total_leads }}</div></a>
+    <a href="{% url 'leads:list' %}?status=new" class="rounded-md border border-[#E5DFD5] bg-white p-4"><div class="text-xs text-[#8B7355]">New Leads</div><div class="text-3xl font-light text-[#1C1C1A]">{{ stats.new_leads }}</div></a>
+    <a href="{% url 'leads:tasks' %}?due=today" class="rounded-md border border-[#E5DFD5] bg-white p-4"><div class="text-xs text-[#8B7355]">Follow-ups Today</div><div class="text-3xl font-light text-[#1C1C1A]">{{ stats.followups_today }}</div></a>
+    <a href="{% url 'leads:tasks' %}?due=missed" class="rounded-md border border-[#E5DFD5] bg-white p-4"><div class="text-xs text-[#8B7355]">Missed Follow-ups</div><div class="text-3xl font-light text-[#1C1C1A]">{{ stats.missed_followups }}</div></a>
+    <a href="{% url 'leads:list' %}?status=site_visit" class="rounded-md border border-[#E5DFD5] bg-white p-4"><div class="text-xs text-[#8B7355]">Site Visits</div><div class="text-3xl font-light text-[#1C1C1A]">{{ stats.site_visits }}</div></a>
+    <a href="{% url 'leads:list' %}?status=converted" class="rounded-md border border-[#E5DFD5] bg-white p-4"><div class="text-xs text-[#8B7355]">Closed Deals</div><div class="text-3xl font-light text-[#1C1C1A]">{{ stats.closed_deals }}</div></a>
+</div>
+
+<div class="grid gap-6 lg:grid-cols-2">
+    <section class="rounded-2xl border border-[#E5DFD5] bg-white p-4 shadow-[0_10px_30px_rgba(28,28,26,0.04)]">
+        <div class="mb-4 flex items-center justify-between gap-3">
+            <div>
+                <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-[#8B7355]">Leads by status</h2>
+                <p class="mt-1 text-xs text-[#8B7355]">A compact view of your pipeline mix.</p>
+            </div>
+            <span class="rounded-full bg-[#F5F2EC] px-3 py-1 text-[11px] font-medium text-[#5C4A33]">Overview</span>
         </div>
-        <div class="flex items-center gap-4">
-            <span class="text-sm" style="font-family: 'Inter', sans-serif;">Hello, {{ owner_name }}</span>
-            <a href="/" class="px-4 py-2 text-xs font-medium rounded-md border border-[#FAF8F4]/30 hover:bg-[#FAF8F4]/10 transition-all" style="font-family: 'Inter', sans-serif; text-decoration: none;">
-                Home
-            </a>
-            <form action="{% url 'accounts:logout' %}" method="POST">
-                {% csrf_token %}
-                <button type="submit" class="px-4 py-2 text-xs font-medium rounded-md border border-[#FAF8F4]/30 hover:bg-[#FAF8F4]/10 transition-all">
-                    Logout
-                </button>
-            </form>
+        <div class="mx-auto h-48 w-full max-w-md md:h-52">
+            <canvas id="statusChart"></canvas>
         </div>
+    </section>
+    <section class="rounded-2xl border border-[#E5DFD5] bg-white p-4 shadow-[0_10px_30px_rgba(28,28,26,0.04)]">
+        <div class="mb-4 flex items-center justify-between gap-3">
+            <div>
+                <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-[#8B7355]">Leads by source</h2>
+                <p class="mt-1 text-xs text-[#8B7355]">Where your enquiries are coming from.</p>
+            </div>
+            <span class="rounded-full bg-[#F5F2EC] px-3 py-1 text-[11px] font-medium text-[#5C4A33]">Source mix</span>
+        </div>
+        <div class="mx-auto h-44 w-full max-w-[240px] md:h-48">
+            <canvas id="sourceChart"></canvas>
+        </div>
+    </section>
+</div>
+
+<section class="mt-8 rounded-md border border-[#E5DFD5] bg-white">
+    <h2 class="border-b border-[#EFE7DA] px-5 py-4 text-lg font-semibold text-[#1C1C1A]">Recent activity</h2>
+    <div class="divide-y divide-[#EFE7DA]">
+        {% for activity in recent_activity %}
+            <div class="px-5 py-3 text-sm">
+                <div class="flex justify-between gap-3">
+                    <strong>{{ activity.get_activity_type_display }}</strong>
+                    <time class="text-xs text-[#8B7355]">{{ activity.created_at|date:"M j, Y H:i" }}</time>
+                </div>
+                <p class="mt-1 text-[#5C4A33]">{{ activity.content }}</p>
+            </div>
+        {% empty %}
+            <p class="px-5 py-6 text-sm text-[#8B7355]">No activity yet.</p>
+        {% endfor %}
     </div>
-</nav>
+</section>
+{% endblock %}
 
-<!-- Dashboard Main Content -->
-<main class="max-w-7xl mx-auto px-6 lg:px-8 py-12" style="background-color: #FAF8F4;">
-    <!-- Welcome section -->
-    <div class="mb-12">
-        <h1 class="text-4xl font-light mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
-            Welcome to {{ agency_name }} Dashboard
-        </h1>
-        <p class="text-sm" style="color: #8B7355; font-family: 'Inter', sans-serif;">
-            Overview of your agency pipeline and properties.
-        </p>
-    </div>
-
-    <!-- Stats Grid (Placeholders) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <div class="p-6 rounded-lg border border-[#E5DFD5] bg-white shadow-sm">
-            <div class="text-sm font-medium" style="color: #8B7355; font-family: 'Inter', sans-serif;">Total Leads</div>
-            <div class="text-3xl font-light mt-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">{{ stats.total_leads }}</div>
-        </div>
-        <div class="p-6 rounded-lg border border-[#E5DFD5] bg-white shadow-sm">
-            <div class="text-sm font-medium" style="color: #8B7355; font-family: 'Inter', sans-serif;">New Leads</div>
-            <div class="text-3xl font-light mt-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">{{ stats.new_leads }}</div>
-        </div>
-        <div class="p-6 rounded-lg border border-[#E5DFD5] bg-white shadow-sm">
-            <div class="text-sm font-medium" style="color: #8B7355; font-family: 'Inter', sans-serif;">Active Properties</div>
-            <div class="text-3xl font-light mt-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">{{ stats.active_properties }}</div>
-        </div>
-        <div class="p-6 rounded-lg border border-[#E5DFD5] bg-white shadow-sm">
-            <div class="text-sm font-medium" style="color: #8B7355; font-family: 'Inter', sans-serif;">Converted Leads</div>
-            <div class="text-3xl font-light mt-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">{{ stats.converted_leads }}</div>
-        </div>
-    </div>
-
-    <!-- Info Notice (Production Ready Status) -->
-    <div class="p-6 rounded-lg border border-[#C4A882]/30 bg-[#F5F2EC] flex items-start gap-4">
-        <div class="p-2 rounded-full bg-[#FAF8F4] text-[#B87333]">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-        </div>
-        <div>
-            <h4 class="text-sm font-medium mb-1" style="color: #1C1C1A; font-family: 'Inter', sans-serif;">Phase 1 Completed Successfully</h4>
-            <p class="text-xs leading-relaxed" style="color: #8B7355; font-family: 'Inter', sans-serif;">
-                Multi-tenancy models, Django auth flow (signup/login/logout), and proper PostgreSQL environment routing are now fully ready. Seed demo data using <code>python manage.py seed_demo_data</code> to populate real listings.
-            </p>
-        </div>
-    </div>
-</main>
+{% block extra_js %}
+{{ block.super }}
+<script>
+const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+new Chart(document.getElementById("statusChart"), {
+    type: "bar",
+    data: { labels: {{ status_labels|safe }}, datasets: [{ data: {{ status_values|safe }}, backgroundColor: "#8B5E34" }] },
+    options: { ...chartOptions, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { precision: 0 } } } }
+});
+new Chart(document.getElementById("sourceChart"), {
+    type: "doughnut",
+    data: { labels: {{ source_labels|safe }}, datasets: [{ data: {{ source_values|safe }}, backgroundColor: ["#8B5E34", "#C4A882", "#1C1C1A", "#B87333", "#D8CBB8"], borderWidth: 0, hoverOffset: 6 }] },
+    options: { responsive: true, maintainAspectRatio: false, cutout: "72%", plugins: { legend: { display: false } } }
+});
+</script>
 {% endblock %}

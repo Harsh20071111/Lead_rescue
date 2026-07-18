@@ -1,0 +1,24 @@
+{% extends "emails/base_email.html" %}
+
+{% block subject %}Welcome to LeadSathi, {{ user.first_name|default:"Agent" }}!{% endblock %}
+
+{% block content %}
+<h2>Welcome aboard, {{ user.first_name|default:"Agent" }}!</h2>
+
+<p>We're thrilled to have you join LeadSathi. Your agency's real estate pipeline is now ready to be streamlined and supercharged.</p>
+
+<p>Here are a few things you can do to get started:</p>
+<ul style="margin-bottom: 24px; color: #333333;">
+    <li><strong>Complete your profile:</strong> Add your phone number and details.</li>
+    <li><strong>Add Properties:</strong> Start listing your inventory.</li>
+    <li><strong>Capture Leads:</strong> Never miss a follow-up again.</li>
+</ul>
+
+<div class="button-container">
+    <a href="{{ login_url }}" class="button">Go to Dashboard</a>
+</div>
+
+<p>If you have any questions or need help setting up, just reply to this email. We're here to help.</p>
+
+<p>Cheers,<br>The LeadSathi Team</p>
+{% endblock %}

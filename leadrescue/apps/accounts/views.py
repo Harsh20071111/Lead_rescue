@@ -49,12 +49,23 @@ class SignupView(FormView):
                 city='Not Specified'
             )
 
-            AgentProfile.objects.create(
+            agent_profile = AgentProfile.objects.create(
                 user=user,
                 agency=agency,
                 role='owner',
                 phone=data['phone']
             )
+
+        try:
+            if not agent_profile.welcome_email_sent:
+                from apps.accounts.services.email_service import send_welcome_email
+                if send_welcome_email(user):
+                    agent_profile.welcome_email_sent = True
+                    agent_profile.save(update_fields=['welcome_email_sent'])
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error("Welcome email failed for email signup %s: %s", user.email, e, exc_info=True)
 
         messages.success(self.request, "Account created. Please sign in.")
         return redirect(self.success_url)
