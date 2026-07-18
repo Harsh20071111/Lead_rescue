@@ -10,6 +10,9 @@
                 <a href="{% url 'leads:list' %}" class="hover:text-[#C4A882]">Leads</a>
                 <a href="{% url 'properties:list' %}" class="hover:text-[#C4A882]">Properties</a>
                 <a href="{% url 'leads:tasks' %}" class="hover:text-[#C4A882]">Follow-ups</a>
+                {% if request.user.agent_profile.role == "owner" %}
+                <a href="{% url 'whatsapp:settings' %}" class="hover:text-[#C4A882]">WhatsApp</a>
+                {% endif %}
             </div>
         </div>
         <div class="flex items-center gap-3 text-sm">

@@ -15,6 +15,7 @@ urlpatterns = [
     path("", include("apps.properties.urls")),
     path("", include("apps.accounts.urls")),
     path("", include("apps.core.urls")),
+    path("", include("apps.whatsapp.urls")),
 ]
 
 # Serve media files in development

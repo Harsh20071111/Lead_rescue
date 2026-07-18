@@ -12,6 +12,7 @@ urlpatterns = [
     path("leads/<int:pk>/assign/", views.LeadAssignView.as_view(), name="assign"),
     path("leads/<int:pk>/activities/add/", views.add_activity, name="add_activity"),
     path("leads/<int:pk>/tasks/add/", views.add_task, name="add_task"),
+    path("leads/<int:pk>/whatsapp/follow-up/", views.send_whatsapp_followup, name="send_whatsapp_followup"),
     path("tasks/", views.TaskListView.as_view(), name="tasks"),
     path("tasks/<int:pk>/complete/", views.complete_task, name="complete_task"),
     path("leads/<int:lead_pk>/link/<int:property_pk>/", views.link_property, name="link_property"),

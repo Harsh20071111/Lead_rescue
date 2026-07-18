@@ -9,16 +9,77 @@
 <form method="post" enctype="multipart/form-data" class="max-w-3xl space-y-4 rounded-md border border-[#E5DFD5] bg-white p-6">
     {% csrf_token %}
     {% for field in form %}
-        <div>
-            <label class="mb-1 block text-sm font-medium text-[#5C4A33]" for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {{ field }}
-            {% if field.help_text %}<p class="mt-1 text-xs text-[#8B7355]">{{ field.help_text }}</p>{% endif %}
-            {% for error in field.errors %}<p class="mt-1 text-xs text-red-700">{{ error }}</p>{% endfor %}
-        </div>
+        {% if field.name == 'image' %}
+            {# Skip the old single image field in the UI to encourage the multi-image field #}
+        {% else %}
+            <div>
+                <label class="mb-1 block text-sm font-medium text-[#5C4A33]" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.name == 'images' %}
+                <div id="image-previews" class="mt-2 grid grid-cols-5 gap-2"></div>
+                {% endif %}
+                {% if field.help_text %}<p class="mt-1 text-xs text-[#8B7355]">{{ field.help_text }}</p>{% endif %}
+                {% for error in field.errors %}<p class="mt-1 text-xs text-red-700">{{ error }}</p>{% endfor %}
+            </div>
+        {% endif %}
     {% endfor %}
     <div class="flex gap-3 pt-2">
         <button class="rounded-md bg-[#8B5E34] px-4 py-2 text-sm font-medium text-white">Save</button>
         <a href="{% if object %}{% url 'properties:detail' object.pk %}{% else %}{% url 'properties:list' %}{% endif %}" class="rounded-md border border-[#D8CBB8] px-4 py-2 text-sm text-[#5C4A33]">Cancel</a>
     </div>
 </form>
+
+{% if object and object.images.exists %}
+<div class="mt-8 max-w-3xl space-y-4 rounded-md border border-[#E5DFD5] bg-white p-6">
+    <h2 class="text-xl font-medium text-[#1C1C1A]">Existing Images</h2>
+    <div class="grid grid-cols-2 gap-4 md:grid-cols-4" id="existing-images-grid">
+        {% for img in object.images.all %}
+            <div class="relative overflow-hidden rounded-md border border-[#D8CBB8] {% if img.is_primary %}ring-2 ring-[#8B5E34]{% endif %}" id="image-container-{{ img.id }}">
+                <img src="{{ img.image.url }}" class="h-32 w-full object-cover" alt="Property image">
+                <div class="absolute bottom-0 left-0 right-0 flex justify-between bg-black/50 p-1">
+                    {% if not img.is_primary %}
+                    <button type="button" 
+                            hx-post="{% url 'properties:set_primary_image' object.pk img.id %}" 
+                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            hx-swap="none"
+                            onclick="setTimeout(() => window.location.reload(), 300)"
+                            class="text-xs text-white hover:text-[#D8CBB8]">Make Primary</button>
+                    {% else %}
+                    <span class="text-xs text-[#D8CBB8]">Primary</span>
+                    {% endif %}
+                    <button type="button" 
+                            hx-delete="{% url 'properties:delete_image' object.pk img.id %}" 
+                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            hx-target="#image-container-{{ img.id }}"
+                            hx-swap="outerHTML"
+                            class="text-xs text-red-300 hover:text-red-500">Delete</button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const imageInput = document.getElementById("id_images");
+        const previewContainer = document.getElementById("image-previews");
+        
+        if (imageInput) {
+            imageInput.addEventListener("change", function() {
+                previewContainer.innerHTML = "";
+                Array.from(this.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement("img");
+                        img.src = e.target.result;
+                        img.className = "h-20 w-20 object-cover rounded border border-[#E5DFD5]";
+                        previewContainer.appendChild(img);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            });
+        }
+    });
+</script>
 {% endblock %}

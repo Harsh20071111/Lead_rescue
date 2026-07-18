@@ -3,6 +3,11 @@ from apps.agencies.models import Agency
 from apps.accounts.models import AgentProfile
 from apps.core.choices import BHKChoices
 from apps.core.managers import AgencyScopedManager
+from cloudinary.models import CloudinaryField
+import cloudinary.uploader
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Property(models.Model):
@@ -68,3 +73,44 @@ class Property(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def primary_image(self):
+        # We assume prefetch_related('images') might be used, so we use Python filtering
+        # to avoid N+1 queries if prefetched, otherwise we hit the DB.
+        images = list(self.images.all())
+        if not images:
+            return None
+        primary = next((img for img in images if img.is_primary), None)
+        if primary:
+            return primary
+        # Fallback to the first one based on ordering
+        return images[0]
+
+class PropertyImage(models.Model):
+    property = models.ForeignKey(
+        Property, on_delete=models.CASCADE, related_name="images"
+    )
+    image = CloudinaryField("image")
+    is_primary = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "uploaded_at"]
+
+    def save(self, *args, **kwargs):
+        if self.is_primary:
+            # Unset primary on siblings
+            PropertyImage.objects.filter(
+                property=self.property, is_primary=True
+            ).exclude(pk=self.pk).update(is_primary=False)
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self.image:
+            try:
+                cloudinary.uploader.destroy(self.image.public_id)
+            except Exception as e:
+                logger.error(f"Failed to delete Cloudinary asset {self.image.public_id}: {e}")
+        super().delete(*args, **kwargs)

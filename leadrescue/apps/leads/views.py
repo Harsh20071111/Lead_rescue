@@ -12,6 +12,8 @@ from apps.core.mixins import AgencyScopedViewMixin, OwnerRequiredMixin
 from apps.leads.forms import ActivityForm, LeadAssignmentForm, LeadForm, TaskForm
 from apps.leads.models import Activity, Lead, Task
 from apps.properties.models import Property
+from apps.whatsapp.services.client import WhatsAppClientError
+from apps.whatsapp.services.followup import send_followup_whatsapp
 
 
 class LeadListView(AgencyScopedViewMixin, ListView):
@@ -374,4 +376,33 @@ def link_property(request, lead_pk, property_pk):
     )
 
     messages.success(request, f"Linked {property_obj.title} to {lead.name}.")
+    return redirect("leads:detail", pk=lead.pk)
+
+
+@login_required
+def send_whatsapp_followup(request, pk):
+    profile = request.user.agent_profile
+    agency = profile.agency
+    queryset = Lead.objects.for_agency(agency)
+    if profile.role != AgentProfile.Role.OWNER:
+        queryset = queryset.filter(assigned_agent=profile)
+    lead = get_object_or_404(queryset, pk=pk)
+
+    if request.method != "POST":
+        raise PermissionDenied
+
+    template_name = request.POST.get("template_name") or "lead_follow_up"
+    try:
+        send_followup_whatsapp(lead, template_name)
+    except WhatsAppClientError as exc:
+        messages.error(request, f"WhatsApp follow-up failed: {exc}")
+    else:
+        Activity.objects.create(
+            agency=agency,
+            lead=lead,
+            agent=profile,
+            activity_type=Activity.ActivityType.WHATSAPP,
+            content=f"Sent WhatsApp follow-up template: {template_name}",
+        )
+        messages.success(request, "WhatsApp follow-up sent.")
     return redirect("leads:detail", pk=lead.pk)

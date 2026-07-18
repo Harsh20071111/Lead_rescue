@@ -1,12 +1,19 @@
 from django.db import models
 from django.utils.text import slugify
 
+from apps.whatsapp.fields import EncryptedTextField
+
 
 class Agency(models.Model):
     class PlanTier(models.TextChoices):
         FREE = "free", "Free"
         STARTER = "starter", "Starter"
         PRO = "pro", "Pro"
+
+    class WhatsAppStatus(models.TextChoices):
+        NOT_CONNECTED = "not_connected", "Not connected"
+        CONNECTED = "connected", "Connected"
+        ERROR = "error", "Error"
 
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True, blank=True)
@@ -25,6 +32,20 @@ class Agency(models.Model):
     brand_primary_color = models.CharField(
         max_length=7, default="#B87333", blank=True
     )
+    whatsapp_phone_number_id = models.CharField(
+        max_length=64, null=True, blank=True, db_index=True
+    )
+    whatsapp_business_account_id = models.CharField(
+        max_length=64, null=True, blank=True
+    )
+    whatsapp_access_token = EncryptedTextField(null=True, blank=True)
+    whatsapp_display_name = models.CharField(max_length=255, null=True, blank=True)
+    whatsapp_status = models.CharField(
+        max_length=20,
+        choices=WhatsAppStatus.choices,
+        default=WhatsAppStatus.NOT_CONNECTED,
+    )
+    whatsapp_connected_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

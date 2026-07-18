@@ -49,10 +49,19 @@
                     <div class="flex items-start justify-between gap-3">
                         <div class="flex-1">
                             <div class="flex items-center gap-2">
-                                <a href="{% url 'properties:detail' match.object.pk %}" class="font-medium text-[#8B5E34] hover:underline">{{ match.object.title }}</a>
-                                <span class="rounded-md bg-[#8B5E34] px-2 py-0.5 text-xs font-medium text-white">{{ match.score|floatformat:0 }}%</span>
+                                {% if match.object.primary_image %}
+                                <img src="{{ match.object.primary_image.image.url }}" alt="{{ match.object.title }}" class="h-10 w-10 rounded-md object-cover">
+                                {% else %}
+                                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-[#F5F2EC] text-[10px] text-[#8B7355]">No img</div>
+                                {% endif %}
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <a href="{% url 'properties:detail' match.object.pk %}" class="font-medium text-[#8B5E34] hover:underline">{{ match.object.title }}</a>
+                                        <span class="rounded-md bg-[#8B5E34] px-2 py-0.5 text-xs font-medium text-white">{{ match.score|floatformat:0 }}%</span>
+                                    </div>
+                                    <p class="mt-1 text-sm text-[#5C4A33]">{{ match.object.locality|default:match.object.location }}, {{ match.object.city }} &middot; {{ match.object.get_bhk_display|default:"-" }} &middot; {{ match.object.price }}</p>
+                                </div>
                             </div>
-                            <p class="mt-1 text-sm text-[#5C4A33]">{{ match.object.locality|default:match.object.location }}, {{ match.object.city }} &middot; {{ match.object.get_bhk_display|default:"-" }} &middot; {{ match.object.price }}</p>
                             <div class="mt-2 flex flex-wrap gap-2 text-xs">
                                 <span class="{% if match.breakdown.bhk.matched == True %}text-green-700{% elif match.breakdown.bhk.matched == 'partial' %}text-amber-700{% else %}text-red-600{% endif %}">
                                     BHK: {{ match.breakdown.bhk.detail }}
@@ -96,6 +105,15 @@
                 {% csrf_token %}
                 {{ task_form.as_p }}
                 <button class="w-full rounded-md bg-[#8B5E34] px-4 py-2 text-sm font-medium text-white">Create follow-up</button>
+            </form>
+        </div>
+        <div class="rounded-md border border-[#E5DFD5] bg-white p-5">
+            <h2 class="mb-3 text-lg font-semibold text-[#1C1C1A]">WhatsApp follow-up</h2>
+            <form method="post" action="{% url 'leads:send_whatsapp_followup' lead.pk %}" class="space-y-3">
+                {% csrf_token %}
+                <input type="hidden" name="template_name" value="lead_follow_up">
+                <p class="text-sm text-[#8B7355]">Send the approved follow-up template using this agency's connected WhatsApp number.</p>
+                <button class="w-full rounded-md bg-[#1F6F4A] px-4 py-2 text-sm font-medium text-white">Send WhatsApp follow-up</button>
             </form>
         </div>
     </aside>

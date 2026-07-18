@@ -17,8 +17,18 @@
 <div class="grid gap-6 lg:grid-cols-[1fr_360px]">
     <section class="space-y-6">
         <div class="overflow-hidden rounded-md border border-[#E5DFD5] bg-white">
-            {% if property.image %}
-                <img src="{{ property.image.url }}" alt="{{ property.title }}" class="max-h-[440px] w-full object-cover">
+            {% if property.primary_image %}
+                <img src="{{ property.primary_image.image.url }}" alt="{{ property.title }}" class="max-h-[440px] w-full object-cover">
+            {% endif %}
+            
+            {% if property.images.count > 1 %}
+            <div class="grid grid-cols-4 gap-2 border-b border-[#E5DFD5] bg-[#F5F2EC] p-4 sm:grid-cols-6 lg:grid-cols-8">
+                {% for img in property.images.all %}
+                    <a href="{{ img.image.url }}" target="_blank" class="aspect-square overflow-hidden rounded-md border border-[#D8CBB8] hover:opacity-80 {% if img.is_primary %}ring-2 ring-[#8B5E34]{% endif %}">
+                        <img src="{{ img.image.url }}" class="h-full w-full object-cover" alt="Property thumbnail">
+                    </a>
+                {% endfor %}
+            </div>
             {% endif %}
             <div class="p-5">
                 <dl class="grid gap-4 text-sm md:grid-cols-2">

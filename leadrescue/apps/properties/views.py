@@ -1,11 +1,13 @@
 from django.db.models import Q
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 
 from apps.core.mixins import AgencyScopedViewMixin
 from apps.leads.models import Lead
 from apps.properties.forms import PropertyForm
-from apps.properties.models import Property
+from apps.properties.models import Property, PropertyImage
 
 
 class PropertyListView(AgencyScopedViewMixin, ListView):
@@ -141,3 +143,26 @@ class PropertyDeleteView(AgencyScopedViewMixin, DeleteView):
 
     def get_queryset(self):
         return self.scope_queryset_for_profile(Property.objects.select_related("agency"))
+
+class SetPrimaryImageView(AgencyScopedViewMixin, View):
+    def post(self, request, *args, **kwargs):
+        property_id = kwargs.get("pk")
+        image_id = kwargs.get("image_id")
+        prop = get_object_or_404(
+            self.scope_queryset_for_profile(Property.objects.all()), pk=property_id
+        )
+        image = get_object_or_404(prop.images.all(), pk=image_id)
+        image.is_primary = True
+        image.save()
+        return HttpResponse(status=200)
+
+class DeleteImageView(AgencyScopedViewMixin, View):
+    def delete(self, request, *args, **kwargs):
+        property_id = kwargs.get("pk")
+        image_id = kwargs.get("image_id")
+        prop = get_object_or_404(
+            self.scope_queryset_for_profile(Property.objects.all()), pk=property_id
+        )
+        image = get_object_or_404(prop.images.all(), pk=image_id)
+        image.delete()
+        return HttpResponse(status=200)

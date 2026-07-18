@@ -10,4 +10,6 @@ urlpatterns = [
     path("properties/<int:pk>/", views.PropertyDetailView.as_view(), name="detail"),
     path("properties/<int:pk>/edit/", views.PropertyUpdateView.as_view(), name="edit"),
     path("properties/<int:pk>/delete/", views.PropertyDeleteView.as_view(), name="delete"),
+    path("properties/<int:pk>/images/<int:image_id>/set-primary/", views.SetPrimaryImageView.as_view(), name="set_primary_image"),
+    path("properties/<int:pk>/images/<int:image_id>/delete/", views.DeleteImageView.as_view(), name="delete_image"),
 ]

@@ -8,7 +8,7 @@
         <h1 class="text-4xl font-light text-[#1C1C1A]" style="font-family: 'Cormorant Garamond', serif;">Properties</h1>
         <p class="text-sm text-[#8B7355]">Inventory visible through agency and assignment rules.</p>
     </div>
-    <a href="{% url 'properties:create' %}" class="rounded-md bg-[#8B5E34] px-4 py-2 text-sm font-medium text-white">Create property</a>
+    <a href="{% url 'properties:create' %}" class="rounded-md border-2 border-[#8B5E34] bg-white px-5 py-2 text-base font-semibold text-[#8B5E34] shadow-sm">Create property</a>
 </div>
 
 <form method="get" class="mb-6 grid gap-3 rounded-md border border-[#E5DFD5] bg-white p-4 md:grid-cols-6">
@@ -35,8 +35,9 @@
     {% for property in properties %}
     <article class="overflow-hidden rounded-md border border-[#E5DFD5] bg-white">
         <div class="aspect-[16/9] bg-[#F5F2EC]">
-            {% if property.image %}
-                <img src="{{ property.image.url }}" alt="{{ property.title }}" class="h-full w-full object-cover">
+            {% if property.primary_image %}
+                {# Use Cloudinary transformation for a thumbnail #}
+                <img src="{{ property.primary_image.image.url }}" alt="{{ property.title }}" class="h-full w-full object-cover">
             {% else %}
                 <div class="flex h-full items-center justify-center text-sm text-[#8B7355]">No image</div>
             {% endif %}
