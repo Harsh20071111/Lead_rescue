@@ -328,7 +328,7 @@ CELERY_BROKER_TRANSPORT_OPTIONS = {
     'socket_connect_timeout': 3.0,
 }
 
-CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default=REDIS_URL)
 
 CELERY_ACCEPT_CONTENT = ["json"]
 
