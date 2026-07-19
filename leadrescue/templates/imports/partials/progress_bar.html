@@ -1,0 +1,50 @@
+<div id="progress-container"
+     {% if job.status == 'processing' or job.status == 'mapping' or job.status == 'pending' %}
+     hx-get="{% url 'imports:import_progress' job.id %}" 
+     hx-trigger="every 2s"
+     hx-swap="outerHTML"
+     {% endif %}
+>
+  <div class="mb-4">
+    <p class="text-lg font-medium text-gray-700">Status: {{ job.get_status_display }}</p>
+    {% if job.status == 'processing' or job.status == 'mapping' or job.status == 'pending' %}
+    <p class="text-sm text-gray-500 animate-pulse">Processing your data...</p>
+    {% endif %}
+  </div>
+
+  {% if job.total_rows > 0 %}
+  <div class="w-full bg-gray-200 rounded-full h-4 mb-4">
+    <div class="bg-indigo-600 h-4 rounded-full transition-all duration-500" 
+         style="width: {% widthratio job.processed_rows job.total_rows 100 %}%">
+    </div>
+  </div>
+  <p class="text-sm text-gray-600">
+    Processed {{ job.processed_rows }} of {{ job.total_rows }} rows.
+  </p>
+  {% endif %}
+
+  {% if job.status == 'completed' or job.status == 'failed' %}
+  <div class="mt-6 border-t pt-4 text-left">
+    <h3 class="text-lg font-medium text-gray-900">Summary</h3>
+    <ul class="mt-2 text-sm text-gray-600 space-y-1">
+      <li><span class="font-medium text-green-600">Successful:</span> {{ job.successful_rows }}</li>
+      <li><span class="font-medium text-red-600">Failed:</span> {{ job.failed_rows }}</li>
+    </ul>
+
+    {% if job.failed_rows > 0 %}
+    <div class="mt-4 bg-red-50 rounded p-4 max-h-60 overflow-y-auto">
+      <h4 class="text-sm font-medium text-red-800 mb-2">Error Log</h4>
+      <ul class="list-disc pl-5 text-sm text-red-700 space-y-1">
+        {% for error in job.error_log %}
+        <li>Row {{ error.row }}: {{ error.error }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+    
+    <div class="mt-6 text-center">
+      <a href="{% url 'imports:import_upload' %}" class="text-indigo-600 hover:text-indigo-500 font-medium">Start another import &rarr;</a>
+    </div>
+  </div>
+  {% endif %}
+</div>

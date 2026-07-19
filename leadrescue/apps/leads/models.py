@@ -13,6 +13,7 @@ class Lead(models.Model):
         GOOGLE = "google", "Google"
         MANUAL = "manual", "Manual"
         WHATSAPP = "whatsapp", "WhatsApp"
+        IMPORT = "import", "Import"
 
     class LeadStatus(models.TextChoices):
         NEW = "new", "New"

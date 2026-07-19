@@ -1,0 +1,11 @@
+{% extends "app_shell.html" %}
+
+{% block app_content %}
+<div class="max-w-3xl mx-auto py-8">
+  <div class="bg-white rounded-lg shadow p-6 text-center">
+    <h1 class="text-2xl font-bold mb-4">Import Progress</h1>
+    
+    {% include "imports/partials/progress_bar.html" %}
+  </div>
+</div>
+{% endblock %}

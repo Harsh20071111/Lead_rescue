@@ -1,0 +1,65 @@
+{% extends "app_shell.html" %}
+
+{% block app_content %}
+<div class="max-w-4xl mx-auto py-8">
+  <div class="bg-white rounded-lg shadow p-6">
+    <h1 class="text-2xl font-bold mb-4">Map Columns</h1>
+    
+    {% if error %}
+    <div class="bg-red-50 text-red-600 p-4 rounded mb-4">
+      {{ error }}
+    </div>
+    {% endif %}
+
+    <p class="mb-4 text-gray-600">Match the columns from your uploaded file to the required fields.</p>
+
+    <form method="POST" class="space-y-6">
+      {% csrf_token %}
+      
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <!-- Required Fields -->
+        <div>
+          <h2 class="text-lg font-medium text-gray-900 mb-3">Required Fields</h2>
+          <div class="space-y-4">
+            {% for field in required_fields %}
+            <div>
+              <label class="block text-sm font-medium text-gray-700">{{ field.label }} *</label>
+              <select name="map_{{ field.name }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                <option value="">-- Select Column --</option>
+                {% for header in headers %}
+                <option value="{{ header }}" {% if field.auto_mapped == header %}selected{% endif %}>{{ header }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Optional Fields -->
+        <div>
+          <h2 class="text-lg font-medium text-gray-900 mb-3">Optional Fields</h2>
+          <div class="space-y-4">
+            {% for field in optional_fields %}
+            <div>
+              <label class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
+              <select name="map_{{ field.name }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">-- Ignore --</option>
+                {% for header in headers %}
+                <option value="{{ header }}" {% if field.auto_mapped == header %}selected{% endif %}>{{ header }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-3 pt-4 border-t">
+        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded shadow hover:bg-indigo-700">
+          Start Import
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

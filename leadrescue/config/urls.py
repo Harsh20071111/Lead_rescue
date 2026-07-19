@@ -11,6 +11,7 @@ urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("dashboard/", include("apps.dashboard.urls")),
+    path("imports/", include("apps.imports.urls")),
     path("", include("apps.leads.urls")),
     path("", include("apps.properties.urls")),
     path("", include("apps.accounts.urls")),
