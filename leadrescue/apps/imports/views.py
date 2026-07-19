@@ -36,10 +36,16 @@ def _read_headers_from_bytes(file_bytes, filename):
 def _queue_import_job(job):
     try:
         process_import_job.delay(job.id)
-    except OperationalError:
-        logger.warning("Celery broker unavailable; processing import job %s inline.", job.id)
-        process_import_job(job.id)
-
+    except Exception as e:
+        logger.error(f"Failed to queue import job {job.id}: {e}")
+        from django.conf import settings
+        if settings.DEBUG:
+            logger.warning(f"Processing import job {job.id} inline due to broker failure.")
+            process_import_job(job.id)
+        else:
+            job.status = ImportJob.Status.FAILED
+            job.error_log.append({"row": 0, "error": f"Task queue (Redis) unavailable. Please configure REDIS_URL."})
+            job.save(update_fields=['status', 'error_log'])
 
 # ──────────────────────────────────────────────
 # Views

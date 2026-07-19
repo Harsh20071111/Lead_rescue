@@ -11,6 +11,18 @@
     </div>
     {% endif %}
 
+    {% if auto_mapping_summary %}
+    <div class="bg-blue-50 text-blue-800 p-4 rounded mb-6">
+      <h2 class="font-semibold text-blue-900 mb-2">Auto-Mapped Columns</h2>
+      <p class="text-sm mb-3">We have automatically detected and mapped the following columns from your file. You can adjust them below if needed.</p>
+      <ul class="list-disc list-inside text-sm space-y-1">
+        {% for match in auto_mapping_summary %}
+        <li><strong>{{ match.header }}</strong> &rarr; {{ match.field }} <span class="text-blue-600 text-xs ml-1">({{ match.confidence }}% match)</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
     <p class="mb-4 text-gray-600">Match the columns from your uploaded file to the required fields.</p>
 
     <form method="POST" class="space-y-6">

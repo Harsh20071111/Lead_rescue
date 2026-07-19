@@ -23,7 +23,18 @@
   </p>
   {% endif %}
 
-  {% if job.status == 'completed' or job.status == 'failed' %}
+  {% if job.status == 'processing' or job.status == 'mapping' or job.status == 'pending' %}
+  <div class="mt-4 flex justify-center">
+    <form action="{% url 'imports:import_cancel' job.id %}" method="post">
+      {% csrf_token %}
+      <button type="submit" class="text-sm font-medium text-red-600 hover:text-red-800 border border-red-200 px-3 py-1 rounded-md shadow-sm hover:bg-red-50 transition-colors" onclick="return confirm('Are you sure you want to cancel this import?');">
+        Cancel Import
+      </button>
+    </form>
+  </div>
+  {% endif %}
+
+  {% if job.status == 'completed' or job.status == 'failed' or job.status == 'canceled' %}
   <div class="mt-6 border-t pt-4 text-left">
     <h3 class="text-lg font-medium text-gray-900">Summary</h3>
     <ul class="mt-2 text-sm text-gray-600 space-y-1">
