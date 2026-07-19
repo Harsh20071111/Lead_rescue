@@ -44,7 +44,7 @@ def _queue_import_job(job):
             process_import_job(job.id)
         else:
             job.status = ImportJob.Status.FAILED
-            job.error_log.append({"row": 0, "error": f"Task queue (Redis) unavailable. Please configure REDIS_URL."})
+            job.error_log.append({"row": 0, "error": f"Task queue (Redis) unavailable: {e}. Please check REDIS_URL."})
             job.save(update_fields=['status', 'error_log'])
 
 # ──────────────────────────────────────────────
