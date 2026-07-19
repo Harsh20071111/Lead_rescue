@@ -1,14 +1,64 @@
 from django.db import models
 from django.core.validators import FileExtensionValidator
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage, Storage
 from apps.agencies.models import Agency
 from apps.accounts.models import AgentProfile
 
-from django.core.files.storage import default_storage
 try:
     from cloudinary_storage.storage import RawMediaCloudinaryStorage
-    import_storage = RawMediaCloudinaryStorage()
 except ImportError:
-    import_storage = default_storage
+    RawMediaCloudinaryStorage = None
+
+
+class ImportFileStorage(Storage):
+    def __init__(self):
+        self._storage = None
+
+    def deconstruct(self):
+        return ("apps.imports.models.ImportFileStorage", [], {})
+
+    @property
+    def storage(self):
+        if self._storage is None:
+            if getattr(settings, "USE_CLOUDINARY_IMPORT_STORAGE", False) and RawMediaCloudinaryStorage is not None:
+                self._storage = RawMediaCloudinaryStorage()
+            else:
+                self._storage = FileSystemStorage(location=settings.MEDIA_ROOT, base_url=settings.MEDIA_URL)
+        return self._storage
+
+    def _open(self, name, mode="rb"):
+        return self.storage.open(name, mode)
+
+    def _save(self, name, content):
+        return self.storage.save(name, content)
+
+    def delete(self, name):
+        return self.storage.delete(name)
+
+    def exists(self, name):
+        return self.storage.exists(name)
+
+    def listdir(self, path):
+        return self.storage.listdir(path)
+
+    def size(self, name):
+        return self.storage.size(name)
+
+    def url(self, name):
+        return self.storage.url(name)
+
+    def get_accessed_time(self, name):
+        return self.storage.get_accessed_time(name)
+
+    def get_created_time(self, name):
+        return self.storage.get_created_time(name)
+
+    def get_modified_time(self, name):
+        return self.storage.get_modified_time(name)
+
+
+import_storage = ImportFileStorage()
 
 
 class ImportJob(models.Model):
@@ -22,6 +72,7 @@ class ImportJob(models.Model):
         PROCESSING = "processing", "Processing"
         COMPLETED = "completed", "Completed"
         FAILED = "failed", "Failed"
+        CANCELED = "canceled", "Canceled"
 
     agency = models.ForeignKey(Agency, on_delete=models.CASCADE, related_name="imports", db_index=True)
     initiated_by = models.ForeignKey(AgentProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name="imports")

@@ -7,4 +7,5 @@ urlpatterns = [
     path("upload/", views.import_upload, name="import_upload"),
     path("<int:job_id>/mapping/", views.import_mapping, name="import_mapping"),
     path("<int:job_id>/progress/", views.import_progress, name="import_progress"),
+    path("<int:job_id>/cancel/", views.import_cancel, name="import_cancel"),
 ]

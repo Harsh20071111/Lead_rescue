@@ -1,6 +1,7 @@
 import io
 import math
 import logging
+from contextlib import contextmanager
 import requests
 import pandas as pd
 from celery import shared_task
@@ -28,29 +29,28 @@ def process_import_job(self, job_id):
     job.save(update_fields=['status'])
 
     try:
-        # Download file directly from Cloudinary URL into memory
-        if not job.file_url:
-            raise ValueError("No file URL saved for this job.")
-
-        response = requests.get(job.file_url, stream=True)
-        response.raise_for_status()
-        
-        file_bytes = io.BytesIO(response.content)
-
-        if job.file.name.endswith('.csv'):
-            reader = pd.read_csv(file_bytes, chunksize=100)
-            for chunk in reader:
-                _process_chunk(job, chunk)
-        elif job.file.name.endswith(('.xls', '.xlsx')):
-            df = pd.read_excel(file_bytes)
-            for i in range(0, len(df), 100):
-                chunk = df.iloc[i:i+100]
-                _process_chunk(job, chunk)
-        else:
-            job.status = ImportJob.Status.FAILED
-            job.error_log.append({"error": "Unsupported file format."})
-            job.save(update_fields=['status', 'error_log'])
-            return
+        with _open_import_file(job) as file_bytes:
+            filename = job.file.name.lower()
+            if filename.endswith('.csv'):
+                reader = pd.read_csv(file_bytes, chunksize=100)
+                for chunk in reader:
+                    job.refresh_from_db()
+                    if job.status == ImportJob.Status.CANCELED:
+                        return
+                    _process_chunk(job, chunk)
+            elif filename.endswith(('.xls', '.xlsx')):
+                df = pd.read_excel(file_bytes)
+                for i in range(0, len(df), 100):
+                    job.refresh_from_db()
+                    if job.status == ImportJob.Status.CANCELED:
+                        return
+                    chunk = df.iloc[i:i+100]
+                    _process_chunk(job, chunk)
+            else:
+                job.status = ImportJob.Status.FAILED
+                job.error_log.append({"error": "Unsupported file format."})
+                job.save(update_fields=['status', 'error_log'])
+                return
     except Exception as e:
         logger.exception("Failed to read/process file for job %s", job_id)
         job.status = ImportJob.Status.FAILED
@@ -59,12 +59,31 @@ def process_import_job(self, job_id):
         return
 
     # Determine final status
+    job.refresh_from_db()
+    if job.status == ImportJob.Status.CANCELED:
+        return
+
     if job.total_rows > 0 and job.successful_rows == 0:
         job.status = ImportJob.Status.FAILED
     else:
         job.status = ImportJob.Status.COMPLETED
 
     job.save(update_fields=['status'])
+
+
+@contextmanager
+def _open_import_file(job):
+    if job.file_url.startswith(("http://", "https://")):
+        response = requests.get(job.file_url, timeout=30)
+        response.raise_for_status()
+        yield io.BytesIO(response.content)
+        return
+
+    if not job.file:
+        raise ValueError("No import file saved for this job.")
+
+    with job.file.open("rb") as import_file:
+        yield import_file
 
 
 def clean_value(val):

@@ -287,6 +287,15 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': CLOUDINARY_API_SECRET,
 }
 
+USE_CLOUDINARY_IMPORT_STORAGE = env.bool(
+    "USE_CLOUDINARY_IMPORT_STORAGE",
+    default=_is_render and all([
+        CLOUDINARY_CLOUD_NAME,
+        CLOUDINARY_API_KEY,
+        CLOUDINARY_API_SECRET,
+    ]),
+)
+
 if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
     # Merge with existing STORAGES if defined by whitenoise
     if 'STORAGES' not in locals():
@@ -323,6 +332,8 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_TRACK_STARTED = True
 
 CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes
+
+CELERY_TASK_ALWAYS_EAGER = env.bool("CELERY_TASK_ALWAYS_EAGER", default=False)
 
 # ==================================================
 # WHATSAPP / META APP CONFIG
