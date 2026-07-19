@@ -1,0 +1,30 @@
+{% extends "app_shell.html" %}
+
+{% block title %}Invite Agent - LeadSathi{% endblock %}
+
+{% block app_content %}
+<div class="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+    <div>
+        <h1 class="text-4xl font-light text-[#1C1C1A]" style="font-family: 'Cormorant Garamond', serif;">Invite Agent</h1>
+        <p class="text-sm text-[#8B7355]">Send an invitation to join your agency.</p>
+    </div>
+    <a href="{% url 'accounts:team_list' %}" class="rounded-md border border-[#E5DFD5] bg-white px-4 py-2 text-sm text-[#5C4A33] shadow-sm hover:bg-[#F5F2EC]">Back to Team</a>
+</div>
+
+<div class="mx-auto max-w-md rounded-md border border-[#E5DFD5] bg-white p-6 shadow-sm">
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label class="mb-1 block text-sm font-medium text-[#1C1C1A]">Email address</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div class="mt-1 text-xs text-red-600">{{ form.email.errors.0 }}</div>
+            {% endif %}
+        </div>
+        
+        <button type="submit" class="w-full rounded-md border-2 border-[#8B5E34] bg-white px-5 py-2 text-base font-semibold text-[#8B5E34] shadow-sm hover:bg-[#F5F2EC]">
+            Send Invite
+        </button>
+    </form>
+</div>
+{% endblock %}

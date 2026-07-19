@@ -80,8 +80,17 @@ class LoginView(DefaultLoginView):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
+    def form_valid(self, form):
+        user = form.get_user()
+        if hasattr(user, 'agent_profile') and not user.agent_profile.is_active:
+            messages.error(self.request, "Your account has been deactivated. Please contact your agency owner.")
+            return self.form_invalid(form)
+        return super().form_valid(form)
+
     def form_invalid(self, form):
-        messages.error(self.request, "Invalid email or password.")
+        # Only show the generic error if we didn't already add a specific one
+        if not self.request._messages:
+            messages.error(self.request, "Invalid email or password.")
         return super().form_invalid(form)
 
 

@@ -62,7 +62,7 @@ def send_agent_invite_email(invite):
     """
     context = {
         'inviter_name': invite.agency.owner_email, # Simple fallback if owner name isn't on agency
-        'invite_url': f"https://leadsathi.in/invite/{invite.token}/" if not settings.DEBUG else f"http://localhost:8000/invite/{invite.token}/",
+        'invite_url': f"https://leadsathi.in/invites/accept/{invite.token}/" if not settings.DEBUG else f"http://localhost:8000/invites/accept/{invite.token}/",
     }
     return _send_leadsathi_email(
         subject="You've been invited to join LeadSathi",

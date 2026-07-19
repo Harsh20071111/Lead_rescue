@@ -11,6 +11,7 @@
                 <a href="{% url 'properties:list' %}" class="hover:text-[#C4A882]">Properties</a>
                 <a href="{% url 'leads:tasks' %}" class="hover:text-[#C4A882]">Follow-ups</a>
                 {% if request.user.agent_profile.role == "owner" %}
+                <a href="{% url 'accounts:team_list' %}" class="hover:text-[#C4A882]">Team</a>
                 <a href="{% url 'whatsapp:settings' %}" class="hover:text-[#C4A882]">WhatsApp</a>
                 {% endif %}
             </div>

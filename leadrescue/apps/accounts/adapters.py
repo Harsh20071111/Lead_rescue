@@ -87,41 +87,58 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
     def save_user(self, request, sociallogin, form=None):
         """
         Called on FIRST social signup only (when a brand-new User is
-        created). Creates the default Agency and AgentProfile(Owner).
+        created). Handles invite tokens if present, else creates default Agency.
         """
         user = super().save_user(request, sociallogin, form)
 
-        # Ensure the username field is set (our User model inherits
-        # AbstractUser which requires it).
         if not user.username:
             user.username = user.email
             user.save(update_fields=["username"])
 
-        # Only create Agency/AgentProfile if one doesn't already exist.
-        # (Defensive: pre_social_login might have already linked to a
-        # user that has these.)
         if not AgentProfile.objects.filter(user=user).exists():
-            name = user.get_full_name() or user.email.split("@")[0]
+            from apps.accounts.models import AgentInvite
+            
+            invite_token = request.session.get("invite_token")
+            invite = None
+            if invite_token:
+                try:
+                    invite = AgentInvite.objects.get(token=invite_token, status=AgentInvite.Status.PENDING)
+                except AgentInvite.DoesNotExist:
+                    pass
 
-            agency = Agency.objects.create(
-                name=f"{name}'s Agency",
-                owner_phone="N/A",
-                owner_email=user.email,
-                city="N/A",
-            )
+            if invite:
+                # Attach to existing agency via invite
+                agent_profile = AgentProfile.objects.create(
+                    user=user,
+                    agency=invite.agency,
+                    role="agent",
+                    phone="N/A",
+                )
+                invite.status = AgentInvite.Status.ACCEPTED
+                invite.save(update_fields=["status"])
+                if "invite_token" in request.session:
+                    del request.session["invite_token"]
+                    
+                logger.info("Attached Google user %s to Agency '%s' via invite", user.email, invite.agency.name)
+            else:
+                # Normal organic signup, create new agency
+                name = user.get_full_name() or user.email.split("@")[0]
 
-            agent_profile = AgentProfile.objects.create(
-                user=user,
-                agency=agency,
-                role="owner",
-                phone="N/A",
-            )
+                agency = Agency.objects.create(
+                    name=f"{name}'s Agency",
+                    owner_phone="N/A",
+                    owner_email=user.email,
+                    city="N/A",
+                )
 
-            logger.info(
-                "Created Agency '%s' and AgentProfile(Owner) for Google user %s",
-                agency.name,
-                user.email,
-            )
+                agent_profile = AgentProfile.objects.create(
+                    user=user,
+                    agency=agency,
+                    role="owner",
+                    phone="N/A",
+                )
+
+                logger.info("Created Agency '%s' and AgentProfile(Owner) for Google user %s", agency.name, user.email)
 
             try:
                 if not agent_profile.welcome_email_sent:
