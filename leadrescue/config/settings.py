@@ -377,8 +377,8 @@ if DEBUG:
     SSL_CERTIFICATE = BASE_DIR / "adhoc.crt"
     SSL_PRIVATE_KEY = BASE_DIR / "adhoc.key"
 
-    # We run local dev over HTTPS (runserver_plus --cert-file adhoc),
-    # so cookies should be Secure to match.
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
+    # We run local dev over HTTP (due to pyOpenSSL SSL compatibility issues in Python 3.13),
+    # so cookies should NOT be Secure to allow login over HTTP.
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
     SECURE_SSL_REDIRECT = False

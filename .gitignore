@@ -92,3 +92,8 @@ coverage.xml
 
 # mypy
 .mypy_cache/
+
+# Video files
+*.mp4
+*.mov
+*.avi
