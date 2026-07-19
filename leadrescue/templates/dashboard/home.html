@@ -68,12 +68,12 @@
 const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
 new Chart(document.getElementById("statusChart"), {
     type: "bar",
-    data: { labels: {{ status_labels|safe }}, datasets: [{ data: {{ status_values|safe }}, backgroundColor: "#8B5E34" }] },
+    data: { labels: {{ status_labels }}, datasets: [{ data: {{ status_values }}, backgroundColor: "#8B5E34" }] },
     options: { ...chartOptions, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { precision: 0 } } } }
 });
 new Chart(document.getElementById("sourceChart"), {
     type: "doughnut",
-    data: { labels: {{ source_labels|safe }}, datasets: [{ data: {{ source_values|safe }}, backgroundColor: ["#8B5E34", "#C4A882", "#1C1C1A", "#B87333", "#D8CBB8"], borderWidth: 0, hoverOffset: 6 }] },
+    data: { labels: {{ source_labels }}, datasets: [{ data: {{ source_values }}, backgroundColor: ["#8B5E34", "#C4A882", "#1C1C1A", "#B87333", "#D8CBB8"], borderWidth: 0, hoverOffset: 6 }] },
     options: { responsive: true, maintainAspectRatio: false, cutout: "72%", plugins: { legend: { display: false } } }
 });
 </script>

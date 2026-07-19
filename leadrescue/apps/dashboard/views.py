@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.utils import timezone
@@ -53,22 +55,22 @@ class DashboardHomeView(LoginRequiredMixin, TemplateView):
                     "closed_deals": leads.filter(status=Lead.LeadStatus.CONVERTED).count(),
                 },
                 "recent_activity": activities.order_by("-created_at")[:10],
-                "status_labels": [
+                "status_labels": json.dumps([
                     label for value, label in Lead.LeadStatus.choices if value in status_counts
-                ],
-                "status_values": [
+                ]),
+                "status_values": json.dumps([
                     status_counts[value]
                     for value, label in Lead.LeadStatus.choices
                     if value in status_counts
-                ],
-                "source_labels": [
+                ]),
+                "source_labels": json.dumps([
                     label for value, label in Lead.LeadSource.choices if value in source_counts
-                ],
-                "source_values": [
+                ]),
+                "source_values": json.dumps([
                     source_counts[value]
                     for value, label in Lead.LeadSource.choices
                     if value in source_counts
-                ],
+                ]),
             }
         )
         return context

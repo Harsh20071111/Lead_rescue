@@ -122,6 +122,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "config.admin_site.AdminOnlyMiddleware",
 ]
 
 # ==================================================
@@ -328,6 +329,12 @@ WHATSAPP_APP_ID = env("WHATSAPP_APP_ID", default="")
 WHATSAPP_APP_SECRET = env("WHATSAPP_APP_SECRET", default="")
 WHATSAPP_WEBHOOK_VERIFY_TOKEN = env("WHATSAPP_WEBHOOK_VERIFY_TOKEN", default="")
 FIELD_ENCRYPTION_KEY = env("FIELD_ENCRYPTION_KEY", default=SECRET_KEY)
+
+# ==================================================
+# ADMIN SECURITY
+# ==================================================
+
+ADMIN_URL = env("ADMIN_URL", default="harsh-admin")
 
 # ==================================================
 # EMAIL
