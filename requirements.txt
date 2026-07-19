@@ -20,6 +20,7 @@ django-celery-beat==2.9.0
 django-cloudinary-storage==0.3.0
 django-environ==0.14.0
 django-extensions==3.2.3
+django-htmx==1.28.0
 django-sslserver==0.22
 django-timezone-field==7.2.2
 fonttools==4.63.0
@@ -30,6 +31,7 @@ MarkupSafe==3.0.3
 numpy==2.5.1
 packaging==26.2
 pandas==2.3.3
+openpyxl==3.1.5
 pillow==10.4.0
 prompt_toolkit==3.0.52
 psycopg2-binary==2.9.12

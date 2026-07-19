@@ -90,6 +90,7 @@ THIRD_PARTY_APPS = [
     "cloudinary_storage",
     "cloudinary",
     "django_celery_beat",
+    "django_htmx",
 ]
 
 LOCAL_APPS = [
@@ -104,6 +105,7 @@ LOCAL_APPS = [
     "apps.core",
     "apps.matching",
     "apps.whatsapp",
+    "apps.imports",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -120,6 +122,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "config.admin_site.AdminOnlyMiddleware",
