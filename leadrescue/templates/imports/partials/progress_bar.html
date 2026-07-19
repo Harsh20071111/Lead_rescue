@@ -42,12 +42,12 @@
       <li><span class="font-medium text-red-600">Failed:</span> {{ job.failed_rows }}</li>
     </ul>
 
-    {% if job.failed_rows > 0 %}
+    {% if job.error_log %}
     <div class="mt-4 bg-red-50 rounded p-4 max-h-60 overflow-y-auto">
       <h4 class="text-sm font-medium text-red-800 mb-2">Error Log</h4>
       <ul class="list-disc pl-5 text-sm text-red-700 space-y-1">
         {% for error in job.error_log %}
-        <li>Row {{ error.row }}: {{ error.error }}</li>
+        <li>Row {{ error.row|default:"-" }}: {{ error.error }}</li>
         {% endfor %}
       </ul>
     </div>
