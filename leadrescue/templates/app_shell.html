@@ -152,6 +152,8 @@
             padding: 22px 18px 40px;
         }
     }
+    @keyframes slide-in { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .animate-slide-in { animation: slide-in 400ms cubic-bezier(.2,.8,.2,1) both; }
 </style>
 {% endblock %}
 
@@ -189,11 +191,26 @@
 </nav>
 <main class="ls-main">
     {% if messages %}
-        <div class="mb-6 space-y-2">
+        <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2">
             {% for message in messages %}
-                <div class="rounded-md border border-[#D8CBB8] bg-[#F5F2EC] px-4 py-3 text-sm text-[#5C4A33]">{{ message }}</div>
+                <div class="toast-message rounded-md border border-[#D8CBB8] bg-[#F5F2EC] px-5 py-3 text-sm text-[#5C4A33] shadow-lg animate-slide-in">
+                    {{ message }}
+                </div>
             {% endfor %}
         </div>
+        <script>
+            (function() {
+                var toasts = document.querySelectorAll('.toast-message');
+                toasts.forEach(function(t) {
+                    setTimeout(function() {
+                        t.style.transition = 'opacity 400ms ease, transform 400ms ease';
+                        t.style.opacity = '0';
+                        t.style.transform = 'translateX(40px)';
+                        setTimeout(function() { t.remove(); }, 400);
+                    }, 3000);
+                });
+            })();
+        </script>
     {% endif %}
     {% block app_content %}{% endblock %}
 </main>

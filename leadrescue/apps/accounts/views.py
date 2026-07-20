@@ -91,8 +91,10 @@ class LoginView(DefaultLoginView):
 
         if self.request.POST.get("remember"):
             self.request.session.set_expiry(60 * 60 * 24)
+            messages.info(self.request, "You'll stay signed in for 24 hours.")
         else:
             self.request.session.set_expiry(0)
+            messages.info(self.request, "Session expires when you close the browser.")
 
         return redirect(self.get_success_url())
 
