@@ -1,14 +1,14 @@
-<div class="space-y-3">
+<div style="display: grid; gap: 10px;">
     {% for activity in activities %}
-        <article class="rounded-md border border-[#EFE7DA] bg-[#FAF8F4] p-3 text-sm">
-            <div class="flex items-center justify-between gap-3">
-                <strong class="text-[#1C1C1A]">{{ activity.get_activity_type_display }}</strong>
-                <time class="text-xs text-[#8B7355]">{{ activity.created_at|date:"M j, Y H:i" }}</time>
+        <article class="activity-entry">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                <strong>{{ activity.get_activity_type_display }}</strong>
+                <time style="font-size: 12px; color: var(--muted);">{{ activity.created_at|date:"M j, Y H:i" }}</time>
             </div>
-            <p class="mt-1 text-[#5C4A33]">{{ activity.content }}</p>
-            <p class="mt-2 text-xs text-[#8B7355]">{{ activity.agent.user.email }}</p>
+            <p>{{ activity.content }}</p>
+            <p style="font-size: 11px; color: var(--muted); margin-top: 4px;">{{ activity.agent.user.email }}</p>
         </article>
     {% empty %}
-        <p class="text-sm text-[#8B7355]">No activity yet.</p>
+        <p style="font-size: 14px; color: var(--muted);">No activity yet.</p>
     {% endfor %}
 </div>

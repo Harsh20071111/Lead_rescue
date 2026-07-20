@@ -1,32 +1,193 @@
 {% extends "base.html" %}
 
+{% block extra_css %}
+{{ block.super }}
+<style>
+    :root {
+        --ls-page: #ffffff;
+        --ls-nav: #fff9f3;
+        --ls-panel: #fffaf6;
+        --ls-border: #efe3d8;
+        --ls-primary: #b56a30;
+        --ls-text: #2f241f;
+        --ls-muted: #7e6f67;
+        --ls-soft: #f7f1eb;
+        --ls-icon: #efe6dd;
+    }
+
+    body {
+        background: var(--ls-page) !important;
+        color: var(--ls-text);
+    }
+
+    .ls-shell-nav {
+        height: 70px;
+        border-bottom: 1px solid var(--ls-border);
+        background: var(--ls-nav);
+    }
+
+    .ls-shell-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 100%;
+        width: 100%;
+        padding: 0 32px;
+    }
+
+    .ls-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--ls-text);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 22px;
+        line-height: 1;
+        text-decoration: none;
+    }
+
+    .ls-brand svg {
+        color: var(--ls-primary);
+        width: 22px;
+        height: 22px;
+    }
+
+    .ls-nav-links {
+        display: flex;
+        align-items: center;
+        gap: 42px;
+        margin-left: 42px;
+        font-size: 14px;
+    }
+
+    .ls-nav-links a {
+        color: var(--ls-text);
+        text-decoration: none;
+    }
+
+    .ls-nav-left,
+    .ls-nav-actions {
+        display: flex;
+        align-items: center;
+    }
+
+    .ls-nav-actions {
+        gap: 16px;
+    }
+
+    .ls-search {
+        width: 260px;
+        height: 38px;
+        border: 1px solid #e5d9cf;
+        border-radius: 999px;
+        background: #ffffff;
+        color: var(--ls-text);
+        font-size: 14px;
+        padding: 0 14px;
+        box-shadow: 0 1px 5px rgba(47, 36, 31, 0.04) inset;
+    }
+
+    .ls-search::placeholder {
+        color: #8fa2b4;
+    }
+
+    .ls-top-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 36px;
+        border-radius: 5px;
+        background: var(--ls-primary);
+        color: #ffffff;
+        padding: 0 18px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .ls-bell {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        color: #5d514b;
+    }
+
+    .ls-avatar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 999px;
+        background: #eadfd4;
+        color: #4b3f36;
+        font-family: "Cormorant Garamond", serif;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .ls-main {
+        max-width: none;
+        padding: 24px 40px 48px;
+    }
+
+    @media (max-width: 900px) {
+        .ls-shell-inner {
+            padding: 0 18px;
+        }
+
+        .ls-nav-links,
+        .ls-search,
+        .ls-bell {
+            display: none;
+        }
+
+        .ls-top-button {
+            padding: 0 12px;
+        }
+
+        .ls-main {
+            padding: 22px 18px 40px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<nav class="border-b border-[#E5DFD5] bg-[#1C1C1A] text-[#FAF8F4] px-6 py-4">
-    <div class="mx-auto flex max-w-7xl items-center justify-between gap-6">
-        <div class="flex items-center gap-6">
-            <a href="{% url 'dashboard:home' %}" class="text-2xl font-light text-[#FAF8F4]" style="font-family: 'Cormorant Garamond', serif; text-decoration: none;">LeadSathi</a>
-            <div class="hidden items-center gap-4 text-sm text-[#D8CBB8] md:flex">
-                <a href="{% url 'dashboard:home' %}" class="hover:text-[#C4A882]">Dashboard</a>
-                <a href="{% url 'leads:list' %}" class="hover:text-[#C4A882]">Leads</a>
-                <a href="{% url 'properties:list' %}" class="hover:text-[#C4A882]">Properties</a>
-                <a href="{% url 'leads:tasks' %}" class="hover:text-[#C4A882]">Follow-ups</a>
-                {% if request.user.agent_profile.role == "owner" %}
-                <a href="{% url 'accounts:team_list' %}" class="hover:text-[#C4A882]">Team</a>
-                <a href="{% url 'imports:import_upload' %}" class="hover:text-[#C4A882]">Import Data</a>
-                <a href="{% url 'whatsapp:settings' %}" class="hover:text-[#C4A882]">WhatsApp</a>
-                {% endif %}
+<nav class="ls-shell-nav">
+    <div class="ls-shell-inner">
+        <div class="ls-nav-left">
+            <a href="{% url 'dashboard:home' %}" class="ls-brand" aria-label="LeadSathi home">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M3 11.5 12 4l9 7.5-1.4 1.7L18 11.9V20h-5v-5h-2v5H6v-8.1l-1.6 1.3L3 11.5Z"/>
+                    <path d="M5 7.4V4h3v.9L5 7.4Z"/>
+                </svg>
+                <span>LeadSathi</span>
+            </a>
+            <div class="ls-nav-links">
+                <a href="{% url 'dashboard:home' %}">Dashboard</a>
+                <a href="{% url 'leads:list' %}">Leads</a>
+                <a href="{% url 'properties:list' %}">Properties</a>
+                <a href="{% url 'imports:import_upload' %}">Imports</a>
             </div>
         </div>
-        <div class="flex items-center gap-3 text-sm">
-            <span class="hidden text-[#C4A882] sm:inline">{{ request.user.agent_profile.agency.name }}</span>
-            <form action="{% url 'accounts:logout' %}" method="post">
-                {% csrf_token %}
-                <button class="rounded-md border border-[#FAF8F4]/30 px-3 py-2 text-xs hover:bg-[#FAF8F4]/10">Logout</button>
+        <div class="ls-nav-actions">
+            <form action="{% url 'leads:list' %}" method="get">
+                <input class="ls-search" type="search" name="q" value="{{ request.GET.q }}" placeholder="Search leads, properties...">
             </form>
+            <a href="{% url 'leads:create' %}" class="ls-top-button">Create Lead</a>
+            <span class="ls-bell" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                    <path d="M12 22a2.6 2.6 0 0 0 2.45-1.75h-4.9A2.6 2.6 0 0 0 12 22Zm7-5.2-1.6-1.9V10a5.4 5.4 0 0 0-4.2-5.25V3a1.2 1.2 0 1 0-2.4 0v1.75A5.4 5.4 0 0 0 6.6 10v4.9L5 16.8V18h14v-1.2Z"/>
+                </svg>
+            </span>
+            <span class="ls-avatar">{{ request.user.email|default:request.user.username|slice:":2"|upper }}</span>
         </div>
     </div>
 </nav>
-<main class="mx-auto max-w-7xl px-6 py-8 lg:px-8">
+<main class="ls-main">
     {% if messages %}
         <div class="mb-6 space-y-2">
             {% for message in messages %}

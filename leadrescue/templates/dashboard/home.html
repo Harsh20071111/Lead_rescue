@@ -2,64 +2,223 @@
 
 {% block title %}Dashboard - LeadSathi{% endblock %}
 
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .dash-page {
+        --copy: #2f241f;
+        --muted: #7e6f67;
+        --panel: #fffaf6;
+        --line: #efe3d8;
+        --primary: #b56a30;
+        --orange: #ff784b;
+        --peach: #ffe2d9;
+        --brown: #995f4c;
+        display: grid;
+        grid-template-columns: minmax(0, 940px) 320px;
+        gap: 32px;
+        align-items: start;
+    }
+
+    .dash-main { min-width: 0; }
+
+    .dash-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    .dash-title {
+        color: var(--copy);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 34px;
+        font-weight: 400;
+        line-height: 1;
+        margin: 4px 0 7px;
+    }
+
+    .dash-subtitle, .dash-caption {
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    .dash-actions { display: flex; gap: 12px; padding-top: 2px; }
+
+    .ls-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-height: 38px; border-radius: 5px; border: 1px solid #5f524b;
+        background: transparent; color: var(--copy); padding: 0 17px;
+        font-size: 14px; font-weight: 500; text-decoration: none;
+        transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+    .ls-btn-primary { border-color: var(--primary); background: var(--primary); color: #fff; font-weight: 700; }
+    .ls-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(47,36,31,.08); }
+    .ls-btn:active { transform: translateY(0) scale(.98); }
+
+    .metric-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; margin-bottom: 24px; }
+    .metric-card, .chart-card, .side-card { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+    .metric-card { min-height: 125px; padding: 17px 17px 15px; text-decoration: none; }
+    .metric-label { color: var(--muted); font-size: 12px; margin-bottom: 18px; }
+    .metric-value { color: var(--copy); font-family: "Cormorant Garamond", serif; font-size: 29px; line-height: 1; margin-bottom: 12px; }
+
+    .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 26px; }
+    .chart-card { height: 320px; padding: 20px 16px 16px; }
+    .chart-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .section-title { color: var(--copy); font-family: "Cormorant Garamond", serif; font-size: 19px; font-weight: 500; line-height: 1.1; margin: 0; }
+    .chart-window { height: 220px; }
+
+    .activity-card { padding: 17px 16px; }
+    .activity-list { display: grid; gap: 14px; font-size: 14px; }
+    .activity-item strong { display: block; color: var(--copy); font-weight: 500; line-height: 1.25; }
+    .activity-time { color: var(--muted); font-size: 14px; }
+
+    .side-stack { display: grid; gap: 16px; padding-top: 2px; }
+    .side-card { padding: 17px 16px; }
+    .side-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .quick-buttons { display: grid; gap: 8px; }
+    .quick-buttons .ls-btn { width: 100%; min-height: 38px; }
+
+    .fade-in { animation: fade-up 520ms cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--delay, 0ms); }
+    @keyframes fade-up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } .ls-btn { transition: none; } }
+    @media (max-width: 1120px) { .dash-page { grid-template-columns: 1fr; } .side-stack { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 760px) {
+        .dash-head { flex-direction: column; }
+        .metric-grid, .chart-grid, .side-stack { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
 {% block app_content %}
-<div class="mb-8">
-    <h1 class="text-4xl font-light text-[#1C1C1A]" style="font-family: 'Cormorant Garamond', serif;">{{ agency_name }} Dashboard</h1>
-    <p class="text-sm text-[#8B7355]">Pipeline, follow-ups, and recent movement for {{ owner_name }}.</p>
-</div>
-
-<div class="mb-8 grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-    <a href="{% url 'leads:list' %}" class="rounded-md border border-[#E5DFD5] bg-white p-4"><div class="text-xs text-[#8B7355]">Total Leads</div><div class="text-3xl font-light text-[#1C1C1A]">{{ stats.total_leads }}</div></a>
-    <a href="{% url 'leads:list' %}?status=new" class="rounded-md border border-[#E5DFD5] bg-white p-4"><div class="text-xs text-[#8B7355]">New Leads</div><div class="text-3xl font-light text-[#1C1C1A]">{{ stats.new_leads }}</div></a>
-    <a href="{% url 'leads:tasks' %}?due=today" class="rounded-md border border-[#E5DFD5] bg-white p-4"><div class="text-xs text-[#8B7355]">Follow-ups Today</div><div class="text-3xl font-light text-[#1C1C1A]">{{ stats.followups_today }}</div></a>
-    <a href="{% url 'leads:tasks' %}?due=missed" class="rounded-md border border-[#E5DFD5] bg-white p-4"><div class="text-xs text-[#8B7355]">Missed Follow-ups</div><div class="text-3xl font-light text-[#1C1C1A]">{{ stats.missed_followups }}</div></a>
-    <a href="{% url 'leads:list' %}?status=site_visit" class="rounded-md border border-[#E5DFD5] bg-white p-4"><div class="text-xs text-[#8B7355]">Site Visits</div><div class="text-3xl font-light text-[#1C1C1A]">{{ stats.site_visits }}</div></a>
-    <a href="{% url 'leads:list' %}?status=converted" class="rounded-md border border-[#E5DFD5] bg-white p-4"><div class="text-xs text-[#8B7355]">Closed Deals</div><div class="text-3xl font-light text-[#1C1C1A]">{{ stats.closed_deals }}</div></a>
-</div>
-
-<div class="grid gap-6 lg:grid-cols-2">
-    <section class="rounded-2xl border border-[#E5DFD5] bg-white p-4 shadow-[0_10px_30px_rgba(28,28,26,0.04)]">
-        <div class="mb-4 flex items-center justify-between gap-3">
+<div class="dash-page">
+    <div class="dash-main">
+        <header class="dash-head fade-in">
             <div>
-                <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-[#8B7355]">Leads by status</h2>
-                <p class="mt-1 text-xs text-[#8B7355]">A compact view of your pipeline mix.</p>
+                <h1 class="dash-title">{{ agency_name }} Dashboard</h1>
+                <p class="dash-subtitle">Pipeline, follow-ups, and recent movement for {{ owner_name }}</p>
             </div>
-            <span class="rounded-full bg-[#F5F2EC] px-3 py-1 text-[11px] font-medium text-[#5C4A33]">Overview</span>
-        </div>
-        <div class="mx-auto h-48 w-full max-w-md md:h-52">
-            <canvas id="statusChart"></canvas>
-        </div>
-    </section>
-    <section class="rounded-2xl border border-[#E5DFD5] bg-white p-4 shadow-[0_10px_30px_rgba(28,28,26,0.04)]">
-        <div class="mb-4 flex items-center justify-between gap-3">
-            <div>
-                <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-[#8B7355]">Leads by source</h2>
-                <p class="mt-1 text-xs text-[#8B7355]">Where your enquiries are coming from.</p>
+            <div class="dash-actions">
+                <a class="ls-btn" href="{% url 'leads:list' %}">View Leads</a>
+                <a class="ls-btn ls-btn-primary" href="{% url 'leads:create' %}">Create Lead</a>
             </div>
-            <span class="rounded-full bg-[#F5F2EC] px-3 py-1 text-[11px] font-medium text-[#5C4A33]">Source mix</span>
-        </div>
-        <div class="mx-auto h-44 w-full max-w-[240px] md:h-48">
-            <canvas id="sourceChart"></canvas>
-        </div>
-    </section>
-</div>
+        </header>
 
-<section class="mt-8 rounded-md border border-[#E5DFD5] bg-white">
-    <h2 class="border-b border-[#EFE7DA] px-5 py-4 text-lg font-semibold text-[#1C1C1A]">Recent activity</h2>
-    <div class="divide-y divide-[#EFE7DA]">
-        {% for activity in recent_activity %}
-            <div class="px-5 py-3 text-sm">
-                <div class="flex justify-between gap-3">
-                    <strong>{{ activity.get_activity_type_display }}</strong>
-                    <time class="text-xs text-[#8B7355]">{{ activity.created_at|date:"M j, Y H:i" }}</time>
+        <section class="metric-grid">
+            <a href="{% url 'leads:list' %}" class="metric-card fade-in" style="--delay: 70ms">
+                <div class="metric-label">Total Leads</div>
+                <div class="metric-value">{{ stats.total_leads }}</div>
+                <div class="dash-caption">Active this quarter</div>
+            </a>
+            <a href="{% url 'leads:list' %}?status=new" class="metric-card fade-in" style="--delay: 140ms">
+                <div class="metric-label">New Leads</div>
+                <div class="metric-value">{{ stats.new_leads }}</div>
+                <div class="dash-caption">Added in last 7 days</div>
+            </a>
+            <a href="{% url 'leads:tasks' %}?due=today" class="metric-card fade-in" style="--delay: 210ms">
+                <div class="metric-label">Follow-ups Today</div>
+                <div class="metric-value">{{ stats.followups_today }}</div>
+                <div class="dash-caption">Due within 48 hours</div>
+            </a>
+            <a href="{% url 'leads:tasks' %}?due=missed" class="metric-card fade-in" style="--delay: 280ms">
+                <div class="metric-label">Missed Follow-ups</div>
+                <div class="metric-value">{{ stats.missed_followups }}</div>
+                <div class="dash-caption">Overdue tasks</div>
+            </a>
+            <a href="{% url 'leads:list' %}?status=site_visit" class="metric-card fade-in" style="--delay: 350ms">
+                <div class="metric-label">Site Visits</div>
+                <div class="metric-value">{{ stats.site_visits }}</div>
+                <div class="dash-caption">Scheduled visits</div>
+            </a>
+            <a href="{% url 'leads:list' %}?status=converted" class="metric-card fade-in" style="--delay: 420ms">
+                <div class="metric-label">Closed Deals</div>
+                <div class="metric-value">{{ stats.closed_deals }}</div>
+                <div class="dash-caption">Successfully converted</div>
+            </a>
+        </section>
+
+        <section class="chart-grid">
+            <article class="chart-card fade-in" style="--delay: 480ms">
+                <div class="chart-card-head">
+                    <div>
+                        <h2 class="section-title">Leads by Status</h2>
+                        <p class="dash-caption">Distribution across lifecycle</p>
+                    </div>
+                    <span class="dash-caption">Overview</span>
                 </div>
-                <p class="mt-1 text-[#5C4A33]">{{ activity.content }}</p>
+                <div class="chart-window">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </article>
+
+            <article class="chart-card fade-in" style="--delay: 540ms">
+                <div class="chart-card-head">
+                    <div>
+                        <h2 class="section-title">Leads by Source</h2>
+                        <p class="dash-caption">Where your enquiries come from</p>
+                    </div>
+                    <span class="dash-caption">Source mix</span>
+                </div>
+                <div class="chart-window">
+                    <canvas id="sourceChart"></canvas>
+                </div>
+            </article>
+        </section>
+
+        <section class="activity-card fade-in" style="--delay: 600ms">
+            <div class="dash-head" style="margin-bottom: 14px;">
+                <h2 class="section-title">Recent Activity</h2>
+                <span class="dash-caption">Updated moments ago</span>
             </div>
-        {% empty %}
-            <p class="px-5 py-6 text-sm text-[#8B7355]">No activity yet.</p>
-        {% endfor %}
+            <div class="activity-list">
+                {% for activity in recent_activity %}
+                    <div class="activity-item">
+                        <strong>{{ activity.get_activity_type_display }}</strong>
+                        <p class="dash-caption" style="margin: 2px 0;">{{ activity.content }}</p>
+                        <span class="activity-time">{{ activity.created_at|date:"M j, Y H:i" }}</span>
+                    </div>
+                {% empty %}
+                    <div class="activity-item">
+                        <strong>No activity yet</strong>
+                        <span class="activity-time">Start by creating or importing leads</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
     </div>
-</section>
+
+    <aside class="side-stack">
+        <section class="side-card fade-in" style="--delay: 180ms">
+            <div class="side-title-row">
+                <h2 class="section-title">Quick</h2>
+                <span class="dash-caption">•••</span>
+            </div>
+            <div class="quick-buttons">
+                <a class="ls-btn ls-btn-primary" href="{% url 'leads:create' %}">Create Lead</a>
+                <a class="ls-btn" href="{% url 'properties:create' %}">Create Property</a>
+                <a class="ls-btn" href="{% url 'accounts:team_invite' %}">Invite Agent</a>
+            </div>
+        </section>
+
+        <section class="side-card fade-in" style="--delay: 260ms">
+            <h2 class="section-title" style="margin-bottom: 14px;">Pipeline</h2>
+            <div class="activity-list">
+                <div class="activity-item">
+                    <strong>New Leads</strong>
+                    <span class="dash-caption">{{ stats.new_leads }} leads</span>
+                </div>
+                <div class="activity-item">
+                    <strong>Site Visits</strong>
+                    <span class="dash-caption">{{ stats.site_visits }} scheduled</span>
+                </div>
+                <div class="activity-item">
+                    <strong>Closed Deals</strong>
+                    <span class="dash-caption">{{ stats.closed_deals }} converted</span>
+                </div>
+            </div>
+        </section>
+    </aside>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -68,12 +227,12 @@
 const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
 new Chart(document.getElementById("statusChart"), {
     type: "bar",
-    data: { labels: {{ status_labels }}, datasets: [{ data: {{ status_values }}, backgroundColor: "#8B5E34" }] },
+    data: { labels: {{ status_labels }}, datasets: [{ data: {{ status_values }}, backgroundColor: "#b56a30" }] },
     options: { ...chartOptions, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { precision: 0 } } } }
 });
 new Chart(document.getElementById("sourceChart"), {
     type: "doughnut",
-    data: { labels: {{ source_labels }}, datasets: [{ data: {{ source_values }}, backgroundColor: ["#8B5E34", "#C4A882", "#1C1C1A", "#B87333", "#D8CBB8"], borderWidth: 0, hoverOffset: 6 }] },
+    data: { labels: {{ source_labels }}, datasets: [{ data: {{ source_values }}, backgroundColor: ["#b56a30", "#ff784b", "#995f4c", "#ffe2d9", "#efe3d8"], borderWidth: 0, hoverOffset: 6 }] },
     options: { responsive: true, maintainAspectRatio: false, cutout: "72%", plugins: { legend: { display: false } } }
 });
 </script>

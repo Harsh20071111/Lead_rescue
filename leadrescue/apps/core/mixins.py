@@ -8,6 +8,8 @@ class AgencyScopedViewMixin(LoginRequiredMixin):
     agent_lookup_field = "assigned_agent"
 
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
         self.agent_profile = request.user.agent_profile
         self.agency = self.agent_profile.agency
         return super().dispatch(request, *args, **kwargs)

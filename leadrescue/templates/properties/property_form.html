@@ -2,69 +2,162 @@
 
 {% block title %}{% if object %}Edit property{% else %}Create property{% endif %} - LeadSathi{% endblock %}
 
-{% block app_content %}
-<div class="mb-6">
-    <h1 class="text-4xl font-light text-[#1C1C1A]" style="font-family: 'Cormorant Garamond', serif;">{% if object %}Edit property{% else %}Create property{% endif %}</h1>
-</div>
-<form method="post" enctype="multipart/form-data" class="max-w-3xl space-y-4 rounded-md border border-[#E5DFD5] bg-white p-6">
-    {% csrf_token %}
-    {% for field in form %}
-        {% if field.name == 'image' %}
-            {# Skip the old single image field in the UI to encourage the multi-image field #}
-        {% else %}
-            <div>
-                <label class="mb-1 block text-sm font-medium text-[#5C4A33]" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                {{ field }}
-                {% if field.name == 'images' %}
-                <div id="image-previews" class="mt-2 grid grid-cols-5 gap-2"></div>
-                {% endif %}
-                {% if field.help_text %}<p class="mt-1 text-xs text-[#8B7355]">{{ field.help_text }}</p>{% endif %}
-                {% for error in field.errors %}<p class="mt-1 text-xs text-red-700">{{ error }}</p>{% endfor %}
-            </div>
-        {% endif %}
-    {% endfor %}
-    <div class="flex gap-3 pt-2">
-        <button class="rounded-md bg-[#8B5E34] px-4 py-2 text-sm font-medium text-white">Save</button>
-        <a href="{% if object %}{% url 'properties:detail' object.pk %}{% else %}{% url 'properties:list' %}{% endif %}" class="rounded-md border border-[#D8CBB8] px-4 py-2 text-sm text-[#5C4A33]">Cancel</a>
-    </div>
-</form>
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .form-page {
+        --copy: #2f241f;
+        --muted: #7e6f67;
+        --panel: #fffaf6;
+        --line: #efe3d8;
+        --primary: #b56a30;
+        --orange: #ff784b;
+        --peach: #ffe2d9;
+        --brown: #995f4c;
+        max-width: 700px;
+    }
 
-{% if object and object.images.exists %}
-<div class="mt-8 max-w-3xl space-y-4 rounded-md border border-[#E5DFD5] bg-white p-6">
-    <h2 class="text-xl font-medium text-[#1C1C1A]">Existing Images</h2>
-    <div class="grid grid-cols-2 gap-4 md:grid-cols-4" id="existing-images-grid">
-        {% for img in object.images.all %}
-            <div class="relative overflow-hidden rounded-md border border-[#D8CBB8] {% if img.is_primary %}ring-2 ring-[#8B5E34]{% endif %}" id="image-container-{{ img.id }}">
-                <img src="{{ img.image.url }}" class="h-32 w-full object-cover" alt="Property image">
-                <div class="absolute bottom-0 left-0 right-0 flex justify-between bg-black/50 p-1">
-                    {% if not img.is_primary %}
-                    <button type="button" 
-                            hx-post="{% url 'properties:set_primary_image' object.pk img.id %}" 
-                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                            hx-swap="none"
-                            onclick="setTimeout(() => window.location.reload(), 300)"
-                            class="text-xs text-white hover:text-[#D8CBB8]">Make Primary</button>
-                    {% else %}
-                    <span class="text-xs text-[#D8CBB8]">Primary</span>
+    .form-title {
+        color: var(--copy);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 34px;
+        font-weight: 400;
+        line-height: 1;
+        margin: 4px 0 24px;
+    }
+
+    .form-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 24px;
+    }
+
+    .ls-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-height: 38px; border-radius: 5px; border: 1px solid #5f524b;
+        background: transparent; color: var(--copy); padding: 0 17px;
+        font-size: 14px; font-weight: 500; text-decoration: none;
+        transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+    .ls-btn-primary { border-color: var(--primary); background: var(--primary); color: #fff; font-weight: 700; }
+    .ls-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(47,36,31,.08); }
+    .ls-btn:active { transform: translateY(0) scale(.98); }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+        display: block; font-size: 12px; font-weight: 500; color: var(--muted);
+        margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .form-group input[type="text"], .form-group input[type="email"],
+    .form-group input[type="number"], .form-group input[type="tel"],
+    .form-group input[type="date"], .form-group input[type="password"],
+    .form-group input[type="file"], .form-group textarea, .form-group select {
+        width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 5px;
+        font-size: 14px; color: var(--copy); background: #fff; outline: none;
+        transition: border-color 160ms ease; box-sizing: border-box;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+        border-color: var(--primary);
+    }
+    .form-group .helptext { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .form-group .errorlist { list-style: none; padding: 0; margin: 4px 0 0; }
+    .form-group .errorlist li { font-size: 12px; color: #b91c1c; }
+
+    .image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 8px;
+        margin-top: 8px;
+    }
+
+    .image-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+    }
+    .image-card img { width: 100%; height: 100px; object-fit: cover; }
+    .image-card.is-primary { outline: 2px solid var(--primary); }
+    .image-card .image-overlay {
+        position: absolute; bottom: 0; left: 0; right: 0;
+        display: flex; justify-content: space-between; padding: 4px 6px;
+        background: rgba(0,0,0,0.5);
+    }
+    .image-card .image-overlay button,
+    .image-card .image-overlay span {
+        font-size: 10px; color: #fff; background: none; border: none; cursor: pointer;
+    }
+    .image-card .image-overlay button:hover { text-decoration: underline; }
+    .image-card .image-overlay .delete-btn:hover { color: #fca5a5; }
+
+    .fade-in { animation: fade-up 520ms cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--delay, 0ms); }
+    @keyframes fade-up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } .ls-btn { transition: none; } }
+</style>
+{% endblock %}
+
+{% block app_content %}
+<div class="form-page">
+    <h1 class="form-title fade-in">{% if object %}Edit property{% else %}Create property{% endif %}</h1>
+    <form method="post" enctype="multipart/form-data" class="form-card fade-in" style="--delay: 70ms;">
+        {% csrf_token %}
+        {% for field in form %}
+            {% if field.name == 'image' %}
+                {# Skip old single image field #}
+            {% else %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.name == 'images' %}
+                        <div id="image-previews" class="image-grid"></div>
                     {% endif %}
-                    <button type="button" 
-                            hx-delete="{% url 'properties:delete_image' object.pk img.id %}" 
-                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                            hx-target="#image-container-{{ img.id }}"
-                            hx-swap="outerHTML"
-                            class="text-xs text-red-300 hover:text-red-500">Delete</button>
+                    {% if field.help_text %}<p class="helptext">{{ field.help_text }}</p>{% endif %}
+                    {% for error in field.errors %}<ul class="errorlist"><li>{{ error }}</li></ul>{% endfor %}
                 </div>
-            </div>
+            {% endif %}
         {% endfor %}
-    </div>
+        <div style="display: flex; gap: 12px; padding-top: 8px;">
+            <button class="ls-btn ls-btn-primary">Save</button>
+            <a href="{% if object %}{% url 'properties:detail' object.pk %}{% else %}{% url 'properties:list' %}{% endif %}" class="ls-btn">Cancel</a>
+        </div>
+    </form>
+
+    {% if object and object.images.exists %}
+        <div class="form-card fade-in" style="--delay: 140ms; margin-top: 24px;">
+            <h2 style="color: var(--copy); font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 500; margin: 0 0 14px;">Existing Images</h2>
+            <div class="image-grid" id="existing-images-grid">
+                {% for img in object.images.all %}
+                    <div class="image-card {% if img.is_primary %}is-primary{% endif %}" id="image-container-{{ img.id }}">
+                        <img src="{{ img.image.url }}" alt="Property image">
+                        <div class="image-overlay">
+                            {% if not img.is_primary %}
+                                <button type="button"
+                                        hx-post="{% url 'properties:set_primary_image' object.pk img.id %}"
+                                        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                        hx-swap="none"
+                                        onclick="setTimeout(() => window.location.reload(), 300)">Make Primary</button>
+                            {% else %}
+                                <span>Primary</span>
+                            {% endif %}
+                            <button type="button"
+                                    hx-delete="{% url 'properties:delete_image' object.pk img.id %}"
+                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                    hx-target="#image-container-{{ img.id }}"
+                                    hx-swap="outerHTML"
+                                    class="delete-btn">Delete</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
 </div>
-{% endif %}
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const imageInput = document.getElementById("id_images");
         const previewContainer = document.getElementById("image-previews");
-        
         if (imageInput) {
             imageInput.addEventListener("change", function() {
                 previewContainer.innerHTML = "";
@@ -73,9 +166,9 @@
                     reader.onload = function(e) {
                         const img = document.createElement("img");
                         img.src = e.target.result;
-                        img.className = "h-20 w-20 object-cover rounded border border-[#E5DFD5]";
+                        img.style.cssText = "height: 80px; width: 100%; object-fit: cover; border-radius: 6px; border: 1px solid var(--line);";
                         previewContainer.appendChild(img);
-                    }
+                    };
                     reader.readAsDataURL(file);
                 });
             });

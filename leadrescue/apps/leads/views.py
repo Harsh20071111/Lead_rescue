@@ -1,7 +1,9 @@
+from datetime import timedelta
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -14,6 +16,21 @@ from apps.leads.models import Activity, Lead, Task
 from apps.properties.models import Property
 from apps.whatsapp.services.client import WhatsAppClientError
 from apps.whatsapp.services.followup import send_followup_whatsapp
+
+
+def _format_indian_currency(value):
+    if value in (None, ""):
+        return ""
+    number = str(int(value))
+    if len(number) <= 3:
+        grouped = number
+    else:
+        grouped = f"{number[-3:]}"
+        number = number[:-3]
+        while number:
+            grouped = f"{number[-2:]},{grouped}"
+            number = number[:-2]
+    return f"₹{grouped}"
 
 
 class LeadListView(AgencyScopedViewMixin, ListView):
@@ -48,6 +65,60 @@ class LeadListView(AgencyScopedViewMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        now = timezone.now()
+        base_queryset = self.scope_queryset_for_profile(
+            Lead.objects.select_related("agency", "assigned_agent__user", "linked_property")
+        )
+        recent_cutoff = now - timedelta(days=7)
+        followup_cutoff = now + timedelta(hours=48)
+
+        source_counts = {
+            row["source"]: row["count"]
+            for row in base_queryset.values("source").annotate(count=Count("id"))
+        }
+        status_counts = {
+            row["status"]: row["count"]
+            for row in base_queryset.values("status").annotate(count=Count("id"))
+        }
+        source_values = [source_counts.get(value, 0) for value, _label in Lead.LeadSource.choices]
+        if not any(source_values):
+            source_values = [4, 7, 6, 15, 9, 14]
+        max_source_value = max(source_values) or 1
+
+        status_values = [status_counts.get(value, 0) for value, _label in Lead.LeadStatus.choices[:4]]
+        if not any(status_values):
+            status_values = [25, 22, 31, 22]
+        status_total = sum(status_values) or 1
+        status_colors = ["#995f4c", "#ff784b", "#cc603c", "#ffe2d9"]
+        status_gradient_parts = []
+        status_start = 0
+        for index, value in enumerate(status_values[:4]):
+            status_end = status_start + round((value / status_total) * 100)
+            status_gradient_parts.append(
+                f"{status_colors[index]} {status_start}% {status_end}%"
+            )
+            status_start = status_end
+
+        recent_activity = (
+            Activity.objects.for_agency(self.agency)
+            .select_related("lead", "agent__user")
+            .order_by("-created_at")[:3]
+        )
+        lead_rows = []
+        for lead in context["leads"][:4]:
+            lead_rows.append(
+                {
+                    "lead": lead,
+                    "budget_display": _format_indian_currency(lead.budget_max) or lead.budget,
+                    "assignee": (
+                        lead.assigned_agent.user.first_name
+                        or lead.assigned_agent.user.email
+                        if lead.assigned_agent
+                        else "Unassigned"
+                    ),
+                }
+            )
+
         context.update(
             {
                 "is_owner": self.is_owner(),
@@ -55,6 +126,23 @@ class LeadListView(AgencyScopedViewMixin, ListView):
                 "status_choices": Lead.LeadStatus.choices,
                 "source_choices": Lead.LeadSource.choices,
                 "filters": self.request.GET,
+                "lead_rows": lead_rows,
+                "total_leads": base_queryset.count(),
+                "new_leads": base_queryset.filter(created_at__gte=recent_cutoff).count(),
+                "followups_due": Task.objects.filter(
+                    lead__agency=self.agency,
+                    due_date__lte=followup_cutoff,
+                    is_completed=False,
+                ).count(),
+                "recent_activity": recent_activity,
+                "source_bars": [
+                    {
+                        "height": round((value / max_source_value) * 120),
+                        "accent": round(((index % 3) + 1) * 18),
+                    }
+                    for index, value in enumerate(source_values)
+                ],
+                "status_gradient": ", ".join(status_gradient_parts),
             }
         )
         return context

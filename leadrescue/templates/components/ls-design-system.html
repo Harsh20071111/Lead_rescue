@@ -1,0 +1,412 @@
+/* LeadSathi Design System v2 — shared across all pages */
+
+/* ── Variables ─────────────────────────────────────── */
+.ls {
+    --ls-copy: #2f241f;
+    --ls-muted: #7e6f67;
+    --ls-panel: #fffaf6;
+    --ls-line: #efe3d8;
+    --ls-primary: #b56a30;
+    --ls-orange: #ff784b;
+    --ls-peach: #ffe2d9;
+    --ls-brown: #995f4c;
+    --ls-red: #8A341F;
+    --ls-red-border: #B85C38;
+    --ls-green: #1F6F4A;
+    --ls-radius: 8px;
+    --ls-radius-sm: 5px;
+}
+
+/* ── Typography ────────────────────────────────────── */
+.ls-title {
+    color: var(--ls-copy);
+    font-family: "Cormorant Garamond", serif;
+    font-size: 34px;
+    font-weight: 400;
+    line-height: 1;
+    margin: 0;
+}
+
+.ls-subtitle {
+    color: var(--ls-muted);
+    font-size: 14px;
+    margin: 4px 0 0;
+}
+
+.ls-section-title {
+    color: var(--ls-copy);
+    font-family: "Cormorant Garamond", serif;
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 1.1;
+    margin: 0;
+}
+
+.ls-caption {
+    color: var(--ls-muted);
+    font-size: 14px;
+}
+
+.ls-label {
+    color: var(--ls-muted);
+    font-size: 12px;
+}
+
+.ls-value {
+    color: var(--ls-copy);
+    font-family: "Cormorant Garamond", serif;
+    font-size: 29px;
+    line-height: 1;
+}
+
+/* ── Layout ────────────────────────────────────────── */
+.ls-page {
+    display: grid;
+    grid-template-columns: minmax(0, 940px) 320px;
+    gap: 32px;
+    align-items: start;
+}
+
+.ls-main {
+    min-width: 0;
+}
+
+.ls-aside {
+    display: grid;
+    gap: 16px;
+    padding-top: 2px;
+}
+
+.ls-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.ls-full {
+    display: block;
+}
+
+/* ── Cards ─────────────────────────────────────────── */
+.ls-card {
+    border: 1px solid var(--ls-line);
+    border-radius: var(--ls-radius);
+    background: var(--ls-panel);
+}
+
+.ls-card-pad {
+    padding: 17px 16px;
+}
+
+/* ── Metric cards ──────────────────────────────────── */
+.ls-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.ls-metric {
+    min-height: 125px;
+    padding: 17px 17px 15px;
+}
+
+/* ── Buttons ───────────────────────────────────────── */
+.ls-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    border-radius: var(--ls-radius-sm);
+    border: 1px solid #5f524b;
+    background: transparent;
+    color: var(--ls-copy);
+    padding: 0 17px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.ls-btn-primary {
+    border-color: var(--ls-primary);
+    background: var(--ls-primary);
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.ls-btn-danger {
+    border-color: var(--ls-red-border);
+    background: transparent;
+    color: var(--ls-red);
+}
+
+.ls-btn-danger-fill {
+    border-color: var(--ls-red);
+    background: var(--ls-red);
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.ls-btn-green {
+    border-color: var(--ls-green);
+    background: var(--ls-green);
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.ls-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(47, 36, 31, 0.08);
+}
+
+.ls-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* ── Data rows (list items) ────────────────────────── */
+.ls-rows {
+    border-bottom: 1px solid transparent;
+}
+
+.ls-row {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr) auto auto;
+    gap: 16px;
+    align-items: center;
+    min-height: 90px;
+    border-bottom: 1px solid var(--ls-line);
+    transition: transform 160ms ease, background 160ms ease;
+}
+
+.ls-row:hover {
+    background: #fffaf6;
+    transform: translateX(3px);
+}
+
+.ls-row-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 6px;
+    background: #efe6dd;
+    color: #594a42;
+}
+
+.ls-row-name {
+    color: var(--ls-copy);
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.ls-row-meta {
+    color: var(--ls-muted);
+    font-size: 14px;
+}
+
+.ls-row-aside {
+    color: var(--ls-muted);
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+/* ── Forms ─────────────────────────────────────────── */
+.ls-form-group {
+    margin-bottom: 16px;
+}
+
+.ls-form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ls-muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.ls-form-group input[type="text"],
+.ls-form-group input[type="email"],
+.ls-form-group input[type="number"],
+.ls-form-group input[type="tel"],
+.ls-form-group input[type="date"],
+.ls-form-group input[type="file"],
+.ls-form-group input[type="password"],
+.ls-form-group textarea,
+.ls-form-group select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--ls-line);
+    border-radius: var(--ls-radius-sm);
+    font-size: 14px;
+    color: var(--ls-copy);
+    background: #fff;
+    outline: none;
+    transition: border-color 160ms ease;
+    box-sizing: border-box;
+}
+
+.ls-form-group input:focus,
+.ls-form-group textarea:focus,
+.ls-form-group select:focus {
+    border-color: var(--ls-primary);
+}
+
+.ls-form-group .helptext {
+    font-size: 12px;
+    color: var(--ls-muted);
+    margin-top: 4px;
+}
+
+.ls-form-group .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0;
+}
+
+.ls-form-group .errorlist li {
+    font-size: 12px;
+    color: #b91c1c;
+}
+
+/* ── Filter bar ────────────────────────────────────── */
+.ls-filters {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 17px 16px;
+}
+
+/* ── Activity ──────────────────────────────────────── */
+.ls-activity-list {
+    display: grid;
+    gap: 14px;
+    font-size: 14px;
+}
+
+.ls-activity-item strong {
+    display: block;
+    color: var(--ls-copy);
+    font-weight: 500;
+    line-height: 1.25;
+}
+
+/* ── Detail grid ───────────────────────────────────── */
+.ls-detail-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.ls-detail-grid dt {
+    color: var(--ls-muted);
+    font-size: 13px;
+}
+
+.ls-detail-grid dd {
+    color: var(--ls-copy);
+    font-size: 14px;
+}
+
+/* ── Matching scores ───────────────────────────────── */
+.ls-score {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--ls-primary);
+    color: #fff;
+}
+
+.ls-match-good { color: #15803d; }
+.ls-match-partial { color: #a16207; }
+.ls-match-bad { color: #dc2626; }
+
+/* ── Table ─────────────────────────────────────────── */
+.ls-table {
+    width: 100%;
+    text-align: left;
+    font-size: 14px;
+}
+
+.ls-table thead {
+    background: var(--ls-panel);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--ls-muted);
+}
+
+.ls-table th {
+    padding: 12px 14px;
+}
+
+.ls-table td {
+    padding: 14px;
+    border-bottom: 1px solid var(--ls-line);
+}
+
+.ls-table tbody tr {
+    transition: background 160ms ease;
+}
+
+.ls-table tbody tr:hover {
+    background: #fffaf6;
+}
+
+/* ── Animations ────────────────────────────────────── */
+.ls-fade {
+    animation: ls-fade-up 520ms cubic-bezier(.2,.8,.2,1) both;
+    animation-delay: var(--ls-delay, 0ms);
+}
+
+@keyframes ls-fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ls-fade { animation: none; }
+    .ls-btn, .ls-row { transition: none; }
+}
+
+/* ── Responsive ────────────────────────────────────── */
+@media (max-width: 1120px) {
+    .ls-page {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .ls-header {
+        flex-direction: column;
+    }
+
+    .ls-metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .ls-row {
+        grid-template-columns: 48px minmax(0, 1fr) auto;
+        gap: 12px;
+        padding: 14px 0;
+    }
+
+    .ls-row-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .ls-row-aside {
+        grid-column: 2 / -1;
+    }
+
+    .ls-aside {
+        grid-template-columns: 1fr;
+    }
+}

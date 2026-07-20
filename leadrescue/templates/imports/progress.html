@@ -1,11 +1,48 @@
 {% extends "app_shell.html" %}
 
+{% block title %}Import Progress - LeadSathi{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .form-page {
+        --copy: #2f241f;
+        --muted: #7e6f67;
+        --panel: #fffaf6;
+        --line: #efe3d8;
+        --primary: #b56a30;
+        max-width: 640px;
+    }
+
+    .form-title {
+        color: var(--copy);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 34px;
+        font-weight: 400;
+        line-height: 1;
+        margin: 4px 0 24px;
+        text-align: center;
+    }
+
+    .form-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 24px;
+        text-align: center;
+    }
+
+    .fade-in { animation: fade-up 520ms cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--delay, 0ms); }
+    @keyframes fade-up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } }
+</style>
+{% endblock %}
+
 {% block app_content %}
-<div class="max-w-3xl mx-auto py-8">
-  <div class="bg-white rounded-lg shadow p-6 text-center">
-    <h1 class="text-2xl font-bold mb-4">Import Progress</h1>
-    
-    {% include "imports/partials/progress_bar.html" %}
-  </div>
+<div class="form-page" style="margin: 0 auto;">
+    <h1 class="form-title fade-in">Import Progress</h1>
+    <div class="form-card fade-in" style="--delay: 70ms;">
+        {% include "imports/partials/progress_bar.html" %}
+    </div>
 </div>
 {% endblock %}

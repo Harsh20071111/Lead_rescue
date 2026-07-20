@@ -1,36 +1,98 @@
 {% extends "app_shell.html" %}
 
+{% block title %}Bulk Import - LeadSathi{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .form-page {
+        --copy: #2f241f;
+        --muted: #7e6f67;
+        --panel: #fffaf6;
+        --line: #efe3d8;
+        --primary: #b56a30;
+        --red: #8A341F;
+        --red-border: #B85C38;
+        max-width: 640px;
+    }
+
+    .form-title {
+        color: var(--copy);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 34px;
+        font-weight: 400;
+        line-height: 1;
+        margin: 4px 0 24px;
+    }
+
+    .form-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 24px;
+    }
+
+    .error-box {
+        border: 1px solid var(--red-border);
+        border-radius: 8px;
+        background: #fff5f5;
+        color: var(--red);
+        padding: 14px 16px;
+        margin-bottom: 16px;
+        font-size: 14px;
+    }
+
+    .ls-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-height: 38px; border-radius: 5px; border: 1px solid #5f524b;
+        background: transparent; color: var(--copy); padding: 0 17px;
+        font-size: 14px; font-weight: 500; text-decoration: none;
+        transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+    .ls-btn-primary { border-color: var(--primary); background: var(--primary); color: #fff; font-weight: 700; }
+    .ls-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(47,36,31,.08); }
+    .ls-btn:active { transform: translateY(0) scale(.98); }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+        display: block; font-size: 12px; font-weight: 500; color: var(--muted);
+        margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .form-group select, .form-group input[type="file"] {
+        width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 5px;
+        font-size: 14px; color: var(--copy); background: #fff; outline: none;
+        transition: border-color 160ms ease; box-sizing: border-box;
+    }
+    .form-group select:focus { border-color: var(--primary); }
+
+    .fade-in { animation: fade-up 520ms cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--delay, 0ms); }
+    @keyframes fade-up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } .ls-btn { transition: none; } }
+</style>
+{% endblock %}
+
 {% block app_content %}
-<div class="max-w-3xl mx-auto py-8">
-  <div class="bg-white rounded-lg shadow p-6">
-    <h1 class="text-2xl font-bold mb-4">Bulk Import</h1>
-    
+<div class="form-page">
+    <h1 class="form-title fade-in">Bulk Import</h1>
+
     {% if error %}
-    <div class="bg-red-50 text-red-600 p-4 rounded mb-4">
-      {{ error }}
-    </div>
+    <div class="error-box fade-in" style="--delay: 50ms;">{{ error }}</div>
     {% endif %}
 
-    <form method="POST" enctype="multipart/form-data" class="space-y-4">
-      {% csrf_token %}
-      
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Target Model</label>
-        <select name="target_model" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-          <option value="lead">Leads</option>
-          <option value="property">Properties</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-gray-700">CSV or Excel File</label>
-        <input type="file" name="file" accept=".csv, .xls, .xlsx" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" required>
-      </div>
-
-      <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded shadow hover:bg-indigo-700">
-        Upload & Map Columns
-      </button>
+    <form method="POST" enctype="multipart/form-data" class="form-card fade-in" style="--delay: 70ms;">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Target Model</label>
+            <select name="target_model">
+                <option value="lead">Leads</option>
+                <option value="property">Properties</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>CSV or Excel File</label>
+            <input type="file" name="file" accept=".csv, .xls, .xlsx" required>
+        </div>
+        <button type="submit" class="ls-btn ls-btn-primary" style="width: 100%;">Upload & Map Columns</button>
     </form>
-  </div>
 </div>
 {% endblock %}

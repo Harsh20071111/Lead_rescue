@@ -2,120 +2,255 @@
 
 {% block title %}{{ lead.name }} - LeadSathi{% endblock %}
 
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .lead-page {
+        --copy: #2f241f;
+        --muted: #7e6f67;
+        --panel: #fffaf6;
+        --line: #efe3d8;
+        --primary: #b56a30;
+        --orange: #ff784b;
+        --peach: #ffe2d9;
+        --brown: #995f4c;
+        --red: #8A341F;
+        --red-border: #B85C38;
+        --green: #1F6F4A;
+        display: grid;
+        grid-template-columns: minmax(0, 940px) 320px;
+        gap: 32px;
+        align-items: start;
+    }
+
+    .lead-page-main { min-width: 0; }
+
+    .lead-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    .lead-title {
+        color: var(--copy);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 34px;
+        font-weight: 400;
+        line-height: 1;
+        margin: 4px 0 7px;
+    }
+
+    .lead-subtitle, .lead-caption, .lead-meta, .activity-time {
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    .lead-actions { display: flex; gap: 12px; padding-top: 2px; }
+
+    .ls-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-height: 38px; border-radius: 5px; border: 1px solid #5f524b;
+        background: transparent; color: var(--copy); padding: 0 17px;
+        font-size: 14px; font-weight: 500; text-decoration: none;
+        transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+    .ls-btn-primary { border-color: var(--primary); background: var(--primary); color: #fff; font-weight: 700; }
+    .ls-btn-danger { border-color: var(--red-border); background: transparent; color: var(--red); }
+    .ls-btn-green { border-color: var(--green); background: var(--green); color: #fff; font-weight: 700; }
+    .ls-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(47,36,31,.08); }
+    .ls-btn:active { transform: translateY(0) scale(.98); }
+
+    .content-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 17px 16px;
+        margin-bottom: 16px;
+    }
+
+    .section-title { color: var(--copy); font-family: "Cormorant Garamond", serif; font-size: 19px; font-weight: 500; line-height: 1.1; margin: 0 0 12px; }
+
+    .detail-grid { display: grid; gap: 12px; }
+    .detail-grid dt { color: var(--muted); font-size: 13px; }
+    .detail-grid dd { color: var(--copy); font-size: 14px; }
+
+    .match-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fffdfb;
+        padding: 12px 14px;
+        margin-bottom: 10px;
+    }
+    .match-card:last-child { margin-bottom: 0; }
+
+    .match-name { color: var(--primary); font-size: 14px; font-weight: 600; text-decoration: none; }
+    .match-name:hover { text-decoration: underline; }
+
+    .match-score {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .match-meta { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+    .match-detail { font-size: 11px; margin-top: 6px; }
+    .match-good { color: #15803d; }
+    .match-partial { color: #a16207; }
+    .match-bad { color: #dc2626; }
+
+    .activity-list { display: grid; gap: 14px; font-size: 14px; }
+    .activity-item strong { display: block; color: var(--copy); font-weight: 500; line-height: 1.25; }
+    .activity-time { color: var(--muted); font-size: 14px; }
+
+    .side-stack { display: grid; gap: 16px; padding-top: 2px; }
+    .side-card { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 17px 16px; }
+
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-group select, .form-group input, .form-group textarea {
+        width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 5px;
+        font-size: 14px; color: var(--copy); background: #fff; outline: none; box-sizing: border-box;
+    }
+    .form-group select:focus, .form-group input:focus, .form-group textarea:focus { border-color: var(--primary); }
+
+    .form-hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .activity-entry {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fffdfb;
+        padding: 10px 12px;
+    }
+    .activity-entry strong { color: var(--copy); font-weight: 500; }
+    .activity-entry p { color: var(--muted); font-size: 13px; margin: 2px 0 0; }
+
+    .fade-in { animation: fade-up 520ms cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--delay, 0ms); }
+    @keyframes fade-up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } .ls-btn { transition: none; } }
+    @media (max-width: 1120px) { .lead-page { grid-template-columns: 1fr; } .side-stack { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 760px) {
+        .lead-head { flex-direction: column; }
+        .side-stack { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
 {% block app_content %}
-<div class="mb-6 flex flex-col justify-between gap-4 md:flex-row">
-    <div>
-        <h1 class="text-4xl font-light text-[#1C1C1A]" style="font-family: 'Cormorant Garamond', serif;">{{ lead.name }}</h1>
-        <p class="text-sm text-[#8B7355]">{{ lead.phone }}{% if lead.email %} · {{ lead.email }}{% endif %}</p>
-    </div>
-    <div class="flex gap-2">
-        <a href="{% url 'leads:edit' lead.pk %}" class="rounded-md border border-[#8B5E34] px-4 py-2 text-sm text-[#5C4A33]">Edit</a>
-        <a href="{% url 'leads:delete' lead.pk %}" class="rounded-md border border-[#B85C38] px-4 py-2 text-sm text-[#8A341F]">Delete</a>
-    </div>
-</div>
-
-<div class="grid gap-6 lg:grid-cols-[1fr_380px]">
-    <section class="space-y-6">
-        <div class="rounded-md border border-[#E5DFD5] bg-white p-5">
-            <h2 class="mb-4 text-lg font-semibold text-[#1C1C1A]">Lead details</h2>
-            <dl class="grid gap-4 text-sm md:grid-cols-2">
-                <div><dt class="text-[#8B7355]">Status</dt><dd>{{ lead.get_status_display }}</dd></div>
-                <div><dt class="text-[#8B7355]">Source</dt><dd>{{ lead.get_source_display }}</dd></div>
-                <div><dt class="text-[#8B7355]">Budget</dt><dd>{{ lead.budget_min|default:"-" }} - {{ lead.budget_max|default:"-" }}</dd></div>
-                <div><dt class="text-[#8B7355]">Preferred BHK</dt><dd>{{ lead.get_preferred_bhk_display|default:"-" }}</dd></div>
-                <div><dt class="text-[#8B7355]">Preferred location</dt><dd>{{ lead.preferred_location|default:"-" }}</dd></div>
-                <div><dt class="text-[#8B7355]">Linked property</dt><dd>{% if lead.linked_property %}<a class="text-[#8B5E34]" href="{% url 'properties:detail' lead.linked_property.pk %}">{{ lead.linked_property }}</a>{% else %}-{% endif %}</dd></div>
-                <div><dt class="text-[#8B7355]">Assigned agent</dt><dd>{{ lead.assigned_agent.user.email|default:"Unassigned" }}</dd></div>
-            </dl>
-            {% if lead.notes %}<div class="mt-4 text-sm"><div class="text-[#8B7355]">Notes</div>{{ lead.notes|linebreaks }}</div>{% endif %}
-        </div>
-
-        <div class="rounded-md border border-[#E5DFD5] bg-white p-5">
-            <div class="mb-4 flex items-center justify-between">
-                <h2 class="text-lg font-semibold text-[#1C1C1A]">Activity timeline</h2>
+<div class="lead-page">
+    <div class="lead-page-main">
+        <header class="lead-head fade-in">
+            <div>
+                <h1 class="lead-title">{{ lead.name }}</h1>
+                <p class="lead-subtitle">{{ lead.phone }}{% if lead.email %} · {{ lead.email }}{% endif %}</p>
             </div>
+            <div class="lead-actions">
+                <a class="ls-btn" href="{% url 'leads:edit' lead.pk %}">Edit</a>
+                <a class="ls-btn ls-btn-danger" href="{% url 'leads:delete' lead.pk %}">Delete</a>
+            </div>
+        </header>
+
+        <article class="content-card fade-in" style="--delay: 70ms">
+            <h2 class="section-title">Lead Details</h2>
+            <dl class="detail-grid" style="grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                <div><dt>Status</dt><dd>{{ lead.get_status_display }}</dd></div>
+                <div><dt>Source</dt><dd>{{ lead.get_source_display }}</dd></div>
+                <div><dt>Budget</dt><dd>{{ lead.budget_min|default:"-" }} – {{ lead.budget_max|default:"-" }}</dd></div>
+                <div><dt>Preferred BHK</dt><dd>{{ lead.get_preferred_bhk_display|default:"-" }}</dd></div>
+                <div><dt>Preferred Location</dt><dd>{{ lead.preferred_location|default:"-" }}</dd></div>
+                <div><dt>Linked Property</dt><dd>{% if lead.linked_property %}<a class="match-name" href="{% url 'properties:detail' lead.linked_property.pk %}">{{ lead.linked_property }}</a>{% else %}—{% endif %}</dd></div>
+                <div><dt>Assigned Agent</dt><dd>{{ lead.assigned_agent.user.email|default:"Unassigned" }}</dd></div>
+            </dl>
+            {% if lead.notes %}<div style="margin-top: 14px;"><dt style="color: var(--muted); font-size: 13px;">Notes</dt><dd style="color: var(--copy); font-size: 14px; margin-top: 4px;">{{ lead.notes|linebreaks }}</dd></div>{% endif %}
+        </article>
+
+        <article class="content-card fade-in" style="--delay: 140ms">
+            <h2 class="section-title">Activity Timeline</h2>
             {% include "leads/partials/activity_form.html" %}
-            <div id="activity-timeline" class="mt-5">
+            <div id="activity-timeline" style="margin-top: 14px;">
                 {% include "leads/partials/activity_timeline.html" %}
             </div>
-        </div>
+        </article>
 
-        <div class="rounded-md border border-[#E5DFD5] bg-white p-5">
-            <h2 class="mb-4 text-lg font-semibold text-[#1C1C1A]">Matching Properties</h2>
+        <article class="content-card fade-in" style="--delay: 210ms">
+            <h2 class="section-title">Matching Properties</h2>
             {% if matching_properties %}
-            <div class="space-y-3">
                 {% for match in matching_properties %}
-                <div class="rounded-md border border-[#EFE7DA] bg-[#FAF8F4] p-4">
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2">
+                    <div class="match-card">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
                                 {% if match.object.primary_image %}
-                                <img src="{{ match.object.primary_image.image.url }}" alt="{{ match.object.title }}" class="h-10 w-10 rounded-md object-cover">
+                                    <img src="{{ match.object.primary_image.image.url }}" alt="{{ match.object.title }}" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover;">
                                 {% else %}
-                                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-[#F5F2EC] text-[10px] text-[#8B7355]">No img</div>
+                                    <div style="width: 40px; height: 40px; border-radius: 6px; background: var(--line); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--muted);">No img</div>
                                 {% endif %}
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <a href="{% url 'properties:detail' match.object.pk %}" class="font-medium text-[#8B5E34] hover:underline">{{ match.object.title }}</a>
-                                        <span class="rounded-md bg-[#8B5E34] px-2 py-0.5 text-xs font-medium text-white">{{ match.score|floatformat:0 }}%</span>
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <a class="match-name" href="{% url 'properties:detail' match.object.pk %}">{{ match.object.title }}</a>
+                                        <span class="match-score">{{ match.score|floatformat:0 }}%</span>
                                     </div>
-                                    <p class="mt-1 text-sm text-[#5C4A33]">{{ match.object.locality|default:match.object.location }}, {{ match.object.city }} &middot; {{ match.object.get_bhk_display|default:"-" }} &middot; {{ match.object.price }}</p>
+                                    <div class="match-meta">{{ match.object.locality|default:match.object.location }}, {{ match.object.city }} · {{ match.object.get_bhk_display|default:"-" }} · ₹{{ match.object.price }}</div>
                                 </div>
                             </div>
-                            <div class="mt-2 flex flex-wrap gap-2 text-xs">
-                                <span class="{% if match.breakdown.bhk.matched == True %}text-green-700{% elif match.breakdown.bhk.matched == 'partial' %}text-amber-700{% else %}text-red-600{% endif %}">
-                                    BHK: {{ match.breakdown.bhk.detail }}
-                                </span>
-                                <span class="{% if match.breakdown.budget.matched == True %}text-green-700{% elif match.breakdown.budget.matched == 'partial' %}text-amber-700{% else %}text-red-600{% endif %}">
-                                    Budget: {{ match.breakdown.budget.detail }}
-                                </span>
-                                <span class="{% if match.breakdown.location.matched == True %}text-green-700{% elif match.breakdown.location.matched == 'partial' %}text-amber-700{% else %}text-red-600{% endif %}">
-                                    Location: {{ match.breakdown.location.detail }}
-                                </span>
-                            </div>
+                            {% if not lead.linked_property or lead.linked_property.pk != match.object.pk %}
+                                <form method="post" action="{% url 'leads:link_property' lead.pk match.object.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="ls-btn" style="min-height: 30px; font-size: 12px; padding: 0 12px;">Link</button>
+                                </form>
+                            {% else %}
+                                <span class="ls-btn" style="min-height: 30px; font-size: 12px; padding: 0 12px; border-color: var(--green); color: var(--green); cursor: default;">Linked</span>
+                            {% endif %}
                         </div>
-                        {% if not lead.linked_property or lead.linked_property.pk != match.object.pk %}
-                        <form method="post" action="{% url 'leads:link_property' lead.pk match.object.pk %}">
-                            {% csrf_token %}
-                            <button type="submit" class="rounded-md border border-[#8B5E34] px-3 py-1 text-xs text-[#5C4A33] hover:bg-[#F5F2EC]">Link</button>
-                        </form>
-                        {% else %}
-                        <span class="rounded-md bg-green-50 px-3 py-1 text-xs text-green-700">Linked</span>
-                        {% endif %}
+                        <div class="match-detail" style="display: flex; gap: 8px;">
+                            <span class="{% if match.breakdown.bhk.matched == True %}match-good{% elif match.breakdown.bhk.matched == 'partial' %}match-partial{% else %}match-bad{% endif %}">BHK: {{ match.breakdown.bhk.detail }}</span>
+                            <span class="{% if match.breakdown.budget.matched == True %}match-good{% elif match.breakdown.budget.matched == 'partial' %}match-partial{% else %}match-bad{% endif %}">Budget: {{ match.breakdown.budget.detail }}</span>
+                            <span class="{% if match.breakdown.location.matched == True %}match-good{% elif match.breakdown.location.matched == 'partial' %}match-partial{% else %}match-bad{% endif %}">Location: {{ match.breakdown.location.detail }}</span>
+                        </div>
                     </div>
-                </div>
                 {% endfor %}
-            </div>
             {% else %}
-            <p class="text-sm text-[#8B7355]">No matching properties found.</p>
+                <p class="lead-caption">No matching properties found.</p>
             {% endif %}
-        </div>
-    </section>
+        </article>
+    </div>
 
-    <aside class="space-y-6">
+    <aside class="side-stack">
         {% if is_owner %}
-        <div class="rounded-md border border-[#E5DFD5] bg-white p-5">
-            <h2 class="mb-3 text-lg font-semibold text-[#1C1C1A]">Assignment</h2>
+        <section class="side-card fade-in" style="--delay: 180ms">
+            <h2 class="section-title">Assignment</h2>
             {% include "leads/partials/assignment_form.html" with form=assignment_form %}
-        </div>
+        </section>
         {% endif %}
-        <div class="rounded-md border border-[#E5DFD5] bg-white p-5">
-            <h2 class="mb-3 text-lg font-semibold text-[#1C1C1A]">Set follow-up</h2>
-            <form method="post" action="{% url 'leads:add_task' lead.pk %}" class="space-y-3">
+
+        <section class="side-card fade-in" style="--delay: 260ms">
+            <h2 class="section-title">Set Follow-up</h2>
+            <form method="post" action="{% url 'leads:add_task' lead.pk %}">
                 {% csrf_token %}
-                {{ task_form.as_p }}
-                <button class="w-full rounded-md bg-[#8B5E34] px-4 py-2 text-sm font-medium text-white">Create follow-up</button>
+                {% for field in task_form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}<p style="font-size: 12px; color: #b91c1c; margin: 2px 0 0;">{{ error }}</p>{% endfor %}
+                    </div>
+                {% endfor %}
+                <button class="ls-btn ls-btn-primary" style="width: 100%; margin-top: 4px;">Create follow-up</button>
             </form>
-        </div>
-        <div class="rounded-md border border-[#E5DFD5] bg-white p-5">
-            <h2 class="mb-3 text-lg font-semibold text-[#1C1C1A]">WhatsApp follow-up</h2>
-            <form method="post" action="{% url 'leads:send_whatsapp_followup' lead.pk %}" class="space-y-3">
+        </section>
+
+        <section class="side-card fade-in" style="--delay: 320ms">
+            <h2 class="section-title">WhatsApp Follow-up</h2>
+            <form method="post" action="{% url 'leads:send_whatsapp_followup' lead.pk %}">
                 {% csrf_token %}
                 <input type="hidden" name="template_name" value="lead_follow_up">
-                <p class="text-sm text-[#8B7355]">Send the approved follow-up template using this agency's connected WhatsApp number.</p>
-                <button class="w-full rounded-md bg-[#1F6F4A] px-4 py-2 text-sm font-medium text-white">Send WhatsApp follow-up</button>
+                <p class="lead-caption" style="margin-bottom: 12px;">Send the approved follow-up template using this agency's connected WhatsApp number.</p>
+                <button class="ls-btn ls-btn-green" style="width: 100%;">Send WhatsApp follow-up</button>
             </form>
-        </div>
+        </section>
     </aside>
 </div>
 {% endblock %}

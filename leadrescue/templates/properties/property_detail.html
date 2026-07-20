@@ -2,101 +2,260 @@
 
 {% block title %}{{ property.title }} - LeadSathi{% endblock %}
 
-{% block app_content %}
-<div class="mb-6 flex flex-col justify-between gap-4 md:flex-row">
-    <div>
-        <h1 class="text-4xl font-light text-[#1C1C1A]" style="font-family: 'Cormorant Garamond', serif;">{{ property.title }}</h1>
-        <p class="text-sm text-[#8B7355]">{{ property.locality|default:property.location }}, {{ property.city }}</p>
-    </div>
-    <div class="flex gap-2">
-        <a href="{% url 'properties:edit' property.pk %}" class="rounded-md border border-[#8B5E34] px-4 py-2 text-sm text-[#5C4A33]">Edit</a>
-        <a href="{% url 'properties:delete' property.pk %}" class="rounded-md border border-[#B85C38] px-4 py-2 text-sm text-[#8A341F]">Delete</a>
-    </div>
-</div>
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .prop-page {
+        --copy: #2f241f;
+        --muted: #7e6f67;
+        --panel: #fffaf6;
+        --line: #efe3d8;
+        --primary: #b56a30;
+        --orange: #ff784b;
+        --peach: #ffe2d9;
+        --brown: #995f4c;
+        --red: #8A341F;
+        --red-border: #B85C38;
+        --green: #1F6F4A;
+        display: grid;
+        grid-template-columns: minmax(0, 940px) 320px;
+        gap: 32px;
+        align-items: start;
+    }
 
-<div class="grid gap-6 lg:grid-cols-[1fr_360px]">
-    <section class="space-y-6">
-        <div class="overflow-hidden rounded-md border border-[#E5DFD5] bg-white">
-            {% if property.primary_image %}
-                <img src="{{ property.primary_image.image.url }}" alt="{{ property.title }}" class="max-h-[440px] w-full object-cover">
-            {% endif %}
-            
-            {% if property.images.count > 1 %}
-            <div class="grid grid-cols-4 gap-2 border-b border-[#E5DFD5] bg-[#F5F2EC] p-4 sm:grid-cols-6 lg:grid-cols-8">
+    .prop-page-main { min-width: 0; }
+
+    .prop-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    .prop-title {
+        color: var(--copy);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 34px;
+        font-weight: 400;
+        line-height: 1;
+        margin: 4px 0 7px;
+    }
+
+    .prop-subtitle, .prop-caption, .prop-meta {
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    .prop-actions { display: flex; gap: 12px; padding-top: 2px; }
+
+    .ls-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-height: 38px; border-radius: 5px; border: 1px solid #5f524b;
+        background: transparent; color: var(--copy); padding: 0 17px;
+        font-size: 14px; font-weight: 500; text-decoration: none;
+        transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+    .ls-btn-primary { border-color: var(--primary); background: var(--primary); color: #fff; font-weight: 700; }
+    .ls-btn-danger { border-color: var(--red-border); background: transparent; color: var(--red); }
+    .ls-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(47,36,31,.08); }
+    .ls-btn:active { transform: translateY(0) scale(.98); }
+
+    .content-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 17px 16px;
+        margin-bottom: 16px;
+    }
+
+    .section-title { color: var(--copy); font-family: "Cormorant Garamond", serif; font-size: 19px; font-weight: 500; line-height: 1.1; margin: 0 0 12px; }
+
+    .hero-image {
+        width: 100%;
+        max-height: 440px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 16px;
+    }
+
+    .image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+
+    .image-grid a {
+        aspect-ratio: 1;
+        overflow: hidden;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        display: block;
+    }
+    .image-grid a:hover { opacity: 0.85; }
+    .image-grid a img { width: 100%; height: 100%; object-fit: cover; }
+    .image-grid a.is-primary { outline: 2px solid var(--primary); }
+
+    .detail-grid { display: grid; gap: 12px; }
+    .detail-grid dt { color: var(--muted); font-size: 13px; }
+    .detail-grid dd { color: var(--copy); font-size: 14px; }
+
+    .amenity-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 5px;
+        background: var(--line);
+        font-size: 12px;
+        color: var(--brown);
+    }
+
+    .lead-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fffdfb;
+        margin-bottom: 8px;
+        transition: transform 160ms ease, background 160ms ease;
+    }
+    .lead-row:hover { background: #fffaf6; transform: translateX(3px); }
+    .lead-row:last-child { margin-bottom: 0; }
+
+    .lead-name { color: var(--copy); font-size: 14px; font-weight: 600; text-decoration: none; }
+    .lead-name:hover { text-decoration: underline; }
+    .lead-meta { color: var(--muted); font-size: 13px; margin-top: 2px; }
+
+    .match-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fffdfb;
+        padding: 12px 14px;
+        margin-bottom: 8px;
+    }
+    .match-card:last-child { margin-bottom: 0; }
+
+    .match-name { color: var(--primary); font-size: 14px; font-weight: 600; text-decoration: none; }
+    .match-score {
+        display: inline-block; padding: 2px 8px; border-radius: 4px;
+        font-size: 12px; font-weight: 600; background: var(--primary); color: #fff;
+    }
+    .match-meta { color: var(--muted); font-size: 13px; margin-top: 4px; }
+    .match-detail { font-size: 11px; margin-top: 6px; display: flex; gap: 8px; }
+    .match-good { color: #15803d; }
+    .match-partial { color: #a16207; }
+    .match-bad { color: #dc2626; }
+
+    .side-stack { display: grid; gap: 16px; padding-top: 2px; }
+    .side-card { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 17px 16px; }
+
+    .fade-in { animation: fade-up 520ms cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--delay, 0ms); }
+    @keyframes fade-up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } .ls-btn, .lead-row { transition: none; } }
+    @media (max-width: 1120px) { .prop-page { grid-template-columns: 1fr; } .side-stack { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 760px) {
+        .prop-head { flex-direction: column; }
+        .side-stack { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block app_content %}
+<div class="prop-page">
+    <div class="prop-page-main">
+        <header class="prop-head fade-in">
+            <div>
+                <h1 class="prop-title">{{ property.title }}</h1>
+                <p class="prop-subtitle">{{ property.locality|default:property.location }}, {{ property.city }}</p>
+            </div>
+            <div class="prop-actions">
+                <a class="ls-btn" href="{% url 'properties:edit' property.pk %}">Edit</a>
+                <a class="ls-btn ls-btn-danger" href="{% url 'properties:delete' property.pk %}">Delete</a>
+            </div>
+        </header>
+
+        {% if property.primary_image %}
+            <img class="hero-image fade-in" style="--delay: 70ms;" src="{{ property.primary_image.image.url }}" alt="{{ property.title }}">
+        {% endif %}
+
+        {% if property.images.count > 1 %}
+            <div class="image-grid fade-in" style="--delay: 100ms;">
                 {% for img in property.images.all %}
-                    <a href="{{ img.image.url }}" target="_blank" class="aspect-square overflow-hidden rounded-md border border-[#D8CBB8] hover:opacity-80 {% if img.is_primary %}ring-2 ring-[#8B5E34]{% endif %}">
-                        <img src="{{ img.image.url }}" class="h-full w-full object-cover" alt="Property thumbnail">
+                    <a href="{{ img.image.url }}" target="_blank" class="{% if img.is_primary %}is-primary{% endif %}">
+                        <img src="{{ img.image.url }}" alt="Property thumbnail">
                     </a>
                 {% endfor %}
             </div>
-            {% endif %}
-            <div class="p-5">
-                <dl class="grid gap-4 text-sm md:grid-cols-2">
-                    <div><dt class="text-[#8B7355]">Project</dt><dd>{{ property.project_name|default:"-" }}</dd></div>
-                    <div><dt class="text-[#8B7355]">Builder</dt><dd>{{ property.builder|default:"-" }}</dd></div>
-                    <div><dt class="text-[#8B7355]">Price</dt><dd>{{ property.price }}</dd></div>
-                    <div><dt class="text-[#8B7355]">BHK</dt><dd>{{ property.get_bhk_display|default:"-" }}</dd></div>
-                    <div><dt class="text-[#8B7355]">Area</dt><dd>{{ property.area_sqft|default:"-" }} sqft</dd></div>
-                    <div><dt class="text-[#8B7355]">Status</dt><dd>{{ property.get_status_display }}</dd></div>
-                    <div><dt class="text-[#8B7355]">Assigned agent</dt><dd>{{ property.assigned_agent.user.email|default:"Unassigned" }}</dd></div>
-                    <div><dt class="text-[#8B7355]">Address</dt><dd>{{ property.address }}</dd></div>
-                </dl>
-                {% if property.description %}<div class="mt-4 text-sm text-[#5C4A33]">{{ property.description|linebreaks }}</div>{% endif %}
-            </div>
-        </div>
-    </section>
-    <aside class="space-y-6">
-        <div class="rounded-md border border-[#E5DFD5] bg-white p-5">
-            <h2 class="mb-3 text-lg font-semibold text-[#1C1C1A]">Amenities</h2>
-            <div class="flex flex-wrap gap-2">
+        {% endif %}
+
+        <article class="content-card fade-in" style="--delay: 140ms;">
+            <h2 class="section-title">Property Details</h2>
+            <dl class="detail-grid" style="grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                <div><dt>Project</dt><dd>{{ property.project_name|default:"-" }}</dd></div>
+                <div><dt>Builder</dt><dd>{{ property.builder|default:"-" }}</dd></div>
+                <div><dt>Price</dt><dd>₹{{ property.price }}</dd></div>
+                <div><dt>BHK</dt><dd>{{ property.get_bhk_display|default:"-" }}</dd></div>
+                <div><dt>Area</dt><dd>{{ property.area_sqft|default:"-" }} sqft</dd></div>
+                <div><dt>Status</dt><dd>{{ property.get_status_display }}</dd></div>
+                <div><dt>Assigned Agent</dt><dd>{{ property.assigned_agent.user.email|default:"Unassigned" }}</dd></div>
+                <div><dt>Address</dt><dd>{{ property.address }}</dd></div>
+            </dl>
+            {% if property.description %}<div style="margin-top: 14px; color: var(--copy); font-size: 14px;">{{ property.description|linebreaks }}</div>{% endif %}
+        </article>
+    </div>
+
+    <aside class="side-stack">
+        <section class="side-card fade-in" style="--delay: 180ms;">
+            <h2 class="section-title">Amenities</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                 {% for amenity in property.amenities %}
-                    <span class="rounded-md bg-[#F5F2EC] px-3 py-1 text-xs text-[#5C4A33]">{{ amenity }}</span>
+                    <span class="amenity-tag">{{ amenity }}</span>
                 {% empty %}
-                    <span class="text-sm text-[#8B7355]">No amenities listed.</span>
+                    <span class="prop-caption">No amenities listed.</span>
                 {% endfor %}
             </div>
-        </div>
-        <div class="rounded-md border border-[#E5DFD5] bg-white p-5">
-            <h2 class="mb-3 text-lg font-semibold text-[#1C1C1A]">Linked leads</h2>
-            <div class="space-y-2">
-                {% for lead in linked_leads %}
-                    <a href="{% url 'leads:detail' lead.pk %}" class="block rounded-md border border-[#EFE7DA] p-3 text-sm text-[#1C1C1A]">{{ lead.name }}<span class="block text-xs text-[#8B7355]">{{ lead.get_status_display }}</span></a>
-                {% empty %}
-                    <p class="text-sm text-[#8B7355]">No linked leads.</p>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="rounded-md border border-[#E5DFD5] bg-white p-5">
-            <h2 class="mb-3 text-lg font-semibold text-[#1C1C1A]">Matching Leads</h2>
+        </section>
+
+        <section class="side-card fade-in" style="--delay: 260ms;">
+            <h2 class="section-title">Linked Leads</h2>
+            {% for lead in linked_leads %}
+                <a class="lead-row" href="{% url 'leads:detail' lead.pk %}">
+                    <div>
+                        <div class="lead-name">{{ lead.name }}</div>
+                        <div class="lead-meta">{{ lead.get_status_display }}</div>
+                    </div>
+                    <span class="ls-btn" style="min-height: 28px; font-size: 11px; padding: 0 10px;">Open</span>
+                </a>
+            {% empty %}
+                <p class="prop-caption">No linked leads.</p>
+            {% endfor %}
+        </section>
+
+        <section class="side-card fade-in" style="--delay: 320ms;">
+            <h2 class="section-title">Matching Leads</h2>
             {% if matching_leads %}
-            <div class="space-y-3">
                 {% for match in matching_leads %}
-                <div class="rounded-md border border-[#EFE7DA] bg-[#FAF8F4] p-3">
-                    <div class="flex items-start justify-between gap-2">
-                        <div class="flex-1">
-                            <a href="{% url 'leads:detail' match.object.pk %}" class="font-medium text-[#8B5E34] hover:underline text-sm">{{ match.object.name }}</a>
-                            <span class="ml-2 rounded-md bg-[#8B5E34] px-2 py-0.5 text-xs font-medium text-white">{{ match.score|floatformat:0 }}%</span>
-                            <p class="mt-1 text-xs text-[#8B7355]">{{ match.object.get_status_display }} &middot; {{ match.object.phone }}</p>
-                            <div class="mt-1 flex flex-wrap gap-1 text-[10px]">
-                                <span class="{% if match.breakdown.bhk.matched == True %}text-green-700{% elif match.breakdown.bhk.matched == 'partial' %}text-amber-700{% else %}text-red-600{% endif %}">
-                                    BHK: {{ match.breakdown.bhk.detail }}
-                                </span>
-                                <span class="{% if match.breakdown.budget.matched == True %}text-green-700{% elif match.breakdown.budget.matched == 'partial' %}text-amber-700{% else %}text-red-600{% endif %}">
-                                    Budget: {{ match.breakdown.budget.detail }}
-                                </span>
-                                <span class="{% if match.breakdown.location.matched == True %}text-green-700{% elif match.breakdown.location.matched == 'partial' %}text-amber-700{% else %}text-red-600{% endif %}">
-                                    Location: {{ match.breakdown.location.detail }}
-                                </span>
+                    <div class="match-card">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                            <div>
+                                <a class="match-name" href="{% url 'leads:detail' match.object.pk %}">{{ match.object.name }}</a>
+                                <span class="match-score">{{ match.score|floatformat:0 }}%</span>
                             </div>
                         </div>
+                        <div class="match-meta">{{ match.object.get_status_display }} · {{ match.object.phone }}</div>
+                        <div class="match-detail">
+                            <span class="{% if match.breakdown.bhk.matched == True %}match-good{% elif match.breakdown.bhk.matched == 'partial' %}match-partial{% else %}match-bad{% endif %}">BHK: {{ match.breakdown.bhk.detail }}</span>
+                            <span class="{% if match.breakdown.budget.matched == True %}match-good{% elif match.breakdown.budget.matched == 'partial' %}match-partial{% else %}match-bad{% endif %}">Budget: {{ match.breakdown.budget.detail }}</span>
+                            <span class="{% if match.breakdown.location.matched == True %}match-good{% elif match.breakdown.location.matched == 'partial' %}match-partial{% else %}match-bad{% endif %}">Location: {{ match.breakdown.location.detail }}</span>
+                        </div>
                     </div>
-                </div>
                 {% endfor %}
-            </div>
             {% else %}
-            <p class="text-sm text-[#8B7355]">No matching leads found.</p>
+                <p class="prop-caption">No matching leads found.</p>
             {% endif %}
-        </div>
+        </section>
     </aside>
 </div>
 {% endblock %}

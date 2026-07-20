@@ -1,5 +1,10 @@
-<form method="post" action="{% url 'leads:add_activity' lead.pk %}" hx-post="{% url 'leads:add_activity' lead.pk %}" hx-target="#activity-timeline" hx-swap="innerHTML" class="space-y-3">
+<form method="post" action="{% url 'leads:add_activity' lead.pk %}" hx-post="{% url 'leads:add_activity' lead.pk %}" hx-target="#activity-timeline" hx-swap="innerHTML">
     {% csrf_token %}
-    {{ activity_form.as_p }}
-    <button class="rounded-md bg-[#8B5E34] px-4 py-2 text-sm font-medium text-white">Add activity</button>
+    {% for field in activity_form %}
+        <div style="margin-bottom: 10px;">
+            <label style="display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">{{ field.label }}</label>
+            {{ field }}
+        </div>
+    {% endfor %}
+    <button class="ls-btn ls-btn-primary" style="width: 100%;">Add activity</button>
 </form>

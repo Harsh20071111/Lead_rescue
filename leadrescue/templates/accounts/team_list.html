@@ -2,65 +2,204 @@
 
 {% block title %}Team Management - LeadSathi{% endblock %}
 
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .team-page {
+        --copy: #2f241f;
+        --muted: #7e6f67;
+        --panel: #fffaf6;
+        --line: #efe3d8;
+        --primary: #b56a30;
+        --orange: #ff784b;
+        --peach: #ffe2d9;
+        --brown: #995f4c;
+        --red: #8A341F;
+        display: grid;
+        grid-template-columns: minmax(0, 940px) 320px;
+        gap: 32px;
+        align-items: start;
+    }
+
+    .team-main { min-width: 0; }
+
+    .team-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    .team-title {
+        color: var(--copy);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 34px;
+        font-weight: 400;
+        line-height: 1;
+        margin: 4px 0 7px;
+    }
+
+    .team-subtitle, .team-caption {
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    .team-actions { display: flex; gap: 12px; padding-top: 2px; }
+
+    .ls-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-height: 38px; border-radius: 5px; border: 1px solid #5f524b;
+        background: transparent; color: var(--copy); padding: 0 17px;
+        font-size: 14px; font-weight: 500; text-decoration: none;
+        transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+    .ls-btn-primary { border-color: var(--primary); background: var(--primary); color: #fff; font-weight: 700; }
+    .ls-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(47,36,31,.08); }
+    .ls-btn:active { transform: translateY(0) scale(.98); }
+
+    .content-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 0;
+        margin-bottom: 16px;
+        overflow: hidden;
+    }
+
+    .section-title { color: var(--copy); font-family: "Cormorant Garamond", serif; font-size: 19px; font-weight: 500; line-height: 1.1; margin: 0 0 14px; }
+
+    .ls-table {
+        width: 100%;
+        text-align: left;
+        font-size: 14px;
+    }
+
+    .ls-table thead {
+        background: var(--panel);
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+    }
+
+    .ls-table th { padding: 12px 14px; }
+    .ls-table td { padding: 14px; border-bottom: 1px solid var(--line); }
+    .ls-table tbody tr { transition: background 160ms ease; }
+    .ls-table tbody tr:hover { background: #fffaf6; }
+
+    .side-stack { display: grid; gap: 16px; padding-top: 2px; }
+    .side-card { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 17px 16px; }
+    .side-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+
+    .activity-list { display: grid; gap: 14px; font-size: 14px; }
+    .activity-item strong { display: block; color: var(--copy); font-weight: 500; line-height: 1.25; }
+
+    .quick-buttons { display: grid; gap: 8px; }
+    .quick-buttons .ls-btn { width: 100%; min-height: 38px; }
+
+    .fade-in { animation: fade-up 520ms cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--delay, 0ms); }
+    @keyframes fade-up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } .ls-btn { transition: none; } }
+    @media (max-width: 1120px) { .team-page { grid-template-columns: 1fr; } .side-stack { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 760px) {
+        .team-head { flex-direction: column; }
+        .side-stack { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
 {% block app_content %}
-<div class="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-    <div>
-        <h1 class="text-4xl font-light text-[#1C1C1A]" style="font-family: 'Cormorant Garamond', serif;">Team</h1>
-        <p class="text-sm text-[#8B7355]">Manage your agents and invites.</p>
+<div class="team-page">
+    <div class="team-main">
+        <header class="team-head fade-in">
+            <div>
+                <h1 class="team-title">Team</h1>
+                <p class="team-subtitle">Manage your agents and invites</p>
+            </div>
+            <div class="team-actions">
+                <a class="ls-btn ls-btn-primary" href="{% url 'accounts:team_invite' %}">Invite Agent</a>
+            </div>
+        </header>
+
+        <h2 class="section-title fade-in" style="--delay: 70ms;">Active & Deactivated Agents</h2>
+        <div class="content-card fade-in" style="--delay: 100ms;">
+            <table class="ls-table">
+                <thead>
+                    <tr>
+                        <th>Agent</th>
+                        <th>Role</th>
+                        <th>Leads</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for agent in agents %}
+                        {% include "accounts/partials/agent_row.html" with agent=agent %}
+                    {% empty %}
+                        <tr><td colspan="5" style="padding: 24px; text-align: center; color: var(--muted);">No agents found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="section-title fade-in" style="--delay: 180ms;">Pending Invites</h2>
+        <div class="content-card fade-in" style="--delay: 210ms;">
+            <table class="ls-table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Invited By</th>
+                        <th>Date</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invite in pending_invites %}
+                        <tr>
+                            <td>{{ invite.email }}</td>
+                            <td>{{ invite.invited_by.user.email }}</td>
+                            <td>{{ invite.created_at|date:"M d, Y" }}</td>
+                            <td style="text-align: right;">
+                                <form method="post" action="{% url 'accounts:team_invite_delete' invite.pk %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" style="color: var(--red); font-size: 12px; font-weight: 500; background: none; border: none; cursor: pointer;" onclick="return confirm('Are you sure you want to delete this invite?');">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="4" style="padding: 24px; text-align: center; color: var(--muted);">No pending invites.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-    <a href="{% url 'accounts:team_invite' %}" class="rounded-md border-2 border-[#8B5E34] bg-white px-5 py-2 text-base font-semibold text-[#8B5E34] shadow-sm">Invite Agent</a>
-</div>
 
-<h2 class="mt-8 mb-4 text-2xl font-light text-[#1C1C1A]" style="font-family: 'Cormorant Garamond', serif;">Active & Deactivated Agents</h2>
-<div class="overflow-hidden rounded-md border border-[#E5DFD5] bg-white mb-8">
-    <table class="w-full text-left text-sm">
-        <thead class="bg-[#F5F2EC] text-xs uppercase tracking-wide text-[#8B7355]">
-            <tr>
-                <th class="p-3">Agent</th>
-                <th class="p-3">Role</th>
-                <th class="p-3">Leads</th>
-                <th class="p-3">Status</th>
-                <th class="p-3 text-right">Actions</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-[#EFE7DA]">
-            {% for agent in agents %}
-                {% include "accounts/partials/agent_row.html" with agent=agent %}
-            {% empty %}
-            <tr><td colspan="5" class="p-6 text-center text-[#8B7355]">No agents found.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+    <aside class="side-stack">
+        <section class="side-card fade-in" style="--delay: 180ms;">
+            <div class="side-title-row">
+                <h2 class="section-title">Quick</h2>
+                <span class="team-caption">•••</span>
+            </div>
+            <div class="quick-buttons">
+                <a class="ls-btn ls-btn-primary" href="{% url 'accounts:team_invite' %}">Invite Agent</a>
+                <a class="ls-btn" href="{% url 'leads:list' %}">View Leads</a>
+            </div>
+        </section>
 
-<h2 class="mb-4 text-2xl font-light text-[#1C1C1A]" style="font-family: 'Cormorant Garamond', serif;">Pending Invites</h2>
-<div class="overflow-hidden rounded-md border border-[#E5DFD5] bg-white">
-    <table class="w-full text-left text-sm">
-        <thead class="bg-[#F5F2EC] text-xs uppercase tracking-wide text-[#8B7355]">
-            <tr>
-                <th class="p-3">Email</th>
-                <th class="p-3">Invited By</th>
-                <th class="p-3">Date</th>
-                <th class="p-3 text-right">Actions</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-[#EFE7DA]">
-            {% for invite in pending_invites %}
-            <tr>
-                <td class="p-3">{{ invite.email }}</td>
-                <td class="p-3">{{ invite.invited_by.user.email }}</td>
-                <td class="p-3">{{ invite.created_at|date:"M d, Y" }}</td>
-                <td class="p-3 text-right">
-                    <form method="post" action="{% url 'accounts:team_invite_delete' invite.pk %}" class="inline">
-                        {% csrf_token %}
-                        <button type="submit" class="text-red-600 hover:text-red-900 font-medium text-xs" onclick="return confirm('Are you sure you want to delete this invite?');">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="4" class="p-6 text-center text-[#8B7355]">No pending invites.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <section class="side-card fade-in" style="--delay: 260ms;">
+            <h2 class="section-title" style="margin-bottom: 14px;">Team Stats</h2>
+            <div class="activity-list">
+                <div class="activity-item">
+                    <strong>Active Agents</strong>
+                    <span class="team-caption">{{ agents|length }} members</span>
+                </div>
+                <div class="activity-item">
+                    <strong>Pending Invites</strong>
+                    <span class="team-caption">{{ pending_invites|length }} pending</span>
+                </div>
+            </div>
+        </section>
+    </aside>
 </div>
 {% endblock %}

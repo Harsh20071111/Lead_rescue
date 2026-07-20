@@ -2,25 +2,157 @@
 
 {% block title %}Follow-ups - LeadSathi{% endblock %}
 
-{% block app_content %}
-<div class="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-    <div>
-        <h1 class="text-4xl font-light text-[#1C1C1A]" style="font-family: 'Cormorant Garamond', serif;">Follow-ups</h1>
-        <p class="text-sm text-[#8B7355]">Grouped by overdue, today, and upcoming work.</p>
-    </div>
-    {% if is_owner %}
-    <form method="get">
-        <select name="assigned_agent" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm" onchange="this.form.submit()">
-            <option value="">Team-wide</option>
-            {% for agent in agents %}<option value="{{ agent.pk }}" {% if request.GET.assigned_agent == agent.pk|stringformat:"s" %}selected{% endif %}>{{ agent.user.email }}</option>{% endfor %}
-        </select>
-    </form>
-    {% endif %}
-</div>
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .tasks-page {
+        --copy: #2f241f;
+        --muted: #7e6f67;
+        --panel: #fffaf6;
+        --line: #efe3d8;
+        --primary: #b56a30;
+        --orange: #ff784b;
+        --peach: #ffe2d9;
+        --brown: #995f4c;
+        display: grid;
+        grid-template-columns: minmax(0, 940px) 320px;
+        gap: 32px;
+        align-items: start;
+    }
 
-{% include "leads/partials/task_group.html" with title="Overdue" tasks=overdue_tasks %}
-{% include "leads/partials/task_group.html" with title="Today" tasks=today_tasks %}
-{% include "leads/partials/task_group.html" with title="Upcoming" tasks=upcoming_tasks %}
-{% include "leads/partials/task_group.html" with title="Completed" tasks=completed_tasks %}
-{% include "partials/pagination.html" %}
+    .tasks-main { min-width: 0; }
+
+    .tasks-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    .tasks-title {
+        color: var(--copy);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 34px;
+        font-weight: 400;
+        line-height: 1;
+        margin: 4px 0 7px;
+    }
+
+    .tasks-subtitle, .tasks-caption {
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    .tasks-actions { display: flex; gap: 12px; padding-top: 2px; }
+
+    .ls-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-height: 38px; border-radius: 5px; border: 1px solid #5f524b;
+        background: transparent; color: var(--copy); padding: 0 17px;
+        font-size: 14px; font-weight: 500; text-decoration: none;
+        transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+    .ls-btn-primary { border-color: var(--primary); background: var(--primary); color: #fff; font-weight: 700; }
+    .ls-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(47,36,31,.08); }
+    .ls-btn:active { transform: translateY(0) scale(.98); }
+
+    .filter-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 14px 16px;
+        margin-bottom: 24px;
+    }
+
+    .filter-card select {
+        padding: 10px 12px; border: 1px solid var(--line); border-radius: 5px;
+        font-size: 13px; color: var(--copy); background: #fff; outline: none;
+    }
+    .filter-card select:focus { border-color: var(--primary); }
+
+    .side-stack { display: grid; gap: 16px; padding-top: 2px; }
+    .side-card { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 17px 16px; }
+    .side-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+
+    .section-title { color: var(--copy); font-family: "Cormorant Garamond", serif; font-size: 19px; font-weight: 500; line-height: 1.1; margin: 0; }
+
+    .activity-list { display: grid; gap: 14px; font-size: 14px; }
+    .activity-item strong { display: block; color: var(--copy); font-weight: 500; line-height: 1.25; }
+
+    .fade-in { animation: fade-up 520ms cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--delay, 0ms); }
+    @keyframes fade-up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } .ls-btn { transition: none; } }
+    @media (max-width: 1120px) { .tasks-page { grid-template-columns: 1fr; } .side-stack { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 760px) {
+        .tasks-head { flex-direction: column; }
+        .side-stack { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block app_content %}
+<div class="tasks-page">
+    <div class="tasks-main">
+        <header class="tasks-head fade-in">
+            <div>
+                <h1 class="tasks-title">Follow-ups</h1>
+                <p class="tasks-subtitle">Grouped by overdue, today, and upcoming work</p>
+            </div>
+            {% if is_owner %}
+            <div class="tasks-actions">
+                <form method="get">
+                    <select name="assigned_agent" onchange="this.form.submit()">
+                        <option value="">Team-wide</option>
+                        {% for agent in agents %}<option value="{{ agent.pk }}" {% if request.GET.assigned_agent == agent.pk|stringformat:"s" %}selected{% endif %}>{{ agent.user.email }}</option>{% endfor %}
+                    </select>
+                </form>
+            </div>
+            {% endif %}
+        </header>
+
+        <div class="fade-in" style="--delay: 70ms;">
+            {% include "leads/partials/task_group.html" with title="Overdue" tasks=overdue_tasks %}
+            {% include "leads/partials/task_group.html" with title="Today" tasks=today_tasks %}
+            {% include "leads/partials/task_group.html" with title="Upcoming" tasks=upcoming_tasks %}
+            {% include "leads/partials/task_group.html" with title="Completed" tasks=completed_tasks %}
+        </div>
+
+        {% include "partials/pagination.html" %}
+    </div>
+
+    <aside class="side-stack">
+        <section class="side-card fade-in" style="--delay: 180ms;">
+            <div class="side-title-row">
+                <h2 class="section-title">Quick</h2>
+                <span class="tasks-caption">•••</span>
+            </div>
+            <div style="display: grid; gap: 8px;">
+                <a class="ls-btn" href="{% url 'leads:list' %}">View Leads</a>
+                <a class="ls-btn" href="{% url 'leads:create' %}">Create Lead</a>
+            </div>
+        </section>
+
+        <section class="side-card fade-in" style="--delay: 260ms;">
+            <h2 class="section-title" style="margin-bottom: 14px;">Categories</h2>
+            <div class="activity-list">
+                <div class="activity-item">
+                    <strong>Overdue</strong>
+                    <span class="tasks-caption">Tasks past due date</span>
+                </div>
+                <div class="activity-item">
+                    <strong>Today</strong>
+                    <span class="tasks-caption">Due within 24 hours</span>
+                </div>
+                <div class="activity-item">
+                    <strong>Upcoming</strong>
+                    <span class="tasks-caption">Due in the future</span>
+                </div>
+                <div class="activity-item">
+                    <strong>Completed</strong>
+                    <span class="tasks-caption">Finished tasks</span>
+                </div>
+            </div>
+        </section>
+    </aside>
+</div>
 {% endblock %}

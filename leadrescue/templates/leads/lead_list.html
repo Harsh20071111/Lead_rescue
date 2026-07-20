@@ -2,60 +2,580 @@
 
 {% block title %}Leads - LeadSathi{% endblock %}
 
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .leads-page {
+        --copy: #2f241f;
+        --muted: #7e6f67;
+        --panel: #fffaf6;
+        --line: #efe3d8;
+        --primary: #b56a30;
+        --orange: #ff784b;
+        --peach: #ffe2d9;
+        --brown: #995f4c;
+        display: grid;
+        grid-template-columns: minmax(0, 940px) 320px;
+        gap: 32px;
+        align-items: start;
+    }
+
+    .leads-main {
+        min-width: 0;
+    }
+
+    .leads-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    .leads-title {
+        color: var(--copy);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 34px;
+        font-weight: 400;
+        line-height: 1;
+        margin: 4px 0 7px;
+    }
+
+    .leads-subtitle,
+    .leads-caption,
+    .lead-meta,
+    .activity-time {
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    .leads-actions {
+        display: flex;
+        gap: 12px;
+        padding-top: 2px;
+    }
+
+    .ls-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        border-radius: 5px;
+        border: 1px solid #5f524b;
+        background: transparent;
+        color: var(--copy);
+        padding: 0 17px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .ls-btn-primary {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #ffffff;
+        font-weight: 700;
+    }
+
+    .ls-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(47, 36, 31, 0.08);
+    }
+
+    .ls-btn:active {
+        transform: translateY(0) scale(0.98);
+    }
+
+    .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .metric-card,
+    .chart-card,
+    .side-card,
+    .import-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+    }
+
+    .metric-card {
+        min-height: 125px;
+        padding: 17px 17px 15px;
+    }
+
+    .metric-label {
+        color: var(--muted);
+        font-size: 12px;
+        margin-bottom: 18px;
+    }
+
+    .metric-value {
+        color: var(--copy);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 29px;
+        line-height: 1;
+        margin-bottom: 12px;
+    }
+
+    .chart-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 26px;
+    }
+
+    .chart-card {
+        height: 266px;
+        padding: 20px 16px 16px;
+    }
+
+    .chart-card-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+    }
+
+    .section-title {
+        color: var(--copy);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 19px;
+        font-weight: 500;
+        line-height: 1.1;
+        margin: 0;
+    }
+
+    .chart-window {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 184px;
+    }
+
+    .status-pie {
+        width: 148px;
+        height: 148px;
+        border-radius: 999px;
+        background: conic-gradient({{ status_gradient|default:"#995f4c 0% 25%, #ff784b 25% 55%, #cc603c 55% 78%, #ffe2d9 78% 100%" }});
+    }
+
+    .source-chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 15px;
+        height: 150px;
+        width: 312px;
+        padding: 0 14px 22px;
+        border-bottom: 3px solid #29211d;
+    }
+
+    .source-bar {
+        position: relative;
+        width: 23px;
+        height: var(--bar-height);
+        min-height: 16px;
+        background: var(--orange);
+        transform-origin: bottom;
+        animation: grow-bar 680ms cubic-bezier(.2,.8,.2,1) both;
+        animation-delay: calc(var(--bar-index) * 70ms + 180ms);
+    }
+
+    .source-bar::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: var(--bar-accent);
+        background: var(--peach);
+    }
+
+    .side-stack {
+        display: grid;
+        gap: 16px;
+        padding-top: 2px;
+    }
+
+    .side-card {
+        padding: 17px 16px;
+    }
+
+    .side-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .quick-buttons {
+        display: grid;
+        gap: 8px;
+    }
+
+    .quick-buttons .ls-btn {
+        width: 100%;
+        min-height: 38px;
+    }
+
+    .activity-list {
+        display: grid;
+        gap: 14px;
+        font-size: 14px;
+    }
+
+    .activity-item strong {
+        display: block;
+        color: var(--copy);
+        font-weight: 500;
+        line-height: 1.25;
+    }
+
+    .recent-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 2px 0 17px;
+    }
+
+    .lead-list {
+        border-bottom: 1px solid transparent;
+    }
+
+    .lead-row {
+        display: grid;
+        grid-template-columns: 56px minmax(0, 1fr) auto auto auto;
+        gap: 16px;
+        align-items: center;
+        min-height: 90px;
+        border-bottom: 1px solid var(--line);
+        transition: transform 160ms ease, background 160ms ease;
+    }
+
+    .lead-row:hover {
+        background: #fffaf6;
+        transform: translateX(3px);
+    }
+
+    .lead-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 56px;
+        height: 56px;
+        border-radius: 6px;
+        background: #efe6dd;
+        color: #594a42;
+    }
+
+    .lead-name {
+        color: var(--copy);
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .lead-assignee {
+        color: var(--muted);
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .import-card {
+        margin-top: 24px;
+        padding: 18px 16px 16px;
+    }
+
+    .import-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 12px;
+    }
+
+    .dropzone {
+        display: flex;
+        min-height: 162px;
+        cursor: pointer;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 1px dashed #ead9ca;
+        border-radius: 8px;
+        background: #fff7f3;
+        color: var(--muted);
+        text-align: center;
+        transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+    }
+
+    .dropzone:hover {
+        border-color: var(--primary);
+        background: #fff4ed;
+        transform: translateY(-1px);
+    }
+
+    .dropzone input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        opacity: 0;
+    }
+
+    .upload-icon {
+        color: var(--primary);
+        margin-bottom: 14px;
+    }
+
+    .fade-in {
+        animation: fade-up 520ms cubic-bezier(.2,.8,.2,1) both;
+        animation-delay: var(--delay, 0ms);
+    }
+
+    @keyframes fade-up {
+        from {
+            opacity: 0;
+            transform: translateY(14px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes grow-bar {
+        from {
+            transform: scaleY(0);
+            opacity: .35;
+        }
+        to {
+            transform: scaleY(1);
+            opacity: 1;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in,
+        .source-bar {
+            animation: none;
+        }
+
+        .ls-btn,
+        .lead-row,
+        .dropzone {
+            transition: none;
+        }
+    }
+
+    @media (max-width: 1120px) {
+        .leads-page {
+            grid-template-columns: 1fr;
+        }
+
+        .side-stack {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 760px) {
+        .leads-head,
+        .recent-head,
+        .import-head {
+            flex-direction: column;
+        }
+
+        .metric-grid,
+        .chart-grid,
+        .side-stack {
+            grid-template-columns: 1fr;
+        }
+
+        .lead-row {
+            grid-template-columns: 48px minmax(0, 1fr) auto;
+            gap: 12px;
+            padding: 14px 0;
+        }
+
+        .lead-icon {
+            width: 48px;
+            height: 48px;
+        }
+
+        .lead-assignee {
+            grid-column: 2 / -1;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block app_content %}
-<div class="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-    <div>
-        <h1 class="text-4xl font-light text-[#1C1C1A]" style="font-family: 'Cormorant Garamond', serif;">Leads</h1>
-        <p class="text-sm text-[#8B7355]">Qualified enquiries, assignments, and pipeline status.</p>
+<div class="leads-page">
+    <div class="leads-main">
+        <header class="leads-head fade-in">
+            <div>
+                <h1 class="leads-title">Leads</h1>
+                <p class="leads-subtitle">All captured leads and current follow-ups</p>
+            </div>
+            <div class="leads-actions">
+                <a class="ls-btn" href="{% url 'imports:import_upload' %}">Import</a>
+                <a class="ls-btn ls-btn-primary" href="{% url 'leads:create' %}">Create Lead</a>
+            </div>
+        </header>
+
+        <section class="metric-grid">
+            <article class="metric-card fade-in" style="--delay: 70ms">
+                <div class="metric-label">Total Leads</div>
+                <div class="metric-value">{{ total_leads }}</div>
+                <div class="leads-caption">Active this quarter</div>
+            </article>
+            <article class="metric-card fade-in" style="--delay: 140ms">
+                <div class="metric-label">New Leads</div>
+                <div class="metric-value">{{ new_leads }}</div>
+                <div class="leads-caption">Added in last 7 days</div>
+            </article>
+            <article class="metric-card fade-in" style="--delay: 210ms">
+                <div class="metric-label">Follow-ups Due</div>
+                <div class="metric-value">{{ followups_due }}</div>
+                <div class="leads-caption">Due within 48 hours</div>
+            </article>
+        </section>
+
+        <section class="chart-grid">
+            <article class="chart-card fade-in" style="--delay: 260ms">
+                <div class="chart-card-head">
+                    <div>
+                        <h2 class="section-title">Leads by Status</h2>
+                        <p class="leads-caption">Distribution across lifecycle</p>
+                    </div>
+                    <span class="leads-caption">Last 30 days</span>
+                </div>
+                <div class="chart-window">
+                    <div class="status-pie" aria-label="Leads by status chart"></div>
+                </div>
+            </article>
+
+            <article class="chart-card fade-in" style="--delay: 320ms">
+                <div class="chart-card-head">
+                    <div>
+                        <h2 class="section-title">Leads by Source</h2>
+                        <p class="leads-caption">Where leads are coming from</p>
+                    </div>
+                    <span class="leads-caption">Last 30 days</span>
+                </div>
+                <div class="chart-window">
+                    <div class="source-chart" aria-label="Leads by source chart">
+                        {% for bar in source_bars %}
+                            <span class="source-bar" style="--bar-height: {{ bar.height }}px; --bar-accent: {{ bar.accent }}px; --bar-index: {{ forloop.counter0 }}"></span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="fade-in" style="--delay: 380ms">
+            <div class="recent-head">
+                <h2 class="section-title">Recent</h2>
+                <span class="leads-caption">Updated moments ago</span>
+            </div>
+
+            <div class="lead-list">
+                {% for lead in leads|slice:":4" %}
+                    <article class="lead-row">
+                        <div class="lead-icon" aria-hidden="true">
+                            {% cycle "user" "phone" "briefcase" "person" as icon silent %}
+                            {% if icon == "phone" %}
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M6.6 10.8a15.3 15.3 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17.3 17.3 0 0 1 3 3.7c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1l-2.2 2.2Z"/></svg>
+                            {% elif icon == "briefcase" %}
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M9 4h6l1 3h4v13H4V7h4l1-3Zm2 2-.3 1h2.6L13 6h-2Zm-5 6v6h12v-6l-5 2v2h-2v-2l-5-2Zm0-3v.9l5 2.1h2l5-2.1V9H6Z"/></svg>
+                            {% else %}
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8c.5-3.5 3.4-6 7-6s6.5 2.5 7 6H5Z"/></svg>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a class="lead-name" href="{% url 'leads:detail' lead.pk %}">{{ lead.name }}</a>
+                            <div class="lead-meta">
+                                {{ lead.phone }}{% if lead.preferred_bhk %} · Preferred: {{ lead.get_preferred_bhk_display }}{% endif %}{% if lead.budget_max %} · Budget: ₹{{ lead.budget_max }}{% elif lead.budget %} · Budget: {{ lead.budget }}{% endif %}
+                            </div>
+                        </div>
+                        <div class="lead-assignee">
+                            {% if lead.assigned_agent %}
+                                Assigned to {{ lead.assigned_agent.user.first_name|default:lead.assigned_agent.user.email }}
+                            {% else %}
+                                Unassigned
+                            {% endif %}
+                        </div>
+                        <a class="ls-btn" href="{% url 'leads:edit' lead.pk %}">{% if lead.assigned_agent %}Edit{% else %}Assign{% endif %}</a>
+                        <a class="ls-btn ls-btn-primary" href="{% url 'leads:detail' lead.pk %}">Open</a>
+                    </article>
+                {% empty %}
+                    <article class="lead-row">
+                        <div class="lead-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8c.5-3.5 3.4-6 7-6s6.5 2.5 7 6H5Z"/></svg>
+                        </div>
+                        <div>
+                            <div class="lead-name">No leads found.</div>
+                            <div class="lead-meta">Create or import leads to fill this list.</div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="import-card fade-in" style="--delay: 440ms">
+            <div class="import-head">
+                <div>
+                    <h2 class="section-title">Import Leads</h2>
+                    <p class="leads-caption">Upload CSV or Excel to bulk-create leads</p>
+                </div>
+                <span class="leads-caption">Supported: .csv, .xlsx</span>
+            </div>
+
+            <form method="post" action="{% url 'imports:import_upload' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="target_model" value="lead">
+                <label class="dropzone">
+                    <input type="file" name="file" accept=".csv,.xlsx,.xls">
+                    <svg class="upload-icon" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M5 20h14V9h-4V4H5v16Zm9-14.5L17.5 9H14V5.5ZM11 17v-4H8l4-4 4 4h-3v4h-2Z"/></svg>
+                    <span>Drag and drop your CSV or Excel file here, or click to browse</span>
+                    <small>We will auto-map columns for you. Files are uploaded to Cloudinary.</small>
+                </label>
+            </form>
+        </section>
     </div>
-    <a href="{% url 'leads:create' %}" class="rounded-md border-2 border-[#8B5E34] bg-white px-5 py-2 text-base font-semibold text-[#8B5E34] shadow-sm">Create lead</a>
+
+    <aside class="side-stack">
+        <section class="side-card fade-in" style="--delay: 180ms">
+            <div class="side-title-row">
+                <h2 class="section-title">Quick</h2>
+                <span class="leads-caption">•••</span>
+            </div>
+            <div class="quick-buttons">
+                <a class="ls-btn ls-btn-primary" href="{% url 'accounts:team_invite' %}">Invite Agent</a>
+                <a class="ls-btn" href="{% url 'properties:create' %}">Create Property</a>
+                <a class="ls-btn" href="{% url 'imports:import_upload' %}">Upload &amp; Map Columns</a>
+            </div>
+        </section>
+
+        <section class="side-card fade-in" style="--delay: 260ms">
+            <h2 class="section-title" style="margin-bottom: 14px;">Recent Activity</h2>
+            <div class="activity-list">
+                {% for activity in recent_activity %}
+                    <div class="activity-item">
+                        <strong>{{ activity.content|truncatechars:42 }}</strong>
+                        <span class="activity-time">{{ activity.created_at|timesince }} ago</span>
+                    </div>
+                {% empty %}
+                    <div class="activity-item">
+                        <strong>No activity yet</strong>
+                        <span class="activity-time">Start by creating or importing leads</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </aside>
 </div>
-
-<form method="get" class="mb-6 grid gap-3 rounded-md border border-[#E5DFD5] bg-white p-4 md:grid-cols-5">
-    <input name="q" value="{{ filters.q }}" placeholder="Search name, phone, email" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm">
-    <select name="status" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm">
-        <option value="">All statuses</option>
-        {% for value,label in status_choices %}<option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
-    </select>
-    <select name="source" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm">
-        <option value="">All sources</option>
-        {% for value,label in source_choices %}<option value="{{ value }}" {% if filters.source == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
-    </select>
-    {% if is_owner %}
-    <select name="assigned_agent" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm">
-        <option value="">All agents</option>
-        {% for agent in agents %}<option value="{{ agent.pk }}" {% if filters.assigned_agent == agent.pk|stringformat:"s" %}selected{% endif %}>{{ agent.user.email }}</option>{% endfor %}
-    </select>
-    {% endif %}
-    <button class="rounded-md border border-[#8B5E34] px-4 py-2 text-sm text-[#5C4A33]">Filter</button>
-</form>
-
-<div class="overflow-hidden rounded-md border border-[#E5DFD5] bg-white">
-    <table class="w-full text-left text-sm">
-        <thead class="bg-[#F5F2EC] text-xs uppercase tracking-wide text-[#8B7355]">
-            <tr><th class="p-3">Lead</th><th class="p-3">Status</th><th class="p-3">Budget</th><th class="p-3">Preference</th><th class="p-3">Agent</th><th class="p-3"></th></tr>
-        </thead>
-        <tbody class="divide-y divide-[#EFE7DA]">
-            {% for lead in leads %}
-            <tr>
-                <td class="p-3"><a class="font-medium text-[#1C1C1A]" href="{% url 'leads:detail' lead.pk %}">{{ lead.name }}</a><div class="text-xs text-[#8B7355]">{{ lead.phone }} {{ lead.email }}</div></td>
-                <td class="p-3">{{ lead.get_status_display }}</td>
-                <td class="p-3">{{ lead.budget_min|default:"-" }} - {{ lead.budget_max|default:"-" }}</td>
-                <td class="p-3">{{ lead.preferred_location|default:"-" }} {{ lead.get_preferred_bhk_display }}</td>
-                <td class="p-3">
-                    {{ lead.assigned_agent.user.email|default:"Unassigned" }}
-                    {% if lead.assigned_agent and not lead.assigned_agent.is_active %}
-                        <span class="ml-2 inline-flex items-center rounded-full bg-red-50 px-2 py-1 text-[10px] font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Needs Reassignment</span>
-                    {% endif %}
-                </td>
-                <td class="p-3 text-right"><a class="text-[#8B5E34]" href="{% url 'leads:edit' lead.pk %}">Edit</a></td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="6" class="p-6 text-center text-[#8B7355]">No leads found.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-{% include "partials/pagination.html" %}
 {% endblock %}

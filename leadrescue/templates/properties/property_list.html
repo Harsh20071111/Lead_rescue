@@ -2,61 +2,237 @@
 
 {% block title %}Properties - LeadSathi{% endblock %}
 
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .props-page {
+        --copy: #2f241f;
+        --muted: #7e6f67;
+        --panel: #fffaf6;
+        --line: #efe3d8;
+        --primary: #b56a30;
+        --orange: #ff784b;
+        --peach: #ffe2d9;
+        --brown: #995f4c;
+        display: grid;
+        grid-template-columns: minmax(0, 940px) 320px;
+        gap: 32px;
+        align-items: start;
+    }
+
+    .props-main { min-width: 0; }
+
+    .props-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    .props-title {
+        color: var(--copy);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 34px;
+        font-weight: 400;
+        line-height: 1;
+        margin: 4px 0 7px;
+    }
+
+    .props-subtitle, .props-caption, .prop-meta {
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    .props-actions { display: flex; gap: 12px; padding-top: 2px; }
+
+    .ls-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-height: 38px; border-radius: 5px; border: 1px solid #5f524b;
+        background: transparent; color: var(--copy); padding: 0 17px;
+        font-size: 14px; font-weight: 500; text-decoration: none;
+        transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+    .ls-btn-primary { border-color: var(--primary); background: var(--primary); color: #fff; font-weight: 700; }
+    .ls-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(47,36,31,.08); }
+    .ls-btn:active { transform: translateY(0) scale(.98); }
+
+    .metric-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; margin-bottom: 24px; }
+    .metric-card, .filter-card, .side-card { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+    .metric-card { min-height: 125px; padding: 17px 17px 15px; }
+    .metric-label { color: var(--muted); font-size: 12px; margin-bottom: 18px; }
+    .metric-value { color: var(--copy); font-family: "Cormorant Garamond", serif; font-size: 29px; line-height: 1; margin-bottom: 12px; }
+
+    .filter-card { padding: 17px 16px; margin-bottom: 24px; }
+    .filter-grid { display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .filter-grid input, .filter-grid select {
+        padding: 10px 12px; border: 1px solid var(--line); border-radius: 5px;
+        font-size: 13px; color: var(--copy); background: #fff; outline: none;
+    }
+    .filter-grid input:focus, .filter-grid select:focus { border-color: var(--primary); }
+
+    .prop-list { border-bottom: 1px solid transparent; }
+
+    .prop-row {
+        display: grid;
+        grid-template-columns: 72px minmax(0,1fr) auto auto auto;
+        gap: 16px;
+        align-items: center;
+        min-height: 100px;
+        border-bottom: 1px solid var(--line);
+        transition: transform 160ms ease, background 160ms ease;
+    }
+    .prop-row:hover { background: #fffaf6; transform: translateX(3px); }
+
+    .prop-thumb {
+        width: 72px; height: 56px; border-radius: 6px; overflow: hidden;
+        background: #efe6dd; display: flex; align-items: center; justify-content: center;
+    }
+    .prop-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .prop-thumb span { color: #594a42; font-size: 10px; }
+
+    .prop-name { color: var(--copy); font-size: 14px; font-weight: 700; text-decoration: none; }
+    .prop-meta { font-size: 13px; }
+
+    .side-stack { display: grid; gap: 16px; padding-top: 2px; }
+    .side-card { padding: 17px 16px; }
+    .side-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+
+    .section-title {
+        color: var(--copy); font-family: "Cormorant Garamond", serif;
+        font-size: 19px; font-weight: 500; line-height: 1.1; margin: 0;
+    }
+
+    .fade-in { animation: fade-up 520ms cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--delay, 0ms); }
+    @keyframes fade-up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } .ls-btn, .prop-row { transition: none; } }
+    @media (max-width: 1120px) { .props-page { grid-template-columns: 1fr; } .side-stack { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 760px) {
+        .props-head { flex-direction: column; }
+        .metric-grid, .filter-grid, .side-stack { grid-template-columns: 1fr; }
+        .prop-row { grid-template-columns: 56px minmax(0,1fr) auto; gap: 12px; padding: 14px 0; }
+        .prop-thumb { width: 56px; height: 48px; }
+    }
+</style>
+{% endblock %}
+
 {% block app_content %}
-<div class="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-    <div>
-        <h1 class="text-4xl font-light text-[#1C1C1A]" style="font-family: 'Cormorant Garamond', serif;">Properties</h1>
-        <p class="text-sm text-[#8B7355]">Inventory visible through agency and assignment rules.</p>
-    </div>
-    <a href="{% url 'properties:create' %}" class="rounded-md border-2 border-[#8B5E34] bg-white px-5 py-2 text-base font-semibold text-[#8B5E34] shadow-sm">Create property</a>
-</div>
-
-<form method="get" class="mb-6 grid gap-3 rounded-md border border-[#E5DFD5] bg-white p-4 md:grid-cols-6">
-    <input name="q" value="{{ filters.q }}" placeholder="Search" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm">
-    <select name="status" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm">
-        <option value="">Any status</option>
-        {% for value,label in status_choices %}<option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
-    </select>
-    <select name="listing_type" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm">
-        <option value="">Sale or rent</option>
-        {% for value,label in listing_type_choices %}<option value="{{ value }}" {% if filters.listing_type == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
-    </select>
-    <select name="bhk" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm">
-        <option value="">Any BHK</option>
-        {% for value,label in bhk_choices %}<option value="{{ value }}" {% if filters.bhk == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
-    </select>
-    <input name="city" value="{{ filters.city }}" placeholder="City" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm">
-    <button class="rounded-md border border-[#8B5E34] px-4 py-2 text-sm text-[#5C4A33]">Filter</button>
-    <input name="min_price" value="{{ filters.min_price }}" placeholder="Min price" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm">
-    <input name="max_price" value="{{ filters.max_price }}" placeholder="Max price" class="rounded-md border border-[#D8CBB8] px-3 py-2 text-sm">
-</form>
-
-<div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-    {% for property in properties %}
-    <article class="overflow-hidden rounded-md border border-[#E5DFD5] bg-white">
-        <div class="aspect-[16/9] bg-[#F5F2EC]">
-            {% if property.primary_image %}
-                {# Use Cloudinary transformation for a thumbnail #}
-                <img src="{{ property.primary_image.image.url }}" alt="{{ property.title }}" class="h-full w-full object-cover">
-            {% else %}
-                <div class="flex h-full items-center justify-center text-sm text-[#8B7355]">No image</div>
-            {% endif %}
-        </div>
-        <div class="p-4">
-            <a href="{% url 'properties:detail' property.pk %}" class="text-lg font-semibold text-[#1C1C1A]">{{ property.title }}</a>
-            <p class="mt-1 text-sm text-[#8B7355]">{{ property.locality|default:property.location }}, {{ property.city }}</p>
-            <div class="mt-3 grid grid-cols-2 gap-2 text-sm text-[#5C4A33]">
-                <span>{{ property.get_bhk_display|default:"-" }}</span>
-                <span>{{ property.area_sqft|default:"-" }} sqft</span>
-                <span>{{ property.get_listing_type_display }}</span>
-                <span>{{ property.price }}</span>
+<div class="props-page">
+    <div class="props-main">
+        <header class="props-head fade-in">
+            <div>
+                <h1 class="props-title">Properties</h1>
+                <p class="props-subtitle">Inventory visible through agency and assignment rules</p>
             </div>
-        </div>
-    </article>
-    {% empty %}
-    <p class="text-sm text-[#8B7355]">No properties found.</p>
-    {% endfor %}
-</div>
+            <div class="props-actions">
+                <a class="ls-btn" href="{% url 'imports:import_upload' %}">Import</a>
+                <a class="ls-btn ls-btn-primary" href="{% url 'properties:create' %}">Create Property</a>
+            </div>
+        </header>
 
-{% include "partials/pagination.html" %}
+        <section class="metric-grid">
+            <article class="metric-card fade-in" style="--delay: 70ms">
+                <div class="metric-label">Total Properties</div>
+                <div class="metric-value">{{ properties.paginator.count|default:properties|length }}</div>
+                <div class="props-caption">In your portfolio</div>
+            </article>
+            <article class="metric-card fade-in" style="--delay: 140ms">
+                <div class="metric-label">Available</div>
+                <div class="metric-value">—</div>
+                <div class="props-caption">Ready for matching</div>
+            </article>
+            <article class="metric-card fade-in" style="--delay: 210ms">
+                <div class="metric-label">With Images</div>
+                <div class="metric-value">—</div>
+                <div class="props-caption">Photos uploaded</div>
+            </article>
+        </section>
+
+        <section class="filter-card fade-in" style="--delay: 260ms">
+            <form method="get" class="filter-grid">
+                <input name="q" value="{{ filters.q }}" placeholder="Search properties...">
+                <select name="status">
+                    <option value="">Any status</option>
+                    {% for value,label in status_choices %}<option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                </select>
+                <select name="listing_type">
+                    <option value="">Sale or rent</option>
+                    {% for value,label in listing_type_choices %}<option value="{{ value }}" {% if filters.listing_type == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                </select>
+                <select name="bhk">
+                    <option value="">Any BHK</option>
+                    {% for value,label in bhk_choices %}<option value="{{ value }}" {% if filters.bhk == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                </select>
+                <input name="city" value="{{ filters.city }}" placeholder="City">
+                <input name="min_price" value="{{ filters.min_price }}" placeholder="Min price">
+                <input name="max_price" value="{{ filters.max_price }}" placeholder="Max price">
+                <button class="ls-btn" style="grid-column: span 2;">Filter</button>
+            </form>
+        </section>
+
+        <section class="fade-in" style="--delay: 320ms">
+            <div class="prop-list">
+                {% for property in properties %}
+                    <article class="prop-row">
+                        <div class="prop-thumb">
+                            {% if property.primary_image %}
+                                <img src="{{ property.primary_image.image.url }}" alt="{{ property.title }}">
+                            {% else %}
+                                <span>No img</span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a class="prop-name" href="{% url 'properties:detail' property.pk %}">{{ property.title }}</a>
+                            <div class="prop-meta">{{ property.locality|default:property.location|default:"—" }}, {{ property.city|default:"—" }} &middot; {{ property.get_bhk_display|default:"-" }} &middot; ₹{{ property.price|default:"—" }}</div>
+                        </div>
+                        <div class="prop-meta">{{ property.get_status_display }}</div>
+                        <a class="ls-btn" href="{% url 'properties:edit' property.pk %}">Edit</a>
+                        <a class="ls-btn ls-btn-primary" href="{% url 'properties:detail' property.pk %}">Open</a>
+                    </article>
+                {% empty %}
+                    <article class="prop-row">
+                        <div class="prop-thumb"><span>—</span></div>
+                        <div>
+                            <div class="prop-name">No properties found.</div>
+                            <div class="prop-meta">Create or import properties to fill this list.</div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+
+        {% include "partials/pagination.html" %}
+    </div>
+
+    <aside class="side-stack">
+        <section class="side-card fade-in" style="--delay: 180ms">
+            <div class="side-title-row">
+                <h2 class="section-title">Quick</h2>
+                <span class="props-caption">•••</span>
+            </div>
+            <div style="display: grid; gap: 8px;">
+                <a class="ls-btn ls-btn-primary" href="{% url 'properties:create' %}">Create Property</a>
+                <a class="ls-btn" href="{% url 'leads:list' %}">View Leads</a>
+                <a class="ls-btn" href="{% url 'imports:import_upload' %}">Import Properties</a>
+            </div>
+        </section>
+
+        <section class="side-card fade-in" style="--delay: 260ms">
+            <h2 class="section-title" style="margin-bottom: 14px;">Filters</h2>
+            <div class="ls-activity-list">
+                <div class="ls-activity-item">
+                    <strong>Status</strong>
+                    <span class="props-caption">Available, Sold, Rented, Off-market</span>
+                </div>
+                <div class="ls-activity-item">
+                    <strong>Type</strong>
+                    <span class="props-caption">Sale, Rent, Lease</span>
+                </div>
+                <div class="ls-activity-item">
+                    <strong>BHK</strong>
+                    <span class="props-caption">Studio to 4+ BHK</span>
+                </div>
+            </div>
+        </section>
+    </aside>
+</div>
 {% endblock %}

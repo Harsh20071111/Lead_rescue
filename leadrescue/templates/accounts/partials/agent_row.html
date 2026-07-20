@@ -1,32 +1,32 @@
 <tr id="agent-row-{{ agent.pk }}">
-    <td class="p-3">
-        <div class="font-medium text-[#1C1C1A]">{{ agent.user.get_full_name|default:agent.user.email }}</div>
-        <div class="text-xs text-[#8B7355]">{{ agent.user.email }}</div>
+    <td>
+        <div style="font-weight: 500; color: var(--copy);">{{ agent.user.get_full_name|default:agent.user.email }}</div>
+        <div style="font-size: 12px; color: var(--muted);">{{ agent.user.email }}</div>
     </td>
-    <td class="p-3">{{ agent.get_role_display }}</td>
-    <td class="p-3">{{ agent.leads.count }}</td>
-    <td class="p-3">
+    <td>{{ agent.get_role_display }}</td>
+    <td>{{ agent.leads.count }}</td>
+    <td>
         {% if agent.is_active %}
-            <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>
+            <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; background: #dcfce7; color: #15803d;">Active</span>
         {% else %}
-            <span class="inline-flex items-center rounded-full bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Deactivated</span>
+            <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; background: #fee2e2; color: #dc2626;">Deactivated</span>
         {% endif %}
     </td>
-    <td class="p-3 text-right">
+    <td style="text-align: right;">
         {% if agent.user != request.user %}
             {% if agent.is_active %}
-                <form hx-post="{% url 'accounts:team_deactivate' agent.pk %}" hx-target="#agent-row-{{ agent.pk }}" hx-swap="outerHTML" class="inline">
+                <form hx-post="{% url 'accounts:team_deactivate' agent.pk %}" hx-target="#agent-row-{{ agent.pk }}" hx-swap="outerHTML" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" class="text-red-600 hover:text-red-800">Deactivate</button>
+                    <button type="submit" style="color: var(--red); font-size: 12px; font-weight: 500; background: none; border: none; cursor: pointer;">Deactivate</button>
                 </form>
             {% else %}
-                <form hx-post="{% url 'accounts:team_reactivate' agent.pk %}" hx-target="#agent-row-{{ agent.pk }}" hx-swap="outerHTML" class="inline">
+                <form hx-post="{% url 'accounts:team_reactivate' agent.pk %}" hx-target="#agent-row-{{ agent.pk }}" hx-swap="outerHTML" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" class="text-green-600 hover:text-green-800">Reactivate</button>
+                    <button type="submit" style="color: #15803d; font-size: 12px; font-weight: 500; background: none; border: none; cursor: pointer;">Reactivate</button>
                 </form>
             {% endif %}
         {% else %}
-            <span class="text-gray-400 text-xs">You</span>
+            <span style="color: var(--muted); font-size: 12px;">You</span>
         {% endif %}
     </td>
 </tr>
