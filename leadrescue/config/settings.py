@@ -164,6 +164,7 @@ if db_url.startswith("postgres"):
             'HOST': tmpPostgres.hostname,
             'PORT': 5432,
             'OPTIONS': dict(parse_qsl(tmpPostgres.query)),
+            'DISABLE_SERVER_SIDE_CURSORS': True,
         }
     }
 else:
@@ -173,6 +174,8 @@ else:
             default="sqlite:///db.sqlite3",
         ),
     }
+    if DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql":
+        DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = True
 
 # ==================================================
 # AUTHENTICATION
