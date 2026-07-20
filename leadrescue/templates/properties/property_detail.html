@@ -1,4 +1,5 @@
 {% extends "app_shell.html" %}
+{% load lead_extras %}
 
 {% block title %}{{ property.title }} - LeadSathi{% endblock %}
 
@@ -36,7 +37,7 @@
         color: var(--copy);
         font-family: "Cormorant Garamond", serif;
         font-size: 34px;
-        font-weight: 400;
+        font-weight: 700;
         line-height: 1;
         margin: 4px 0 7px;
     }
@@ -68,7 +69,7 @@
         margin-bottom: 16px;
     }
 
-    .section-title { color: var(--copy); font-family: "Cormorant Garamond", serif; font-size: 19px; font-weight: 500; line-height: 1.1; margin: 0 0 12px; }
+    .section-title { color: var(--copy); font-family: "Cormorant Garamond", serif; font-size: 19px; font-weight: 700; line-height: 1.1; margin: 0 0 12px; }
 
     .hero-image {
         width: 100%;
@@ -195,7 +196,7 @@
             <dl class="detail-grid" style="grid-template-columns: repeat(2, 1fr); gap: 16px;">
                 <div><dt>Project</dt><dd>{{ property.project_name|default:"-" }}</dd></div>
                 <div><dt>Builder</dt><dd>{{ property.builder|default:"-" }}</dd></div>
-                <div><dt>Price</dt><dd>₹{{ property.price }}</dd></div>
+                <div><dt>Price</dt><dd>{{ property.price|inr_full }}</dd></div>
                 <div><dt>BHK</dt><dd>{{ property.get_bhk_display|default:"-" }}</dd></div>
                 <div><dt>Area</dt><dd>{{ property.area_sqft|default:"-" }} sqft</dd></div>
                 <div><dt>Status</dt><dd>{{ property.get_status_display }}</dd></div>

@@ -1,4 +1,5 @@
 {% extends "app_shell.html" %}
+{% load lead_extras %}
 
 {% block title %}{{ lead.name }} - LeadSathi{% endblock %}
 
@@ -36,7 +37,7 @@
         color: var(--copy);
         font-family: "Cormorant Garamond", serif;
         font-size: 34px;
-        font-weight: 400;
+        font-weight: 700;
         line-height: 1;
         margin: 4px 0 7px;
     }
@@ -69,7 +70,7 @@
         margin-bottom: 16px;
     }
 
-    .section-title { color: var(--copy); font-family: "Cormorant Garamond", serif; font-size: 19px; font-weight: 500; line-height: 1.1; margin: 0 0 12px; }
+    .section-title { color: var(--copy); font-family: "Cormorant Garamond", serif; font-size: 19px; font-weight: 700; line-height: 1.1; margin: 0 0 12px; }
 
     .detail-grid { display: grid; gap: 12px; }
     .detail-grid dt { color: var(--muted); font-size: 13px; }
@@ -160,7 +161,7 @@
             <dl class="detail-grid" style="grid-template-columns: repeat(2, 1fr); gap: 16px;">
                 <div><dt>Status</dt><dd>{{ lead.get_status_display }}</dd></div>
                 <div><dt>Source</dt><dd>{{ lead.get_source_display }}</dd></div>
-                <div><dt>Budget</dt><dd>{{ lead.budget_min|default:"-" }} – {{ lead.budget_max|default:"-" }}</dd></div>
+                <div><dt>Budget</dt><dd>{% if lead.budget_min %}{{ lead.budget_min|inr_full }}{% else %}-{% endif %} – {% if lead.budget_max %}{{ lead.budget_max|inr_full }}{% else %}-{% endif %}</dd></div>
                 <div><dt>Preferred BHK</dt><dd>{{ lead.get_preferred_bhk_display|default:"-" }}</dd></div>
                 <div><dt>Preferred Location</dt><dd>{{ lead.preferred_location|default:"-" }}</dd></div>
                 <div><dt>Linked Property</dt><dd>{% if lead.linked_property %}<a class="match-name" href="{% url 'properties:detail' lead.linked_property.pk %}">{{ lead.linked_property }}</a>{% else %}—{% endif %}</dd></div>
@@ -194,7 +195,7 @@
                                         <a class="match-name" href="{% url 'properties:detail' match.object.pk %}">{{ match.object.title }}</a>
                                         <span class="match-score">{{ match.score|floatformat:0 }}%</span>
                                     </div>
-                                    <div class="match-meta">{{ match.object.locality|default:match.object.location }}, {{ match.object.city }} · {{ match.object.get_bhk_display|default:"-" }} · ₹{{ match.object.price }}</div>
+                                    <div class="match-meta">{{ match.object.locality|default:match.object.location }}, {{ match.object.city }} · {{ match.object.get_bhk_display|default:"-" }} · {{ match.object.price|inr_compact }}</div>
                                 </div>
                             </div>
                             {% if not lead.linked_property or lead.linked_property.pk != match.object.pk %}

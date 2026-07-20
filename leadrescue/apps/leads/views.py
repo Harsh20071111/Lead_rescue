@@ -13,24 +13,10 @@ from apps.accounts.models import AgentProfile
 from apps.core.mixins import AgencyScopedViewMixin, OwnerRequiredMixin
 from apps.leads.forms import ActivityForm, LeadAssignmentForm, LeadForm, TaskForm
 from apps.leads.models import Activity, Lead, Task
+from apps.leads.templatetags.lead_extras import inr_compact, STATUS_COLORS
 from apps.properties.models import Property
 from apps.whatsapp.services.client import WhatsAppClientError
 from apps.whatsapp.services.followup import send_followup_whatsapp
-
-
-def _format_indian_currency(value):
-    if value in (None, ""):
-        return ""
-    number = str(int(value))
-    if len(number) <= 3:
-        grouped = number
-    else:
-        grouped = f"{number[-3:]}"
-        number = number[:-3]
-        while number:
-            grouped = f"{number[-2:]},{grouped}"
-            number = number[:-2]
-    return f"₹{grouped}"
 
 
 class LeadListView(AgencyScopedViewMixin, ListView):
@@ -89,7 +75,11 @@ class LeadListView(AgencyScopedViewMixin, ListView):
         if not any(status_values):
             status_values = [25, 22, 31, 22]
         status_total = sum(status_values) or 1
-        status_colors = ["#995f4c", "#ff784b", "#cc603c", "#ffe2d9"]
+        status_color_map = {
+            value: STATUS_COLORS.get(value, "#78716c")
+            for value, label in Lead.LeadStatus.choices
+        }
+        status_colors = [status_color_map.get(value, "#78716c") for value, label in Lead.LeadStatus.choices[:4]]
         status_gradient_parts = []
         status_start = 0
         for index, value in enumerate(status_values[:4]):
@@ -109,7 +99,7 @@ class LeadListView(AgencyScopedViewMixin, ListView):
             lead_rows.append(
                 {
                     "lead": lead,
-                    "budget_display": _format_indian_currency(lead.budget_max) or lead.budget,
+                    "budget_display": inr_compact(lead.budget_max) or lead.budget,
                     "assignee": (
                         lead.assigned_agent.user.first_name
                         or lead.assigned_agent.user.email
@@ -118,6 +108,15 @@ class LeadListView(AgencyScopedViewMixin, ListView):
                     ),
                 }
             )
+
+        source_labels_list = [
+            label for value, label in Lead.LeadSource.choices if value in source_counts
+        ]
+        source_values_list = [
+            source_counts.get(value, 0) for value, _label in Lead.LeadSource.choices
+            if value in source_counts
+        ]
+        max_source_value = max(source_values_list) or 1
 
         context.update(
             {
@@ -135,12 +134,19 @@ class LeadListView(AgencyScopedViewMixin, ListView):
                     is_completed=False,
                 ).count(),
                 "recent_activity": recent_activity,
+                "source_counts": {k: v for k, v in source_counts.items()},
+                "status_counts": {k: v for k, v in status_counts.items()},
                 "source_bars": [
                     {
-                        "height": round((value / max_source_value) * 120),
+                        "value": source_values_list[index],
+                        "label": source_labels_list[index],
+                        "color": STATUS_COLORS.get(source_key, "#b56a30"),
+                        "height": round((source_values_list[index] / max_source_value) * 150),
                         "accent": round(((index % 3) + 1) * 18),
                     }
-                    for index, value in enumerate(source_values)
+                    for index, (source_key, source_label) in enumerate(
+                        (v, l) for v, l in Lead.LeadSource.choices if v in source_counts
+                    )
                 ],
                 "status_gradient": ", ".join(status_gradient_parts),
             }
@@ -204,6 +210,17 @@ class LeadCreateView(AgencyScopedViewMixin, CreateView):
             }
         )
         return kwargs
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        Activity.objects.create(
+            agency=self.agency,
+            lead=self.object,
+            agent=self.agent_profile,
+            activity_type=Activity.ActivityType.NOTE,
+            content=f"Lead created: {self.object.name} ({self.object.get_source_display()})",
+        )
+        return response
 
     def get_success_url(self):
         return reverse("leads:detail", kwargs={"pk": self.object.pk})

@@ -1,10 +1,21 @@
 {% extends "app_shell.html" %}
+{% load lead_extras %}
 
 {% block title %}Dashboard - LeadSathi{% endblock %}
 
 {% block extra_css %}
 {{ block.super }}
 <style>
+    :root {
+        --sc-new: #d97706;
+        --sc-contacted: #b56a30;
+        --sc-qualified: #995f4c;
+        --sc-site_visit: #7c4c3a;
+        --sc-negotiation: #6366f1;
+        --sc-converted: #15803d;
+        --sc-lost: #78716c;
+    }
+
     .dash-page {
         --copy: #2f241f;
         --muted: #7e6f67;
@@ -33,7 +44,7 @@
         color: var(--copy);
         font-family: "Cormorant Garamond", serif;
         font-size: 34px;
-        font-weight: 400;
+        font-weight: 700;
         line-height: 1;
         margin: 4px 0 7px;
     }
@@ -59,19 +70,41 @@
     .metric-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; margin-bottom: 24px; }
     .metric-card, .chart-card, .side-card { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
     .metric-card { min-height: 125px; padding: 17px 17px 15px; text-decoration: none; }
-    .metric-label { color: var(--muted); font-size: 12px; margin-bottom: 18px; }
-    .metric-value { color: var(--copy); font-family: "Cormorant Garamond", serif; font-size: 29px; line-height: 1; margin-bottom: 12px; }
+    .metric-label { color: var(--muted); font-size: 12px; margin-bottom: 14px; text-transform: uppercase; letter-spacing: .04em; }
+    .metric-value { font-size: 29px; line-height: 1; margin-bottom: 4px; }
+
+    .stat-figure {
+        font-family: "Inter", system-ui, -apple-system, sans-serif;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: -0.02em;
+    }
+
+    .trend-line { font-size: 12px; margin-bottom: 12px; }
+    .trend-up { color: #15803d; }
+    .trend-down { color: #b91c1c; }
+    .trend-flat { color: var(--muted); }
 
     .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 26px; }
-    .chart-card { height: 320px; padding: 20px 16px 16px; }
-    .chart-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-    .section-title { color: var(--copy); font-family: "Cormorant Garamond", serif; font-size: 19px; font-weight: 500; line-height: 1.1; margin: 0; }
-    .chart-window { height: 220px; }
+    .chart-card { display: flex; flex-direction: column; height: auto; min-height: 425px; padding: 20px 16px 16px; }
+    .chart-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-shrink: 0; }
+    .section-title { color: var(--copy); font-family: "Cormorant Garamond", serif; font-size: 19px; font-weight: 700; line-height: 1.1; margin: 0; }
+    .chart-window { flex: 1; height: auto; margin-bottom: 14px; }
+
+    .chart-legend { display: flex; flex-wrap: wrap; gap: 10px 18px; font-size: 13px; padding-top: 4px; flex-shrink: 0; }
+    .legend-dot { display: inline-block; width: 9px; height: 9px; border-radius: 999px; margin-right: 5px; vertical-align: middle; }
+    .legend-label { color: var(--muted); }
+    .legend-value { color: var(--copy); font-weight: 600; }
+
+    .bar-chart-wrap { display: flex; align-items: flex-end; gap: 12px; height: 170px; padding: 0 8px 26px; }
+    .bar-col { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 0; }
+    .bar-label { color: var(--muted); font-size: 11px; text-align: center; margin-top: 6px; line-height: 1.2; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bar-value { font-size: 11px; font-weight: 600; color: var(--copy); margin-bottom: 3px; }
+    .bar-fill { width: 100%; max-width: 40px; border-radius: 4px 4px 0 0; min-height: 4px; transition: height 600ms cubic-bezier(.2,.8,.2,1); }
 
     .activity-card { padding: 17px 16px; }
     .activity-list { display: grid; gap: 14px; font-size: 14px; }
     .activity-item strong { display: block; color: var(--copy); font-weight: 500; line-height: 1.25; }
-    .activity-time { color: var(--muted); font-size: 14px; }
+    .activity-time { color: var(--muted); font-size: 13px; }
 
     .side-stack { display: grid; gap: 16px; padding-top: 2px; }
     .side-card { padding: 17px 16px; }
@@ -105,36 +138,54 @@
         </header>
 
         <section class="metric-grid">
+            {% with t=trends.total_leads %}
             <a href="{% url 'leads:list' %}" class="metric-card fade-in" style="--delay: 70ms">
                 <div class="metric-label">Total Leads</div>
-                <div class="metric-value">{{ stats.total_leads }}</div>
+                <div class="metric-value"><span class="stat-figure">{{ stats.total_leads }}</span></div>
+                {% if t.delta is not None %}<div class="trend-line trend-{{ t.direction }}">{% if t.direction == "up" %}▲{% elif t.direction == "down" %}▼{% else %}–{% endif %} {% if t.delta != 0 %}{{ t.delta|floatformat:1 }}%{% endif %} vs last month</div>{% endif %}
                 <div class="dash-caption">Active this quarter</div>
             </a>
+            {% endwith %}
+            {% with t=trends.new_leads %}
             <a href="{% url 'leads:list' %}?status=new" class="metric-card fade-in" style="--delay: 140ms">
                 <div class="metric-label">New Leads</div>
-                <div class="metric-value">{{ stats.new_leads }}</div>
+                <div class="metric-value"><span class="stat-figure">{{ stats.new_leads }}</span></div>
+                {% if t.delta is not None %}<div class="trend-line trend-{{ t.direction }}">{% if t.direction == "up" %}▲{% elif t.direction == "down" %}▼{% else %}–{% endif %} {% if t.delta != 0 %}{{ t.delta|floatformat:1 }}%{% endif %} vs last month</div>{% endif %}
                 <div class="dash-caption">Added in last 7 days</div>
             </a>
+            {% endwith %}
+            {% with t=trends.followups_today %}
             <a href="{% url 'leads:tasks' %}?due=today" class="metric-card fade-in" style="--delay: 210ms">
                 <div class="metric-label">Follow-ups Today</div>
-                <div class="metric-value">{{ stats.followups_today }}</div>
+                <div class="metric-value"><span class="stat-figure">{{ stats.followups_today }}</span></div>
+                {% if t.delta is not None %}<div class="trend-line trend-{{ t.direction }}">{% if t.direction == "up" %}▲{% elif t.direction == "down" %}▼{% else %}–{% endif %} {% if t.delta != 0 %}{{ t.delta|floatformat:1 }}%{% endif %} vs last month</div>{% endif %}
                 <div class="dash-caption">Due within 48 hours</div>
             </a>
+            {% endwith %}
+            {% with t=trends.missed_followups %}
             <a href="{% url 'leads:tasks' %}?due=missed" class="metric-card fade-in" style="--delay: 280ms">
                 <div class="metric-label">Missed Follow-ups</div>
-                <div class="metric-value">{{ stats.missed_followups }}</div>
+                <div class="metric-value"><span class="stat-figure">{{ stats.missed_followups }}</span></div>
+                {% if t.delta is not None %}<div class="trend-line trend-{{ t.direction }}">{% if t.direction == "up" %}▲{% elif t.direction == "down" %}▼{% else %}–{% endif %} {% if t.delta != 0 %}{{ t.delta|floatformat:1 }}%{% endif %} vs last month</div>{% endif %}
                 <div class="dash-caption">Overdue tasks</div>
             </a>
+            {% endwith %}
+            {% with t=trends.site_visits %}
             <a href="{% url 'leads:list' %}?status=site_visit" class="metric-card fade-in" style="--delay: 350ms">
                 <div class="metric-label">Site Visits</div>
-                <div class="metric-value">{{ stats.site_visits }}</div>
+                <div class="metric-value"><span class="stat-figure">{{ stats.site_visits }}</span></div>
+                {% if t.delta is not None %}<div class="trend-line trend-{{ t.direction }}">{% if t.direction == "up" %}▲{% elif t.direction == "down" %}▼{% else %}–{% endif %} {% if t.delta != 0 %}{{ t.delta|floatformat:1 }}%{% endif %} vs last month</div>{% endif %}
                 <div class="dash-caption">Scheduled visits</div>
             </a>
+            {% endwith %}
+            {% with t=trends.closed_deals %}
             <a href="{% url 'leads:list' %}?status=converted" class="metric-card fade-in" style="--delay: 420ms">
                 <div class="metric-label">Closed Deals</div>
-                <div class="metric-value">{{ stats.closed_deals }}</div>
+                <div class="metric-value"><span class="stat-figure">{{ stats.closed_deals }}</span></div>
+                {% if t.delta is not None %}<div class="trend-line trend-{{ t.direction }}">{% if t.direction == "up" %}▲{% elif t.direction == "down" %}▼{% else %}–{% endif %} {% if t.delta != 0 %}{{ t.delta|floatformat:1 }}%{% endif %} vs last month</div>{% endif %}
                 <div class="dash-caption">Successfully converted</div>
             </a>
+            {% endwith %}
         </section>
 
         <section class="chart-grid">
@@ -149,6 +200,7 @@
                 <div class="chart-window">
                     <canvas id="statusChart"></canvas>
                 </div>
+                <div class="chart-legend" id="statusLegend"></div>
             </article>
 
             <article class="chart-card fade-in" style="--delay: 540ms">
@@ -162,6 +214,7 @@
                 <div class="chart-window">
                     <canvas id="sourceChart"></canvas>
                 </div>
+                <div class="chart-legend" id="sourceLegend"></div>
             </article>
         </section>
 
@@ -178,10 +231,17 @@
                         <span class="activity-time">{{ activity.created_at|date:"M j, Y H:i" }}</span>
                     </div>
                 {% empty %}
-                    <div class="activity-item">
-                        <strong>No activity yet</strong>
-                        <span class="activity-time">Start by creating or importing leads</span>
-                    </div>
+                    {% if stats.total_leads > 0 %}
+                        <div class="activity-item">
+                            <strong>Activity entries being logged</strong>
+                            <span class="activity-time">Activity tracking is now active for new leads.</span>
+                        </div>
+                    {% else %}
+                        <div class="activity-item">
+                            <strong>No activity yet</strong>
+                            <span class="activity-time">Start by creating or importing leads</span>
+                        </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         </section>
@@ -224,16 +284,88 @@
 {% block extra_js %}
 {{ block.super }}
 <script>
-const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+const statusLabels = {{ status_labels|safe }};
+const statusValues = {{ status_values|safe }};
+const statusColors = {{ status_colors|safe }};
+const statusPct = {{ status_pct|safe }};
+
+const sourceLabels = {{ source_labels|safe }};
+const sourceValues = {{ source_values|safe }};
+const sourceColors = {{ source_colors|safe }};
+
+// Bar chart
 new Chart(document.getElementById("statusChart"), {
     type: "bar",
-    data: { labels: {{ status_labels }}, datasets: [{ data: {{ status_values }}, backgroundColor: "#b56a30" }] },
-    options: { ...chartOptions, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { precision: 0 } } } }
+    data: {
+        labels: statusLabels,
+        datasets: [{
+            data: statusValues,
+            backgroundColor: statusColors,
+            borderRadius: 4,
+        }]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: function(ctx) { return ctx.parsed.y + ' leads'; } } }
+        },
+        scales: {
+            x: {
+                grid: { display: false },
+                ticks: { font: { size: 11 }, maxRotation: 45 }
+            },
+            y: { beginAtZero: true, ticks: { precision: 0, font: { size: 11 } } }
+        }
+    }
 });
+
+// Doughnut chart
 new Chart(document.getElementById("sourceChart"), {
     type: "doughnut",
-    data: { labels: {{ source_labels }}, datasets: [{ data: {{ source_values }}, backgroundColor: ["#b56a30", "#ff784b", "#995f4c", "#ffe2d9", "#efe3d8"], borderWidth: 0, hoverOffset: 6 }] },
-    options: { responsive: true, maintainAspectRatio: false, cutout: "72%", plugins: { legend: { display: false } } }
+    data: {
+        labels: sourceLabels,
+        datasets: [{
+            data: sourceValues,
+            backgroundColor: sourceColors,
+            borderWidth: 0,
+            hoverOffset: 6
+        }]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        cutout: "68%",
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(ctx) {
+                        var total = ctx.dataset.data.reduce(function(a,b) { return a + b; }, 0);
+                        var pct = Math.round((ctx.parsed / total) * 100);
+                        return ctx.label + ': ' + ctx.parsed + ' (' + pct + '%)';
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Build status legend
+var statusLegendEl = document.getElementById('statusLegend');
+statusLabels.forEach(function(label, i) {
+    var item = document.createElement('span');
+    item.innerHTML = '<span class="legend-dot" style="background:' + statusColors[i] + '"></span><span class="legend-label">' + label + '</span> <span class="legend-value">' + statusPct[i] + '%</span>';
+    statusLegendEl.appendChild(item);
+});
+
+// Build source legend
+var sourceLegendEl = document.getElementById('sourceLegend');
+var sourceTotal = sourceValues.reduce(function(a,b) { return a + b; }, 0);
+sourceLabels.forEach(function(label, i) {
+    var pct = sourceTotal > 0 ? Math.round((sourceValues[i] / sourceTotal) * 100) : 0;
+    var item = document.createElement('span');
+    item.innerHTML = '<span class="legend-dot" style="background:' + sourceColors[i] + '"></span><span class="legend-label">' + label + '</span> <span class="legend-value">' + sourceValues[i] + '</span>';
+    sourceLegendEl.appendChild(item);
 });
 </script>
 {% endblock %}

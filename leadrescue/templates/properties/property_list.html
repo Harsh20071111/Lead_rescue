@@ -1,4 +1,5 @@
 {% extends "app_shell.html" %}
+{% load lead_extras %}
 
 {% block title %}Properties - LeadSathi{% endblock %}
 
@@ -33,7 +34,7 @@
         color: var(--copy);
         font-family: "Cormorant Garamond", serif;
         font-size: 34px;
-        font-weight: 400;
+        font-weight: 700;
         line-height: 1;
         margin: 4px 0 7px;
     }
@@ -124,7 +125,7 @@
 
     .section-title {
         color: var(--copy); font-family: "Cormorant Garamond", serif;
-        font-size: 19px; font-weight: 500; line-height: 1.1; margin: 0;
+        font-size: 19px; font-weight: 700; line-height: 1.1; margin: 0;
     }
 
     .fade-in { animation: fade-up 520ms cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--delay, 0ms); }
@@ -216,7 +217,7 @@
                         </div>
                         <div>
                             <a class="prop-name" href="{% url 'properties:detail' property.pk %}">{{ property.title }}</a>
-                            <div class="prop-meta">{{ property.locality|default:property.location|default:"—" }}, {{ property.city|default:"—" }} &middot; {{ property.get_bhk_display|default:"-" }} &middot; ₹{{ property.price|default:"—" }}</div>
+                            <div class="prop-meta">{{ property.locality|default:property.location|default:"—" }}, {{ property.city|default:"—" }} &middot; {{ property.get_bhk_display|default:"-" }} &middot; {{ property.price|inr_compact }}</div>
                         </div>
                         <div class="prop-meta">{{ property.get_status_display }}</div>
                         <a class="ls-btn" href="{% url 'properties:edit' property.pk %}">Edit</a>

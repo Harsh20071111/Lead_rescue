@@ -8,7 +8,7 @@ from celery import shared_task
 from django.db import transaction
 
 from apps.imports.models import ImportJob
-from apps.leads.models import Lead
+from apps.leads.models import Activity, Lead
 from apps.properties.models import Property
 from apps.whatsapp.services.qualification import parse_budget, parse_bhk
 
@@ -172,7 +172,7 @@ def _process_lead_row(job, row, mapping):
             status_val = choice[0]
             break
 
-    Lead.objects.create(
+    lead = Lead.objects.create(
         agency=job.agency,
         assigned_agent=job.initiated_by,
         name=name,
@@ -188,6 +188,13 @@ def _process_lead_row(job, row, mapping):
         preferred_location=location_raw,
         area_preference=location_raw,
         notes=notes_raw,
+    )
+    Activity.objects.create(
+        agency=job.agency,
+        lead=lead,
+        agent=job.initiated_by,
+        activity_type=Activity.ActivityType.NOTE,
+        content=f"Imported: {name}",
     )
     return True, ""
 

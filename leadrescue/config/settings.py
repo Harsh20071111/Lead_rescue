@@ -360,7 +360,7 @@ FIELD_ENCRYPTION_KEY = env("FIELD_ENCRYPTION_KEY", default=SECRET_KEY)
 # ADMIN SECURITY
 # ==================================================
 
-ADMIN_URL = env("ADMIN_URL", default="harsh-admin")
+ADMIN_URL = env("ADMIN_URL", default="harsh-admin/")
 
 # ==================================================
 # EMAIL

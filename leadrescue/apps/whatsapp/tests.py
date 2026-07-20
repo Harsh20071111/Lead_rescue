@@ -190,9 +190,12 @@ class WhatsAppPhase45Tests(TestCase):
 
     # ---- (b) Multi-tenant isolation ----
 
+    @patch("apps.whatsapp.services.qualification.send_document_message")
+    @patch("apps.whatsapp.services.qualification.send_text_reply")
     @patch("apps.whatsapp.services.qualification.send_list_message")
     @patch("apps.whatsapp.services.qualification.send_button_message")
-    def test_two_agencies_no_crossover(self, send_btn, send_list):
+    @patch("apps.whatsapp.services.qualification.send_text")
+    def test_two_agencies_no_crossover(self, send_text, send_btn, send_list, send_text_reply, send_doc):
         phones = {
             "phone-a": ("919900001111", "A"),
             "phone-b": ("919900002222", "B"),
@@ -222,10 +225,11 @@ class WhatsAppPhase45Tests(TestCase):
 
     # ---- (c) Property without brochure is skipped ----
 
+    @patch("apps.whatsapp.services.qualification.send_text_reply")
     @patch("apps.whatsapp.services.qualification.send_list_message")
     @patch("apps.whatsapp.services.qualification.send_button_message")
     @patch("apps.whatsapp.services.qualification.send_document_message")
-    def test_property_without_brochure_skipped_gracefully(self, send_doc, send_btn, send_list):
+    def test_property_without_brochure_skipped_gracefully(self, send_doc, send_btn, send_list, send_text_reply):
         # Only create a property without brochure
         Property.objects.all().delete()
         prop = Property.objects.create(
