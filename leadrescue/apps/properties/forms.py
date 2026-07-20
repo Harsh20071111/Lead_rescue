@@ -1,9 +1,13 @@
+import logging
 import os
 from PIL import Image, UnidentifiedImageError
 from django import forms
+from django.contrib import messages
 from django.core.exceptions import ValidationError
 
 from apps.properties.models import Property, PropertyImage
+
+logger = logging.getLogger(__name__)
 
 
 class MultipleFileInput(forms.ClearableFileInput):
@@ -63,11 +67,12 @@ class PropertyForm(forms.ModelForm):
             "description": forms.Textarea(attrs={"rows": 4}),
         }
 
-    def __init__(self, *args, agency, agent_profile, is_owner, **kwargs):
+    def __init__(self, *args, agency, agent_profile, is_owner, request=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.agency = agency
         self.agent_profile = agent_profile
         self.is_owner = is_owner
+        self._request = request
 
         if is_owner:
             self.fields["assigned_agent"].queryset = agency.agents.filter(is_active=True)
@@ -140,12 +145,24 @@ class PropertyForm(forms.ModelForm):
             property_obj.save()
 
             uploaded_images = self.cleaned_data.get("images", [])
+            failed_count = 0
             for idx, img in enumerate(uploaded_images):
-                is_primary = idx == 0 and not property_obj.images.exists()
-                PropertyImage.objects.create(
-                    property=property_obj,
-                    image=img,
-                    is_primary=is_primary,
+                try:
+                    is_primary = idx == 0 and not property_obj.images.exists()
+                    PropertyImage.objects.create(
+                        property=property_obj,
+                        image=img,
+                        is_primary=is_primary,
+                    )
+                except Exception as e:
+                    logger.exception("Failed to upload image %d for property %d: %s", idx, property_obj.pk, e)
+                    failed_count += 1
+
+            if failed_count and self._request:
+                total = len(uploaded_images)
+                messages.warning(
+                    self._request,
+                    f"{failed_count} of {total} image(s) failed to upload. The property was created.",
                 )
 
         return property_obj

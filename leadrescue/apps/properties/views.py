@@ -105,6 +105,7 @@ class PropertyCreateView(AgencyScopedViewMixin, CreateView):
                 "agency": self.agency,
                 "agent_profile": self.agent_profile,
                 "is_owner": self.is_owner(),
+                "request": self.request,
             }
         )
         return kwargs
@@ -128,6 +129,7 @@ class PropertyUpdateView(AgencyScopedViewMixin, UpdateView):
                 "agency": self.agency,
                 "agent_profile": self.agent_profile,
                 "is_owner": self.is_owner(),
+                "request": self.request,
             }
         )
         return kwargs
