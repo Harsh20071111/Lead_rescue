@@ -13,6 +13,14 @@ logger = logging.getLogger(__name__)
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
 
+    def value_from_datadict(self, data, files, name):
+        if hasattr(files, 'getlist'):
+            return files.getlist(name)
+        value = files.get(name)
+        if value:
+            return [value]
+        return []
+
 
 class MultipleFileField(forms.FileField):
     widget = MultipleFileInput
@@ -43,6 +51,11 @@ class PropertyForm(forms.ModelForm):
         required=False,
         label="Property Images",
         help_text="Select up to 10 images (max 5MB each, JPG/PNG/WebP only).",
+    )
+    brochure_file = forms.FileField(
+        required=False,
+        label="Brochure PDF",
+        help_text="Upload a brochure PDF for WhatsApp bot delivery.",
     )
 
     class Meta:
@@ -140,6 +153,13 @@ class PropertyForm(forms.ModelForm):
 
         if not self.is_owner:
             property_obj.assigned_agent = self.agent_profile
+
+        brochure = self.cleaned_data.get("brochure_file")
+        if brochure:
+            brochure.seek(0)
+            from cloudinary import uploader
+            result = uploader.upload(brochure, resource_type="raw", folder="brochures/")
+            property_obj.brochure_pdf = result.get("public_id")
 
         if commit:
             property_obj.save()

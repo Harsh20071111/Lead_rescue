@@ -74,7 +74,7 @@
 
     .prop-row {
         display: grid;
-        grid-template-columns: 72px minmax(0,1fr) auto auto auto;
+        grid-template-columns: 120px minmax(0,1fr) auto auto auto;
         gap: 16px;
         align-items: center;
         min-height: 100px;
@@ -84,11 +84,36 @@
     .prop-row:hover { background: #fffaf6; transform: translateX(3px); }
 
     .prop-thumb {
-        width: 72px; height: 56px; border-radius: 6px; overflow: hidden;
+        width: 120px; height: 80px; border-radius: 6px; overflow: hidden;
         background: #efe6dd; display: flex; align-items: center; justify-content: center;
+        position: relative;
     }
     .prop-thumb img { width: 100%; height: 100%; object-fit: cover; }
     .prop-thumb span { color: #594a42; font-size: 10px; }
+
+    .carousel-track {
+        display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+        scroll-behavior: smooth; width: 100%; height: 100%;
+        -ms-overflow-style: none; scrollbar-width: none;
+    }
+    .carousel-track::-webkit-scrollbar { display: none; }
+    .carousel-track img {
+        flex: 0 0 100%; width: 100%; height: 100%;
+        object-fit: cover; scroll-snap-align: start;
+    }
+    
+    .carousel-btn {
+        position: absolute; top: 50%; transform: translateY(-50%);
+        background: rgba(0,0,0,0.5); color: #fff;
+        border: none; width: 24px; height: 24px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; opacity: 0; transition: opacity 0.2s, background 0.2s;
+        font-size: 16px; font-weight: bold; line-height: 1; padding-bottom: 2px;
+    }
+    .prop-thumb:hover .carousel-btn { opacity: 1; }
+    .carousel-btn:hover { background: rgba(0,0,0,0.8); }
+    .carousel-btn.prev { left: 4px; }
+    .carousel-btn.next { right: 4px; }
 
     .prop-name { color: var(--copy); font-size: 14px; font-weight: 700; text-decoration: none; }
     .prop-meta { font-size: 13px; }
@@ -109,8 +134,9 @@
     @media (max-width: 760px) {
         .props-head { flex-direction: column; }
         .metric-grid, .filter-grid, .side-stack { grid-template-columns: 1fr; }
-        .prop-row { grid-template-columns: 56px minmax(0,1fr) auto; gap: 12px; padding: 14px 0; }
-        .prop-thumb { width: 56px; height: 48px; }
+        .prop-row { grid-template-columns: 80px minmax(0,1fr) auto; gap: 12px; padding: 14px 0; }
+        .prop-thumb { width: 80px; height: 56px; }
+        .carousel-btn { width: 20px; height: 20px; font-size: 14px; }
     }
 </style>
 {% endblock %}
@@ -173,9 +199,17 @@
             <div class="prop-list">
                 {% for property in properties %}
                     <article class="prop-row">
-                        <div class="prop-thumb">
-                            {% if property.primary_image %}
-                                <img src="{{ property.primary_image.image.url }}" alt="{{ property.title }}">
+                        <div class="prop-thumb carousel">
+                            {% if property.images.all %}
+                                <div class="carousel-track" id="carousel-{{ property.pk }}">
+                                    {% for img in property.images.all %}
+                                        <img src="{{ img.image.url }}" alt="{{ property.title }}" loading="lazy">
+                                    {% endfor %}
+                                </div>
+                                {% if property.images.all|length > 1 %}
+                                    <button type="button" class="carousel-btn prev" onclick="scrollCarousel(event, 'carousel-{{ property.pk }}', -1)">‹</button>
+                                    <button type="button" class="carousel-btn next" onclick="scrollCarousel(event, 'carousel-{{ property.pk }}', 1)">›</button>
+                                {% endif %}
                             {% else %}
                                 <span>No img</span>
                             {% endif %}
@@ -235,4 +269,14 @@
         </section>
     </aside>
 </div>
+<script>
+    function scrollCarousel(event, id, direction) {
+        event.preventDefault();
+        event.stopPropagation();
+        const track = document.getElementById(id);
+        if (track) {
+            track.scrollBy({ left: track.clientWidth * direction, behavior: 'smooth' });
+        }
+    }
+</script>
 {% endblock %}

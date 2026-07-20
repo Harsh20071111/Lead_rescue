@@ -1,5 +1,8 @@
 import hashlib
 import hmac
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def verify_signature(body, signature_header, app_secret):
@@ -22,8 +25,23 @@ def iter_inbound_messages(payload):
 
 
 def message_text(message):
+    """Extract text from an inbound message (text or interactive reply)."""
     message_type = message.get("type")
     if message_type == "text":
         return message.get("text", {}).get("body", "").strip()
-    return f"[{message_type or 'unsupported'} message]"
+    if message_type == "interactive":
+        interactive = message.get("interactive", {})
+        reply_type = interactive.get("type")
+        if reply_type == "list_reply":
+            reply = interactive.get("list_reply", {})
+            return reply.get("id", "").strip()
+        if reply_type == "button_reply":
+            reply = interactive.get("button_reply", {})
+            return reply.get("id", "").strip()
+    logger.debug("Unhandled message type %s: %s", message_type, message)
+    return ""
 
+
+def message_is_interactive(message):
+    """Check if the inbound message is an interactive reply."""
+    return message.get("type") == "interactive"

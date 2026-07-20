@@ -19,17 +19,21 @@ from apps.whatsapp.tasks import process_whatsapp_webhook
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_BUDGET_BRACKETS = ["Under 50L", "50L–1Cr", "1Cr–2Cr", "2Cr+"]
+
 
 class WhatsAppSettingsView(OwnerRequiredMixin, View):
     template_name = "whatsapp/settings.html"
 
     def get(self, request):
+        brackets = self.agency.budget_brackets or DEFAULT_BUDGET_BRACKETS
         form = WhatsAppSettingsForm(
             agency=self.agency,
             initial={
                 "phone_number_id": self.agency.whatsapp_phone_number_id,
                 "business_account_id": self.agency.whatsapp_business_account_id,
                 "display_name": self.agency.whatsapp_display_name,
+                "budget_brackets": ", ".join(brackets),
             },
         )
         return render(request, self.template_name, {"form": form, "agency": self.agency})
@@ -37,16 +41,25 @@ class WhatsAppSettingsView(OwnerRequiredMixin, View):
     def post(self, request):
         form = WhatsAppSettingsForm(request.POST, agency=self.agency)
         if form.is_valid():
-            self.agency.whatsapp_phone_number_id = form.cleaned_data["phone_number_id"]
-            self.agency.whatsapp_business_account_id = form.cleaned_data["business_account_id"]
-            self.agency.whatsapp_access_token = form.cleaned_data["access_token"]
-            self.agency.whatsapp_display_name = (
-                form.cleaned_data["display_name"]
-                or form.cleaned_data["meta_details"].get("verified_name")
-                or self.agency.name
-            )
-            self.agency.whatsapp_status = Agency.WhatsAppStatus.CONNECTED
-            self.agency.whatsapp_connected_at = timezone.now()
+            phone_number_id = form.cleaned_data.get("phone_number_id", "").strip()
+
+            if phone_number_id:
+                # Connect mode
+                self.agency.whatsapp_phone_number_id = phone_number_id
+                self.agency.whatsapp_business_account_id = form.cleaned_data["business_account_id"]
+                self.agency.whatsapp_access_token = form.cleaned_data["access_token"]
+                self.agency.whatsapp_display_name = (
+                    form.cleaned_data["display_name"]
+                    or form.cleaned_data.get("meta_details", {}).get("verified_name")
+                    or self.agency.name
+                )
+                self.agency.whatsapp_status = Agency.WhatsAppStatus.CONNECTED
+                self.agency.whatsapp_connected_at = timezone.now()
+
+            brackets = form.cleaned_data.get("budget_brackets")
+            if brackets is not None:
+                self.agency.budget_brackets = brackets
+
             self.agency.save(
                 update_fields=[
                     "whatsapp_phone_number_id",
@@ -55,9 +68,10 @@ class WhatsAppSettingsView(OwnerRequiredMixin, View):
                     "whatsapp_display_name",
                     "whatsapp_status",
                     "whatsapp_connected_at",
+                    "budget_brackets",
                 ]
             )
-            messages.success(request, "WhatsApp connection saved.")
+            messages.success(request, "WhatsApp settings saved.")
             return redirect("whatsapp:settings")
         return render(request, self.template_name, {"form": form, "agency": self.agency})
 

@@ -12,8 +12,8 @@ class WhatsAppMessageInline(admin.TabularInline):
 
 @admin.register(WhatsAppConversation)
 class WhatsAppConversationAdmin(admin.ModelAdmin):
-    list_display = ("agency", "customer_phone", "state", "lead", "is_active", "updated_at")
-    list_filter = ("state", "is_active", "agency")
+    list_display = ("agency", "customer_phone", "state", "purpose", "bhk", "budget_bracket", "locality", "lead", "is_active", "updated_at")
+    list_filter = ("state", "is_active", "agency", "purpose")
     search_fields = ("customer_phone", "lead__name")
     readonly_fields = ("created_at", "updated_at")
     inlines = [WhatsAppMessageInline]
@@ -25,4 +25,3 @@ class WhatsAppMessageAdmin(admin.ModelAdmin):
     list_filter = ("direction",)
     search_fields = ("message_id", "content", "conversation__customer_phone")
     readonly_fields = ("created_at",)
-

@@ -18,7 +18,7 @@ class PropertyListView(AgencyScopedViewMixin, ListView):
 
     def get_queryset(self):
         queryset = self.scope_queryset_for_profile(
-            Property.objects.select_related("agency", "assigned_agent__user")
+            Property.objects.select_related("agency", "assigned_agent__user").prefetch_related("images")
         ).order_by("-created_at")
 
         status = self.request.GET.get("status")

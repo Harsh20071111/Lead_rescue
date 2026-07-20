@@ -15,11 +15,53 @@
 
 <div class="grid gap-6 lg:grid-cols-[1fr_340px]">
     <section class="rounded-md border border-[#E5DFD5] bg-white p-5">
-        <h2 class="mb-4 text-lg font-semibold text-[#1C1C1A]">Manual connection</h2>
+        <h2 class="mb-4 text-lg font-semibold text-[#1C1C1A]">Connection & Bot settings</h2>
         <form method="post" class="space-y-4">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button class="rounded-md bg-[#8B5E34] px-4 py-2 text-sm font-medium text-white">Validate and save</button>
+
+            <fieldset class="space-y-4">
+                <legend class="text-sm font-medium text-[#8B7355]">WhatsApp API Connection</legend>
+
+                <div>
+                    <label class="mb-1 block text-sm text-[#1C1C1A]" for="{{ form.phone_number_id.id_for_label }}">Phone number ID</label>
+                    {{ form.phone_number_id }}
+                    {% if form.phone_number_id.errors %}<p class="mt-1 text-xs text-red-600">{{ form.phone_number_id.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label class="mb-1 block text-sm text-[#1C1C1A]" for="{{ form.business_account_id.id_for_label }}">Business Account ID (WABA)</label>
+                    {{ form.business_account_id }}
+                    {% if form.business_account_id.errors %}<p class="mt-1 text-xs text-red-600">{{ form.business_account_id.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label class="mb-1 block text-sm text-[#1C1C1A]" for="{{ form.access_token.id_for_label }}">Access token</label>
+                    {{ form.access_token }}
+                    {% if form.access_token.errors %}<p class="mt-1 text-xs text-red-600">{{ form.access_token.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label class="mb-1 block text-sm text-[#1C1C1A]" for="{{ form.display_name.id_for_label }}">Display name (optional)</label>
+                    {{ form.display_name }}
+                    <p class="mt-1 text-xs text-[#8B7355]">Falls back to Meta's verified name if blank.</p>
+                    {% if form.display_name.errors %}<p class="mt-1 text-xs text-red-600">{{ form.display_name.errors.0 }}</p>{% endif %}
+                </div>
+            </fieldset>
+
+            <hr class="border-[#E5DFD5]">
+
+            <fieldset class="space-y-4">
+                <legend class="text-sm font-medium text-[#8B7355]">Interactive Bot — Budget Brackets</legend>
+
+                <div>
+                    <label class="mb-1 block text-sm text-[#1C1C1A]" for="{{ form.budget_brackets.id_for_label }}">{{ form.budget_brackets.label }}</label>
+                    {{ form.budget_brackets }}
+                    <p class="mt-1 text-xs text-[#8B7355]">{{ form.budget_brackets.help_text }}</p>
+                    {% if form.budget_brackets.errors %}<p class="mt-1 text-xs text-red-600">{{ form.budget_brackets.errors.0 }}</p>{% endif %}
+                </div>
+            </fieldset>
+
+            <button class="rounded-md bg-[#8B5E34] px-4 py-2 text-sm font-medium text-white">Save settings</button>
         </form>
     </section>
 
@@ -31,6 +73,7 @@
                 <div><dt class="text-[#8B7355]">Phone number ID</dt><dd>{{ agency.whatsapp_phone_number_id|default:"-" }}</dd></div>
                 <div><dt class="text-[#8B7355]">WABA ID</dt><dd>{{ agency.whatsapp_business_account_id|default:"-" }}</dd></div>
                 <div><dt class="text-[#8B7355]">Connected at</dt><dd>{{ agency.whatsapp_connected_at|default:"-" }}</dd></div>
+                <div><dt class="text-[#8B7355]">Budget brackets</dt><dd>{{ agency.budget_brackets|join:", "|default:"-" }}</dd></div>
             </dl>
             {% if agency.whatsapp_status != 'not_connected' %}
             <form method="post" action="{% url 'whatsapp:disconnect' %}" class="mt-4">

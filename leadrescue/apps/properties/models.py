@@ -61,6 +61,9 @@ class Property(models.Model):
     image = models.ImageField(
         upload_to="property_images/", blank=True, null=True
     )
+    brochure_pdf = CloudinaryField(
+        "brochure", resource_type="raw", blank=True, null=True, max_length=255
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

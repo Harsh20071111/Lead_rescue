@@ -6,11 +6,11 @@ from apps.leads.models import Lead
 
 class WhatsAppConversation(models.Model):
     class State(models.TextChoices):
-        STARTED = "started", "Started"
-        ASKED_NAME = "asked_name", "Asked name"
-        ASKED_BUDGET = "asked_budget", "Asked budget"
-        ASKED_BHK = "asked_bhk", "Asked BHK"
-        ASKED_LOCATION = "asked_location", "Asked location"
+        START = "start", "Start"
+        AWAITING_PURPOSE = "awaiting_purpose", "Awaiting purpose"
+        AWAITING_BHK = "awaiting_bhk", "Awaiting BHK"
+        AWAITING_BUDGET = "awaiting_budget", "Awaiting budget"
+        AWAITING_LOCALITY = "awaiting_locality", "Awaiting locality"
         COMPLETED = "completed", "Completed"
         HANDED_OFF = "handed_off", "Handed off"
 
@@ -24,8 +24,14 @@ class WhatsAppConversation(models.Model):
         related_name="whatsapp_conversations",
     )
     state = models.CharField(
-        max_length=32, choices=State.choices, default=State.STARTED
+        max_length=32, choices=State.choices, default=State.START
     )
+
+    purpose = models.CharField(max_length=32, blank=True, default="")
+    bhk = models.CharField(max_length=20, blank=True, default="")
+    budget_bracket = models.CharField(max_length=64, blank=True, default="")
+    locality = models.CharField(max_length=255, blank=True, default="")
+
     collected_data = models.JSONField(default=dict, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -61,4 +67,3 @@ class WhatsAppMessage(models.Model):
 
     def __str__(self):
         return f"{self.direction}: {self.message_id}"
-

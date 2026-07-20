@@ -46,6 +46,10 @@ class Agency(models.Model):
         default=WhatsAppStatus.NOT_CONNECTED,
     )
     whatsapp_connected_at = models.DateTimeField(null=True, blank=True)
+    budget_brackets = models.JSONField(
+        default=list, blank=True,
+        help_text="List of budget brackets e.g. ['Under 50L', '50L–1Cr', '1Cr–2Cr', '2Cr+']",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
