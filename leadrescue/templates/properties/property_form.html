@@ -91,6 +91,18 @@
     .image-card .image-overlay button:hover { text-decoration: underline; }
     .image-card .image-overlay .delete-btn:hover { color: #fca5a5; }
 
+    .dropzone {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        min-height: 120px; cursor: pointer;
+        border: 2px dashed var(--line); border-radius: 8px; background: #fffdfb;
+        color: var(--muted); text-align: center; transition: border-color 160ms ease, background 160ms ease;
+    }
+    .dropzone:hover { border-color: var(--primary); background: #fff7f2; }
+    .dropzone input[type="file"] { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+    .dropzone-icon { color: var(--primary); margin-bottom: 8px; }
+    .dropzone-text { font-size: 13px; }
+    .dropzone-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
     .fade-in { animation: fade-up 520ms cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--delay, 0ms); }
     @keyframes fade-up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
     @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } .ls-btn { transition: none; } }
@@ -102,21 +114,31 @@
     <h1 class="form-title fade-in">{% if object %}Edit property{% else %}Create property{% endif %}</h1>
     <form method="post" enctype="multipart/form-data" class="form-card fade-in" style="--delay: 70ms;">
         {% csrf_token %}
+
         {% for field in form %}
-            {% if field.name == 'image' %}
-                {# Skip old single image field #}
-            {% else %}
-                <div class="form-group">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+
+                {% if field.name == 'images' %}
+                    <label class="dropzone" id="dropzone-images">
+                        <input type="file" name="images" id="id_images"
+                               accept=".jpg,.jpeg,.png,.webp" multiple>
+                        <svg class="dropzone-icon" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M5 20h14V9h-4V4H5v16Zm9-14.5L17.5 9H14V5.5ZM11 17v-4H8l4-4 4 4h-3v4h-2Z"/>
+                        </svg>
+                        <span class="dropzone-text">Click or drag to upload images</span>
+                        <span class="dropzone-hint">JPG, PNG, WebP — max 5MB each, up to 10 files</span>
+                    </label>
+                    <div id="image-previews" class="image-grid"></div>
+                {% else %}
                     {{ field }}
-                    {% if field.name == 'images' %}
-                        <div id="image-previews" class="image-grid"></div>
-                    {% endif %}
-                    {% if field.help_text %}<p class="helptext">{{ field.help_text }}</p>{% endif %}
-                    {% for error in field.errors %}<ul class="errorlist"><li>{{ error }}</li></ul>{% endfor %}
-                </div>
-            {% endif %}
+                {% endif %}
+
+                {% if field.help_text %}<p class="helptext">{{ field.help_text }}</p>{% endif %}
+                {% for error in field.errors %}<ul class="errorlist"><li>{{ error }}</li></ul>{% endfor %}
+            </div>
         {% endfor %}
+
         <div style="display: flex; gap: 12px; padding-top: 8px;">
             <button class="ls-btn ls-btn-primary">Save</button>
             <a href="{% if object %}{% url 'properties:detail' object.pk %}{% else %}{% url 'properties:list' %}{% endif %}" class="ls-btn">Cancel</a>
@@ -158,19 +180,42 @@
     document.addEventListener("DOMContentLoaded", function() {
         const imageInput = document.getElementById("id_images");
         const previewContainer = document.getElementById("image-previews");
-        if (imageInput) {
-            imageInput.addEventListener("change", function() {
-                previewContainer.innerHTML = "";
-                Array.from(this.files).forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement("img");
-                        img.src = e.target.result;
-                        img.style.cssText = "height: 80px; width: 100%; object-fit: cover; border-radius: 6px; border: 1px solid var(--line);";
-                        previewContainer.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                });
+        const dropzone = document.getElementById("dropzone-images");
+
+        if (!imageInput || !previewContainer) return;
+
+        function updatePreviews() {
+            previewContainer.innerHTML = "";
+            Array.from(imageInput.files).forEach(function(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                    img.style.cssText = "height: 80px; width: 100%; object-fit: cover; border-radius: 6px; border: 1px solid var(--line);";
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        imageInput.addEventListener("change", updatePreviews);
+
+        if (dropzone) {
+            dropzone.addEventListener("dragover", function(e) {
+                e.preventDefault();
+                dropzone.style.borderColor = "var(--primary)";
+                dropzone.style.background = "#fff7f2";
+            });
+            dropzone.addEventListener("dragleave", function() {
+                dropzone.style.borderColor = "";
+                dropzone.style.background = "";
+            });
+            dropzone.addEventListener("drop", function(e) {
+                e.preventDefault();
+                dropzone.style.borderColor = "";
+                dropzone.style.background = "";
+                imageInput.files = e.dataTransfer.files;
+                updatePreviews();
             });
         }
     });

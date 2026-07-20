@@ -37,11 +37,13 @@ class LeadForm(forms.ModelForm):
         if not is_owner:
             self.fields.pop("assigned_agent")
 
+        field_style = (
+            "width: 100%; padding: 10px 14px; border: 1px solid var(--line, #efe3d8); "
+            "border-radius: 5px; font-size: 14px; color: var(--copy, #2f241f); "
+            "background: #fff; outline: none; box-sizing: border-box;"
+        )
         for field in self.fields.values():
-            field.widget.attrs.setdefault(
-                "class",
-                "w-full rounded-md border border-[#D8CBB8] bg-white px-3 py-2 text-sm text-[#1C1C1A] focus:border-[#B87333] focus:outline-none",
-            )
+            field.widget.attrs.setdefault("style", field_style)
 
     def _property_queryset(self):
         queryset = Property.objects.for_agency(self.agency)
@@ -71,11 +73,13 @@ class ActivityForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["activity_type"].initial = Activity.ActivityType.NOTE
+        field_style = (
+            "width: 100%; padding: 10px 14px; border: 1px solid var(--line, #efe3d8); "
+            "border-radius: 5px; font-size: 14px; color: var(--copy, #2f241f); "
+            "background: #fff; outline: none; box-sizing: border-box;"
+        )
         for field in self.fields.values():
-            field.widget.attrs.setdefault(
-                "class",
-                "w-full rounded-md border border-[#D8CBB8] bg-white px-3 py-2 text-sm text-[#1C1C1A] focus:border-[#B87333] focus:outline-none",
-            )
+            field.widget.attrs.setdefault("style", field_style)
 
 
 class LeadAssignmentForm(forms.ModelForm):
@@ -88,7 +92,11 @@ class LeadAssignmentForm(forms.ModelForm):
         self.fields["assigned_agent"].queryset = agency.agents.filter(is_active=True)
         self.fields["assigned_agent"].widget.attrs.update(
             {
-                "class": "rounded-md border border-[#D8CBB8] bg-white px-3 py-2 text-sm",
+                "style": (
+                    "width: 100%; padding: 10px 14px; border: 1px solid var(--line, #efe3d8); "
+                    "border-radius: 5px; font-size: 14px; color: var(--copy, #2f241f); "
+                    "background: #fff; outline: none; box-sizing: border-box;"
+                ),
                 "onchange": "this.form.requestSubmit()",
             }
         )
@@ -112,11 +120,13 @@ class TaskForm(forms.ModelForm):
         if not is_owner:
             self.fields.pop("assigned_agent")
 
+        field_style = (
+            "width: 100%; padding: 10px 14px; border: 1px solid var(--line, #efe3d8); "
+            "border-radius: 5px; font-size: 14px; color: var(--copy, #2f241f); "
+            "background: #fff; outline: none; box-sizing: border-box;"
+        )
         for field in self.fields.values():
-            field.widget.attrs.setdefault(
-                "class",
-                "w-full rounded-md border border-[#D8CBB8] bg-white px-3 py-2 text-sm text-[#1C1C1A] focus:border-[#B87333] focus:outline-none",
-            )
+            field.widget.attrs.setdefault("style", field_style)
 
     def save(self, commit=True):
         task = super().save(commit=False)

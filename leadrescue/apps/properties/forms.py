@@ -16,7 +16,7 @@ class MultipleFileField(forms.FileField):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("widget", MultipleFileInput(attrs={
             "multiple": True,
-            "accept": ".jpg,.jpeg,.png"
+            "accept": ".jpg,.jpeg,.png,.webp"
         }))
         super().__init__(*args, **kwargs)
 
@@ -38,7 +38,7 @@ class PropertyForm(forms.ModelForm):
     images = MultipleFileField(
         required=False,
         label="Property Images",
-        help_text="Select up to 10 images (max 5MB each, JPG/PNG only).",
+        help_text="Select up to 10 images (max 5MB each, JPG/PNG/WebP only).",
     )
 
     class Meta:
@@ -57,8 +57,6 @@ class PropertyForm(forms.ModelForm):
             "status",
             "bhk",
             "area_sqft",
-            "image",
-            "images",
             "assigned_agent",
         ]
         widgets = {
@@ -70,79 +68,84 @@ class PropertyForm(forms.ModelForm):
         self.agency = agency
         self.agent_profile = agent_profile
         self.is_owner = is_owner
-        self.fields["assigned_agent"].queryset = agency.agents.filter(is_active=True)
+
+        if is_owner:
+            self.fields["assigned_agent"].queryset = agency.agents.filter(is_active=True)
+        else:
+            self.fields.pop("assigned_agent", None)
+
         if self.instance and self.instance.pk:
             self.fields["amenities_text"].initial = ", ".join(self.instance.amenities or [])
 
-        if not is_owner:
-            self.fields.pop("assigned_agent")
-
+        field_style = (
+            "width: 100%; padding: 10px 14px; border: 1px solid var(--line, #efe3d8); "
+            "border-radius: 5px; font-size: 14px; color: var(--copy, #2f241f); "
+            "background: #fff; outline: none; box-sizing: border-box;"
+        )
         for field in self.fields.values():
-            field.widget.attrs.setdefault(
-                "class",
-                "w-full rounded-md border border-[#D8CBB8] bg-white px-3 py-2 text-sm text-[#1C1C1A] focus:border-[#B87333] focus:outline-none",
-            )
+            field.widget.attrs.setdefault("style", field_style)
 
     def clean_amenities_text(self):
         value = self.cleaned_data["amenities_text"]
         return [item.strip() for item in value.split(",") if item.strip()]
 
     def clean_images(self):
-        files = self.cleaned_data.get('images')
-        
+        files = self.cleaned_data.get("images")
+
         if not files:
             return []
 
-        # If only one file was uploaded, MultipleFileField might return a single file instead of a list
         if not isinstance(files, (list, tuple)):
             files = [files]
 
         if len(files) > 10:
             raise ValidationError("You can upload a maximum of 10 images at once.")
 
-        valid_extensions = ['.jpg', '.jpeg', '.png']
-        max_size = 5 * 1024 * 1024  # 5MB
+        valid_extensions = [".jpg", ".jpeg", ".png", ".webp"]
+        max_size = 5 * 1024 * 1024
 
+        validated = []
         for f in files:
             ext = os.path.splitext(f.name)[1].lower()
             if ext not in valid_extensions:
-                raise ValidationError(f"Invalid file type '{ext}' for {f.name}. Only JPG and PNG are allowed.")
+                raise ValidationError(
+                    f"Invalid file type '{ext}' for {f.name}. Only JPG, PNG, and WebP are allowed."
+                )
             if f.size > max_size:
                 raise ValidationError(f"File {f.name} exceeds the 5MB size limit.")
-            
-            # Prevent malicious payloads by verifying it's a structural image
+
             try:
                 f.seek(0)
                 img = Image.open(f)
-                img.verify()  # Does not decode image fully, only verifies structure/headers
-                f.seek(0)     # Reset file pointer for Cloudinary upload
+                img.verify()
+                f.seek(0)
             except (IOError, SyntaxError, UnidentifiedImageError):
-                raise ValidationError(f"File {f.name} is corrupted or contains a malicious payload.")
-        
-        return files
+                raise ValidationError(
+                    f"File {f.name} is corrupted or not a valid image."
+                )
+
+            validated.append(f)
+
+        return validated
 
     def save(self, commit=True):
         property_obj = super().save(commit=False)
         property_obj.agency = self.agency
-        property_obj.amenities = self.cleaned_data["amenities_text"]
+        property_obj.amenities = self.cleaned_data.get("amenities_text", [])
+
         if not self.is_owner:
             property_obj.assigned_agent = self.agent_profile
+
         if commit:
             property_obj.save()
-            self.save_m2m()
-            
-            # Save newly uploaded images
-            uploaded_images = self.cleaned_data.get("images")
-            if uploaded_images:
-                for idx, img in enumerate(uploaded_images):
-                    is_primary = False
-                    # If this is the first image ever for this property, make it primary
-                    if idx == 0 and not property_obj.images.exists():
-                        is_primary = True
-                    PropertyImage.objects.create(
-                        property=property_obj,
-                        image=img,
-                        is_primary=is_primary
-                    )
-                    
+
+            uploaded_images = self.cleaned_data.get("images", [])
+            for idx, img in enumerate(uploaded_images):
+                is_primary = idx == 0 and not property_obj.images.exists()
+                PropertyImage.objects.create(
+                    property=property_obj,
+                    image=img,
+                    is_primary=is_primary,
+                )
+
         return property_obj
