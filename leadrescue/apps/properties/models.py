@@ -10,6 +10,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def _cloudinary_public_id(value):
+    if not value:
+        return None
+    public_id = getattr(value, "public_id", None)
+    if public_id:
+        return public_id
+    return str(value)
+
+
 class Property(models.Model):
     class ListingType(models.TextChoices):
         SALE = "sale", "Sale"
@@ -113,7 +122,7 @@ class PropertyImage(models.Model):
     def delete(self, *args, **kwargs):
         if self.image:
             try:
-                cloudinary.uploader.destroy(self.image.public_id)
+                cloudinary.uploader.destroy(_cloudinary_public_id(self.image))
             except Exception as e:
-                logger.error(f"Failed to delete Cloudinary asset {self.image.public_id}: {e}")
+                logger.error(f"Failed to delete Cloudinary asset {_cloudinary_public_id(self.image)}: {e}")
         super().delete(*args, **kwargs)

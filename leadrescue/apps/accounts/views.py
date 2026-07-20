@@ -1,4 +1,5 @@
-from django.contrib.auth import login, get_user_model
+from django.contrib.auth import get_user_model
+from django.contrib.auth import login as auth_login
 from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import redirect
@@ -85,7 +86,15 @@ class LoginView(DefaultLoginView):
         if hasattr(user, 'agent_profile') and not user.agent_profile.is_active:
             messages.error(self.request, "Your account has been deactivated. Please contact your agency owner.")
             return self.form_invalid(form)
-        return super().form_valid(form)
+
+        auth_login(self.request, user)
+
+        if self.request.POST.get("remember"):
+            self.request.session.set_expiry(60 * 60 * 24)
+        else:
+            self.request.session.set_expiry(0)
+
+        return redirect(self.get_success_url())
 
     def form_invalid(self, form):
         # Only show the generic error if we didn't already add a specific one

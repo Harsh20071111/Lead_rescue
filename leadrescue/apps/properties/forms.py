@@ -4,6 +4,7 @@ from PIL import Image, UnidentifiedImageError
 from django import forms
 from django.contrib import messages
 from django.core.exceptions import ValidationError
+from cloudinary import uploader
 
 from apps.properties.models import Property, PropertyImage
 
@@ -157,8 +158,12 @@ class PropertyForm(forms.ModelForm):
         brochure = self.cleaned_data.get("brochure_file")
         if brochure:
             brochure.seek(0)
-            from cloudinary import uploader
-            result = uploader.upload(brochure, resource_type="raw", folder="brochures/")
+            result = uploader.upload(
+                brochure,
+                resource_type="raw",
+                folder="brochures",
+                timeout=60,
+            )
             property_obj.brochure_pdf = result.get("public_id")
 
         if commit:
@@ -169,9 +174,16 @@ class PropertyForm(forms.ModelForm):
             for idx, img in enumerate(uploaded_images):
                 try:
                     is_primary = idx == 0 and not property_obj.images.exists()
+                    img.seek(0)
+                    result = uploader.upload(
+                        img,
+                        resource_type="image",
+                        folder="property_images",
+                        timeout=60,
+                    )
                     PropertyImage.objects.create(
                         property=property_obj,
-                        image=img,
+                        image=result.get("public_id"),
                         is_primary=is_primary,
                     )
                 except Exception as e:
