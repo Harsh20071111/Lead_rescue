@@ -47,13 +47,8 @@
         document.body.style.width = '';
       }
     });
-    window.addEventListener('htmx:beforeSwap', () => {
-      moreOpen = false;
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-    });
   "
+  @htmx:before-swap.window="closeMenu()"
   class="ls-bottom-nav md:hidden"
   role="navigation"
   aria-label="Mobile navigation"
