@@ -1,3 +1,4 @@
+import collections
 import io
 import math
 import logging
@@ -13,6 +14,40 @@ from apps.properties.models import Property
 from apps.whatsapp.services.qualification import parse_budget, parse_bhk
 
 logger = logging.getLogger(__name__)
+
+
+def _stream_xlsx_rows(file_bytes, chunk_size=100):
+    """Stream xlsx rows in chunks using openpyxl iter_rows (memory-efficient)."""
+    import openpyxl
+    wb = openpyxl.load_workbook(file_bytes, read_only=True)
+    ws = wb.active
+    headers = [cell.value for cell in next(ws.iter_rows())]
+    chunk = []
+    for row in ws.iter_rows(values_only=True):
+        chunk.append(dict(zip(headers, row)))
+        if len(chunk) >= chunk_size:
+            yield pd.DataFrame(chunk)
+            chunk = []
+    if chunk:
+        yield pd.DataFrame(chunk)
+    wb.close()
+
+
+def _stream_xls_rows(file_bytes, chunk_size=100):
+    """Stream old xls rows in chunks using xlrd."""
+    import xlrd
+    wb = xlrd.open_workbook(file_contents=file_bytes.read())
+    ws = wb.sheet_by_index(0)
+    headers = [ws.cell_value(0, c) for c in range(ws.ncols)]
+    chunk = []
+    for r in range(1, ws.nrows):
+        row = {headers[c]: ws.cell_value(r, c) for c in range(ws.ncols)}
+        chunk.append(row)
+        if len(chunk) >= chunk_size:
+            yield pd.DataFrame(chunk)
+            chunk = []
+    if chunk:
+        yield pd.DataFrame(chunk)
 
 @shared_task(bind=True)
 def process_import_job(self, job_id):
@@ -38,13 +73,17 @@ def process_import_job(self, job_id):
                     if job.status == ImportJob.Status.CANCELED:
                         return
                     _process_chunk(job, chunk)
-            elif filename.endswith(('.xls', '.xlsx')):
-                df = pd.read_excel(file_bytes)
-                for i in range(0, len(df), 100):
+            elif filename.endswith('.xlsx'):
+                for chunk in _stream_xlsx_rows(file_bytes):
                     job.refresh_from_db()
                     if job.status == ImportJob.Status.CANCELED:
                         return
-                    chunk = df.iloc[i:i+100]
+                    _process_chunk(job, chunk)
+            elif filename.endswith('.xls'):
+                for chunk in _stream_xls_rows(file_bytes):
+                    job.refresh_from_db()
+                    if job.status == ImportJob.Status.CANCELED:
+                        return
                     _process_chunk(job, chunk)
             else:
                 job.status = ImportJob.Status.FAILED
