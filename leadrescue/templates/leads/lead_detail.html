@@ -162,10 +162,10 @@
         /* Sticky bottom action bar */
         .lead-mobile-actions {
             position: fixed;
-            bottom: 0;
+            bottom: calc(3.5rem + env(safe-area-inset-bottom));
             left: 0;
             right: 0;
-            z-index: 35;
+            z-index: 45;
             background: var(--panel);
             border-top: 1px solid var(--line);
             display: flex;
@@ -204,7 +204,7 @@
         /* Hide desktop action buttons, show mobile bottom bar */
         .lead-actions { display: none; }
         
-        .lead-page-main { padding-bottom: 70px; }
+        .lead-page-main { padding-bottom: calc(56px + 70px + env(safe-area-inset-bottom)); }
     }
 </style>
 {% endblock %}

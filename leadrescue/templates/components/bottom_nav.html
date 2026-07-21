@@ -41,7 +41,14 @@
       return this.currentPath.startsWith(url);
     }
   }"
-  x-init="$watch('$store.navRefresh', () => { currentPath = window.location.pathname; })"
+  x-init="
+    $watch('$store.navRefresh', () => { currentPath = window.location.pathname; });
+    $watch('moreOpen', (open) => {
+      document.body.style.overflow = open ? 'hidden' : '';
+      document.body.style.position = open ? 'fixed' : '';
+      document.body.style.width = open ? '100%' : '';
+    });
+  "
   class="ls-bottom-nav md:hidden"
   role="navigation"
   aria-label="Mobile navigation"
@@ -147,7 +154,7 @@
   </div>
 
   {# HTMX loading indicator (hidden) #}
-  <div id="nav-loading" class="htmx-indicator fixed top-0 left-0 right-0 z-50 h-0.5 bg-[#b56a30]" style="display:none;"></div>
+  <div id="nav-loading" class="htmx-indicator fixed top-0 left-0 right-0 z-60 h-0.5 bg-[#b56a30]" style="display:none;"></div>
 
   {# ── More Bottom Sheet ────────────────────────────── #}
   <div

@@ -333,4 +333,104 @@
   }
 
   initInfiniteScroll();
+
+  // ==================================================
+  // HTMX BODY SWAP — Alpine.js re-init + scroll unlock
+  // ==================================================
+  // When HTMX replaces <body>, Alpine components in the new DOM
+  // may not auto-initialize. Also, body scroll lock from More sheet
+  // or modals must be cleared so the new page isn't stuck.
+  document.addEventListener("htmx:beforeSwap", function () {
+    // Unlock body scroll (reset More sheet / modal scroll lock)
+    document.body.style.overflow = "";
+    document.body.style.position = "";
+    document.body.style.width = "";
+  });
+
+  document.addEventListener("htmx:afterSwap", function (evt) {
+    // Re-initialize Alpine.js on the new body content
+    if (typeof Alpine !== "undefined") {
+      // Alpine 3.x: initTree scans for un-initialized x-data directives
+      Alpine.initTree(document.body);
+    }
+
+    // Re-bind the profile dropdown (vanilla JS, lost on body swap)
+    var profileBtn = document.getElementById("profile-menu-button");
+    var dropdown = document.getElementById("profile-dropdown");
+    if (profileBtn && dropdown) {
+      profileBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        dropdown.classList.toggle("show");
+        var isExpanded = profileBtn.getAttribute("aria-expanded") === "true";
+        profileBtn.setAttribute("aria-expanded", !isExpanded);
+      });
+      document.addEventListener("click", function (e) {
+        if (!profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
+          dropdown.classList.remove("show");
+          profileBtn.setAttribute("aria-expanded", "false");
+        }
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && dropdown.classList.contains("show")) {
+          dropdown.classList.remove("show");
+          profileBtn.setAttribute("aria-expanded", "false");
+        }
+      });
+    }
+
+    // Re-initialize pull-to-refresh and infinite scroll on new content
+    initPullToRefresh();
+    initInfiniteScroll();
+
+    // Re-bind fade-in animations
+    var newFadeEls = document.querySelectorAll(".fade-in");
+    if (newFadeEls.length > 0) {
+      var fadeObs = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.style.opacity = "1";
+              entry.target.style.transform = "translateY(0)";
+              fadeObs.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.2 }
+      );
+      newFadeEls.forEach(function (el) {
+        fadeObs.observe(el);
+      });
+    }
+
+    // Re-bind count-up animations
+    var newCountEls = document.querySelectorAll(".countup");
+    if (newCountEls.length > 0) {
+      var countObs = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              var el = entry.target;
+              var target = parseFloat(el.getAttribute("data-target"));
+              var decimals = parseInt(el.getAttribute("data-decimals") || "0", 10);
+              var duration = 2000;
+              var startTime = null;
+              function animate(t) {
+                if (!startTime) startTime = t;
+                var progress = Math.min((t - startTime) / duration, 1);
+                var ease = 1 - Math.pow(1 - progress, 4);
+                el.textContent = (target * ease).toFixed(decimals);
+                if (progress < 1) requestAnimationFrame(animate);
+              }
+              requestAnimationFrame(animate);
+              countObs.unobserve(el);
+            }
+          });
+        },
+        { threshold: 0.5 }
+      );
+      newCountEls.forEach(function (el) {
+        countObs.observe(el);
+      });
+    }
+  });
 })();

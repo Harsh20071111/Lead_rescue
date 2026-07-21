@@ -118,7 +118,7 @@
         }
 
         .form-submit-bar {
-            position: fixed; bottom: 0; left: 0; right: 0; z-index: 35;
+            position: fixed; bottom: calc(3.5rem + env(safe-area-inset-bottom)); left: 0; right: 0; z-index: 45;
             background: var(--panel); border-top: 1px solid var(--line);
             padding: 10px 16px;
             padding-bottom: calc(10px + env(safe-area-inset-bottom));
@@ -129,7 +129,7 @@
         .form-submit-inline { display: none; }
 
         /* Bottom padding so content isn't hidden behind fixed bar */
-        .form-page { padding-bottom: 80px; }
+        .form-page { padding-bottom: calc(3.5rem + env(safe-area-inset-bottom) + 80px); }
 
         /* Existing images card */
         .form-card + .form-card { margin-top: 16px; }

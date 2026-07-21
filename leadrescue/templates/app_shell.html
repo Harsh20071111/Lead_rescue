@@ -247,6 +247,13 @@
         transform: translateY(0);
     }
 
+    .ls-search-overlay-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: -1;
+    }
+
     .ls-search-overlay-inner {
         display: flex;
         align-items: center;
@@ -321,6 +328,11 @@
             display: none;
         }
 
+        /* Hide avatar on mobile (More sheet has logout) */
+        .ls-avatar-wrapper {
+            display: none;
+        }
+
         /* Show mobile-only action buttons */
         .ls-mobile-actions {
             display: flex;
@@ -348,7 +360,7 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 14px rgba(181, 106, 48, 0.35);
-            z-index: 40;
+            z-index: 41;
             text-decoration: none;
             -webkit-tap-highlight-color: transparent;
             transition: transform 150ms ease, box-shadow 150ms ease;
@@ -454,6 +466,7 @@
      @toggle-mobile-search.window="open = !open; if (open) { $nextTick(() => $refs.mobileSearchInput.focus()); }"
      :class="{ 'is-open': open }"
      x-cloak>
+    <div class="ls-search-overlay-backdrop" @click="open = false" x-show="open" x-transition.opacity></div>
     <div class="ls-search-overlay-inner">
         <form action="{% url 'leads:list' %}" method="get" style="display:flex;flex:1;gap:8px;">
             <input x-ref="mobileSearchInput" type="search" name="q" value="{{ request.GET.q }}" placeholder="Search leads, properties..." autocomplete="off">

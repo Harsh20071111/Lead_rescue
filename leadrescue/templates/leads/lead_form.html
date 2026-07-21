@@ -71,6 +71,7 @@
     @media (max-width: 767px) {
         .form-page {
             max-width: 100%;
+            padding-bottom: calc(3.5rem + env(safe-area-inset-bottom) + 60px);
         }
         
         .form-title {
@@ -96,10 +97,10 @@
         /* Sticky save button */
         .form-submit-bar {
             position: fixed;
-            bottom: 0;
+            bottom: calc(3.5rem + env(safe-area-inset-bottom));
             left: 0;
             right: 0;
-            z-index: 35;
+            z-index: 45;
             background: var(--panel);
             border-top: 1px solid var(--line);
             padding: 10px 16px;

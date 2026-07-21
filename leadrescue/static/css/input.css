@@ -418,7 +418,7 @@
   position: fixed;
   bottom: calc(var(--ls-nav-height) + env(safe-area-inset-bottom, 0px) + 16px);
   right: 16px;
-  z-index: 35;
+  z-index: 41;
   width: 56px;
   height: 56px;
   border-radius: 50%;
