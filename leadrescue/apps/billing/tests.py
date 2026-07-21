@@ -20,10 +20,10 @@ class EntitlementsGatingTests(TestCase):
     def setUp(self):
         self.client = Client()
         
-        # Free Tier Agency
-        self.free_agency = Agency.objects.create(name="Free Agency", plan_tier="free")
-        self.free_user = User.objects.create_user(username="free@example.com", email="free@example.com", password="password")
-        self.free_agent = AgentProfile.objects.create(user=self.free_user, agency=self.free_agency, role="owner")
+        # Starter Tier Agency
+        self.starter_agency = Agency.objects.create(name="Starter Agency", plan_tier="starter")
+        self.starter_user = User.objects.create_user(username="starter@example.com", email="starter@example.com", password="password")
+        self.starter_agent = AgentProfile.objects.create(user=self.starter_user, agency=self.starter_agency, role="owner")
         
         # Growth Tier Agency
         self.growth_agency = Agency.objects.create(name="Growth Agency", plan_tier="growth")
@@ -36,30 +36,30 @@ class EntitlementsGatingTests(TestCase):
         response = self.client.get(reverse("dashboard:hot_leads_widget"))
         self.assertEqual(response.status_code, 200)
 
-    def test_free_tier_cannot_access_hot_leads(self):
-        """2. Free tier agency accessing Hot Leads widget view is redirected to Upgrade page."""
-        self.client.force_login(self.free_user)
+    def test_starter_tier_cannot_access_hot_leads(self):
+        """2. Starter tier agency accessing Hot Leads widget view is redirected to Upgrade page."""
+        self.client.force_login(self.starter_user)
         response = self.client.get(reverse("dashboard:hot_leads_widget"))
         self.assertRedirects(response, reverse("upgrade_required"))
 
-    def test_free_tier_cannot_exceed_seat_limit(self):
+    def test_starter_tier_cannot_exceed_seat_limit(self):
         """3. Agency at their seat limit (e.g. 3) gets an error when sending invite."""
-        # Create 2 more agents for free agency (total 3, which is the limit)
+        # Create 2 more agents for starter agency (total 3, which is the limit)
         for i in range(2):
-            u = User.objects.create_user(username=f"free{i}@example.com", email=f"free{i}@example.com", password="password")
-            AgentProfile.objects.create(user=u, agency=self.free_agency, role="agent")
+            u = User.objects.create_user(username=f"starter{i}@example.com", email=f"starter{i}@example.com", password="password")
+            AgentProfile.objects.create(user=u, agency=self.starter_agency, role="agent")
         
-        self.client.force_login(self.free_user)
+        self.client.force_login(self.starter_user)
         # Attempt to invite a 4th agent
         response = self.client.post(reverse("accounts:team_invite"), data={"email": "new_agent@example.com"})
         
         # Should return form error, so status 200 with error in context
         self.assertEqual(response.status_code, 200)
-        self.assertFormError(response, 'form', None, "You've reached your plan's agent limit (3). Upgrade to Growth for unlimited agents.")
+        self.assertFormError(response.context["form"], None, "You've reached your plan's agent limit (3). Upgrade to Growth for unlimited agents.")
 
-    def test_free_tier_can_send_invite_under_limit(self):
+    def test_starter_tier_can_send_invite_under_limit(self):
         """4. Agency under limit (e.g. 1) can successfully send invite."""
-        self.client.force_login(self.free_user)
+        self.client.force_login(self.starter_user)
         # Agent count is 1 (the owner). Limit is 3. So inviting should work.
         response = self.client.post(reverse("accounts:team_invite"), data={"email": "new_agent@example.com"})
         
@@ -81,20 +81,19 @@ class EntitlementsGatingTests(TestCase):
         self.assertRedirects(response, reverse("accounts:team_list"))
 
     def test_whatsapp_integration_not_gated(self):
-        """6. WhatsApp integration endpoint works for Free tier (gating exception)."""
+        """6. WhatsApp integration endpoint works for Starter tier (gating exception)."""
         # We can just test that the whatsapp connections view is accessible
-        self.client.force_login(self.free_user)
-        response = self.client.get(reverse("whatsapp:connections"))
-        # It shouldn't redirect to upgrade page.
+        self.client.force_login(self.starter_user)
+        response = self.client.get(reverse("whatsapp:settings"))
         self.assertEqual(response.status_code, 200)
 
     def test_property_matching_not_gated(self):
-        """7. Property matching endpoint (or view logic) works for Free tier (gating exception)."""
+        """7. Property matching endpoint (or view logic) works for Starter tier (gating exception)."""
         # Testing if LeadDetailView loads matching without redirecting to upgrade
         from apps.leads.models import Lead
-        lead = Lead.objects.create(name="Test Lead", agency=self.free_agency, assigned_agent=self.free_agent)
+        lead = Lead.objects.create(name="Test Lead", agency=self.starter_agency, assigned_agent=self.starter_agent)
         
-        self.client.force_login(self.free_user)
+        self.client.force_login(self.starter_user)
         response = self.client.get(reverse("leads:detail", args=[lead.pk]))
         self.assertEqual(response.status_code, 200)
         # It should not have been redirected to upgrade, and it should have 'matching_properties' in context
@@ -105,7 +104,7 @@ class UpgradeRequestTests(TestCase):
     """Tests for the Payment Links + Manual Activation billing system."""
 
     def setUp(self):
-        self.agency = Agency.objects.create(name="Test Agency", plan_tier="free")
+        self.agency = Agency.objects.create(name="Test Agency", plan_tier="starter")
         self.user = User.objects.create_user(
             username="owner@test.com", email="owner@test.com", password="password"
         )
@@ -125,7 +124,7 @@ class UpgradeRequestTests(TestCase):
             requested_plan=UpgradeRequest.PlanChoice.GROWTH,
             amount=amount,
         )
-        self.assertEqual(req.amount, Decimal("2999.00"))
+        self.assertEqual(req.amount, Decimal("6499.00"))
         self.assertEqual(req.status, UpgradeRequest.Status.PENDING)
 
     # ── Test 2: Webhook signature verification ─────────────────────
@@ -164,7 +163,7 @@ class UpgradeRequestTests(TestCase):
             agency=self.agency,
             requested_by=self.agent,
             requested_plan=UpgradeRequest.PlanChoice.GROWTH,
-            amount=Decimal("2999.00"),
+            amount=Decimal("6499.00"),
             razorpay_payment_link_id="link_test_123",
             status=UpgradeRequest.Status.LINK_SENT,
         )
@@ -226,7 +225,7 @@ class UpgradeRequestTests(TestCase):
             agency=self.agency,
             requested_by=self.agent,
             requested_plan=UpgradeRequest.PlanChoice.GROWTH,
-            amount=Decimal("2999.00"),
+            amount=Decimal("6499.00"),
             status=UpgradeRequest.Status.PENDING,
         )
         # Simulate what the admin action does

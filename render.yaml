@@ -2,7 +2,7 @@ services:
   - type: web
     name: leadrescue
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && cd leadrescue && python manage.py collectstatic --noinput
     startCommand: cd leadrescue && python manage.py migrate --noinput && gunicorn config.wsgi --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
@@ -42,11 +42,13 @@ services:
         sync: false
       - key: FIELD_ENCRYPTION_KEY
         generateValue: true
+      - key: ADMIN_URL
+        value: "harsh-admin/"
 
   - type: worker
     name: leadrescue-celery
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && cd leadrescue && python manage.py collectstatic --noinput
     startCommand: cd leadrescue && celery -A config worker --loglevel=info
     envVars:
       - key: PYTHON_VERSION
@@ -87,6 +89,8 @@ services:
         sync: false
       - key: FIELD_ENCRYPTION_KEY
         sync: false
+      - key: ADMIN_URL
+        value: "harsh-admin/"
 
   - type: redis
     name: leadrescue-redis

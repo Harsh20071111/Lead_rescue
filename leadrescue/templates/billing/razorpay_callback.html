@@ -2,21 +2,102 @@
 
 {% block title %}Payment Received - LeadSathi{% endblock %}
 
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .billing-page {
+        --copy: #2f241f;
+        --muted: #7e6f67;
+        --panel: #fffaf6;
+        --line: #efe3d8;
+        --primary: #b56a30;
+        --orange: #ff784b;
+        --peach: #ffe2d9;
+        --brown: #995f4c;
+        max-width: 560px;
+        margin: 48px auto 0;
+    }
+
+    .billing-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 32px;
+        text-align: center;
+    }
+
+    .billing-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--copy);
+        margin: 0 0 8px;
+    }
+
+    .ls-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        border-radius: 5px;
+        border: 1px solid #5f524b;
+        background: transparent;
+        color: var(--copy);
+        padding: 0 17px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .ls-btn-primary {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #ffffff;
+        font-weight: 700;
+    }
+
+    .ls-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(47, 36, 31, 0.08);
+    }
+
+    .ls-btn:active {
+        transform: translateY(0) scale(0.98);
+    }
+
+    .fade-in {
+        animation: fade-up 520ms cubic-bezier(.2,.8,.2,1) both;
+        animation-delay: var(--delay, 0ms);
+    }
+
+    @keyframes fade-up {
+        from { opacity: 0; transform: translateY(14px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in { animation: none; }
+        .ls-btn { transition: none; }
+    }
+</style>
+{% endblock %}
+
 {% block app_content %}
-<div class="max-w-lg mx-auto mt-12">
-    <div class="bg-white rounded-xl border border-[#efe3d8] p-8 text-center">
-        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div class="billing-page fade-in">
+    <div class="billing-card">
+        <div style="width: 64px; height: 64px; border-radius: 999px; background: #d1fae5; color: #059669; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+            <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
             </svg>
         </div>
 
-        <h2 class="text-2xl font-bold text-[#2f241f] mb-2">Payment Received!</h2>
-        <p class="text-[#7e6f67] mb-6">
+        <h2 class="billing-title">Payment Received!</h2>
+        <p style="color: var(--muted); margin: 0 0 32px;">
             Your payment was successful. Your plan will be activated shortly.
         </p>
 
-        <a href="{% url 'billing_home' %}" class="w-full inline-block bg-[#b56a30] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#9e5a28] transition-colors text-center">
+        <a href="{% url 'billing_home' %}" class="ls-btn ls-btn-primary" style="width: 100%; min-height: 44px; font-size: 15px; text-align: center;">
             Back to Billing
         </a>
     </div>
