@@ -127,13 +127,18 @@
             <div>
                 <span style="font-size: 28px; font-weight: 700; color: var(--primary);">{{ current_plan_label }}</span>
                 <p style="color: var(--muted); font-size: 14px; margin: 4px 0 0;">
-                    {% if agency.plan_tier == 'starter' %}3 agents, basic features
+                    {% if agency.plan_tier == 'free' %}1 agent, manual data entry only
+                    {% elif agency.plan_tier == 'starter' %}3 agents, WhatsApp bot, CSV imports
                     {% elif agency.plan_tier == 'growth' %}Unlimited agents, AI scoring, advanced analytics
                     {% endif %}
                 </p>
             </div>
             {% if can_upgrade %}
+                {% if agency.plan_tier == 'free' %}
+                <a href="{% url 'billing_upgrade' plan='starter' %}" class="ls-btn ls-btn-primary">Upgrade to Starter</a>
+                {% elif agency.plan_tier == 'starter' %}
                 <a href="{% url 'billing_upgrade' plan='growth' %}" class="ls-btn ls-btn-primary">Upgrade to Growth</a>
+                {% endif %}
             {% endif %}
         </div>
     </div>

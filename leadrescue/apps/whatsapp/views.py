@@ -12,6 +12,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods, require_POST
 
 from apps.agencies.models import Agency
+from apps.billing.decorators import RequireFeatureMixin
+from apps.billing.entitlements import has_feature
 from apps.core.mixins import OwnerRequiredMixin
 from apps.whatsapp.forms import WhatsAppSettingsForm
 from apps.whatsapp.services.webhooks import verify_signature
@@ -22,8 +24,9 @@ logger = logging.getLogger(__name__)
 DEFAULT_BUDGET_BRACKETS = ["Under 50L", "50L–1Cr", "1Cr–2Cr", "2Cr+"]
 
 
-class WhatsAppSettingsView(OwnerRequiredMixin, View):
+class WhatsAppSettingsView(OwnerRequiredMixin, RequireFeatureMixin, View):
     template_name = "whatsapp/settings.html"
+    required_feature = "whatsapp_bot"
 
     def get(self, request):
         brackets = self.agency.budget_brackets or DEFAULT_BUDGET_BRACKETS
@@ -136,6 +139,10 @@ def webhook(request):
     )
     if not agency:
         logger.warning("WhatsApp webhook received for unknown phone_number_id=%s", phone_number_id)
+        return HttpResponse("ok")
+
+    if not has_feature(agency, "whatsapp_bot"):
+        logger.info("WhatsApp webhook ignored for free-tier agency=%s", agency.id)
         return HttpResponse("ok")
 
     process_whatsapp_webhook.delay(agency.id, payload)

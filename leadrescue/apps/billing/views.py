@@ -11,6 +11,29 @@ from apps.agencies.models import Agency
 class UpgradeRequiredView(TemplateView):
     template_name = "billing/upgrade_required.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        agency = getattr(
+            getattr(self.request.user, "agent_profile", None), "agency", None
+        )
+        if agency is None or agency.plan_tier == Agency.PlanTier.GROWTH:
+            context["next_plan"] = None
+            context["next_plan_label"] = None
+            context["next_plan_url"] = None
+        elif agency.plan_tier == Agency.PlanTier.FREE:
+            context["next_plan"] = Agency.PlanTier.STARTER
+            context["next_plan_label"] = "Starter"
+            context["next_plan_url"] = reverse(
+                "billing_upgrade", kwargs={"plan": Agency.PlanTier.STARTER}
+            )
+        else:
+            context["next_plan"] = Agency.PlanTier.GROWTH
+            context["next_plan_label"] = "Growth"
+            context["next_plan_url"] = reverse(
+                "billing_upgrade", kwargs={"plan": Agency.PlanTier.GROWTH}
+            )
+        return context
+
 
 class OwnerRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):

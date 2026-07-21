@@ -151,7 +151,11 @@
                 <p class="props-subtitle">Inventory visible through agency and assignment rules</p>
             </div>
             <div class="props-actions">
+                {% if has_data_import %}
                 <a class="ls-btn" href="{% url 'imports:import_upload' %}">Import</a>
+                {% else %}
+                <a class="ls-btn" href="{% url 'upgrade_required' %}" style="opacity:.6;">Import <span style="font-size:10px;">&#128274;</span></a>
+                {% endif %}
                 <a class="ls-btn ls-btn-primary" href="{% url 'properties:create' %}">Create Property</a>
             </div>
         </header>
@@ -247,7 +251,11 @@
             <div style="display: grid; gap: 8px;">
                 <a class="ls-btn ls-btn-primary" href="{% url 'properties:create' %}">Create Property</a>
                 <a class="ls-btn" href="{% url 'leads:list' %}">View Leads</a>
+                {% if has_data_import %}
                 <a class="ls-btn" href="{% url 'imports:import_upload' %}">Import Properties</a>
+                {% else %}
+                <a class="ls-btn" href="{% url 'upgrade_required' %}" style="opacity:.6;">Import Properties <span style="font-size:10px;">&#128274;</span></a>
+                {% endif %}
             </div>
         </section>
 

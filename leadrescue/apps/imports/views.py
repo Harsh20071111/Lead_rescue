@@ -5,6 +5,8 @@ import pandas as pd
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 
+from apps.billing.decorators import require_feature
+
 from .models import ImportJob
 from .tasks import process_import_job
 from .services.column_matcher import match_columns
@@ -48,6 +50,7 @@ def _queue_import_job(job):
 # ──────────────────────────────────────────────
 
 @login_required
+@require_feature("data_import")
 def import_upload(request):
     if request.method == "POST":
         target_model = request.POST.get("target_model")

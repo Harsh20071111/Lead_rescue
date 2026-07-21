@@ -439,7 +439,11 @@
                 <p class="leads-subtitle">All captured leads and current follow-ups</p>
             </div>
             <div class="leads-actions">
+                {% if has_data_import %}
                 <a class="ls-btn" href="{% url 'imports:import_upload' %}">Import</a>
+                {% else %}
+                <a class="ls-btn" href="{% url 'upgrade_required' %}" style="opacity:.6;">Import <span style="font-size:10px;">&#128274;</span></a>
+                {% endif %}
                 <a class="ls-btn ls-btn-primary" href="{% url 'leads:create' %}">Create Lead</a>
             </div>
         </header>
@@ -550,6 +554,7 @@
             </div>
         </section>
 
+        {% if has_data_import %}
         <section class="import-card fade-in" style="--delay: 440ms">
             <div class="import-head">
                 <div>
@@ -570,6 +575,16 @@
                 </label>
             </form>
         </section>
+        {% else %}
+        <section class="import-card fade-in" style="--delay: 440ms; text-align: center; padding: 32px;">
+            <div style="margin-bottom: 12px;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#b56a30" stroke-width="1.5"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            </div>
+            <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 4px;">Import requires Starter plan</h3>
+            <p style="color: #7e6f67; font-size: 13px; margin-bottom: 16px;">Bulk import leads from CSV or Excel files.</p>
+            <a href="{% url 'upgrade_required' %}" class="ls-btn ls-btn-primary" style="font-size: 13px;">Upgrade to Starter</a>
+        </section>
+        {% endif %}
     </div>
 
     <aside class="side-stack">

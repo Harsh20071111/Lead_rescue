@@ -10,6 +10,8 @@ from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
 from apps.accounts.models import AgentProfile
+from apps.billing.decorators import require_feature
+from apps.billing.entitlements import has_feature
 from apps.core.mixins import AgencyScopedViewMixin, OwnerRequiredMixin
 from apps.leads.forms import ActivityForm, LeadAssignmentForm, LeadForm, TaskForm
 from apps.leads.models import Activity, Lead, Task
@@ -149,6 +151,8 @@ class LeadListView(AgencyScopedViewMixin, ListView):
                     )
                 ],
                 "status_gradient": ", ".join(status_gradient_parts),
+                "has_data_import": has_feature(self.agency, "data_import"),
+                "has_whatsapp_bot": has_feature(self.agency, "whatsapp_bot"),
             }
         )
         return context
@@ -166,8 +170,8 @@ class LeadDetailView(AgencyScopedViewMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        from apps.billing.entitlements import has_feature
         context["has_ai_scoring"] = has_feature(self.agency, "ai_lead_scoring")
+        context["has_whatsapp_bot"] = has_feature(self.agency, "whatsapp_bot")
 
         try:
             from apps.matching.services import match_properties_for_lead
@@ -491,6 +495,7 @@ def link_property(request, lead_pk, property_pk):
 
 
 @login_required
+@require_feature("whatsapp_bot")
 def send_whatsapp_followup(request, pk):
     profile = request.user.agent_profile
     agency = profile.agency

@@ -52,6 +52,7 @@ class PropertyListView(AgencyScopedViewMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        from apps.billing.entitlements import has_feature
         context.update(
             {
                 "is_owner": self.is_owner(),
@@ -59,6 +60,7 @@ class PropertyListView(AgencyScopedViewMixin, ListView):
                 "listing_type_choices": Property.ListingType.choices,
                 "bhk_choices": Property._meta.get_field("bhk").choices,
                 "filters": self.request.GET,
+                "has_data_import": has_feature(self.agency, "data_import"),
             }
         )
         return context

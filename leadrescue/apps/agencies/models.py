@@ -6,6 +6,7 @@ from apps.whatsapp.fields import EncryptedTextField
 
 class Agency(models.Model):
     class PlanTier(models.TextChoices):
+        FREE = "free", "Free"
         STARTER = "starter", "Starter"
         GROWTH = "growth", "Growth"
 
@@ -23,7 +24,7 @@ class Agency(models.Model):
     plan_tier = models.CharField(
         max_length=20,
         choices=PlanTier.choices,
-        default=PlanTier.STARTER,
+        default=PlanTier.FREE,
     )
     brand_logo = models.ImageField(
         upload_to="agency_logos/", blank=True, null=True

@@ -29,16 +29,26 @@
             </div>
 
             <h2 class="text-2xl font-display font-medium mb-4" style="color: var(--copy);">
-                Available on Growth Plan
+                {% if next_plan_label %}Upgrade to {{ next_plan_label }}{% else %}You're on the best plan{% endif %}
             </h2>
 
             <p class="mb-8" style="color: var(--muted);">
-                This feature requires the Growth plan. Upgrade your agency to unlock AI lead scoring, advanced analytics, and unlimited agents.
+                {% if next_plan_label %}
+                    This feature requires the {{ next_plan_label }} plan. Upgrade your agency to unlock more features.
+                {% else %}
+                    You already have access to all features on the Growth plan.
+                {% endif %}
             </p>
 
-            <a href="{% url 'billing_upgrade' plan='growth' %}" class="ls-btn-primary w-full">
-                Upgrade to Growth
+            {% if next_plan_url %}
+            <a href="{{ next_plan_url }}" class="ls-btn-primary w-full">
+                Upgrade to {{ next_plan_label }}
             </a>
+            {% else %}
+            <a href="{% url 'billing_home' %}" class="ls-btn-primary w-full">
+                View Your Plan
+            </a>
+            {% endif %}
 
             <a href="javascript:history.back()" class="block mt-4 text-sm transition-colors" style="color: var(--muted);">
                 Go back

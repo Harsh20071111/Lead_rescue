@@ -245,12 +245,20 @@
 
         <section class="side-card fade-in" style="--delay: 320ms">
             <h2 class="section-title">WhatsApp Follow-up</h2>
+            {% if has_whatsapp_bot %}
             <form method="post" action="{% url 'leads:send_whatsapp_followup' lead.pk %}">
                 {% csrf_token %}
                 <input type="hidden" name="template_name" value="lead_follow_up">
                 <p class="lead-caption" style="margin-bottom: 12px;">Send the approved follow-up template using this agency's connected WhatsApp number.</p>
                 <button class="ls-btn ls-btn-green" style="width: 100%;">Send WhatsApp follow-up</button>
             </form>
+            {% else %}
+            <div style="text-align: center; padding: 12px 0;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b56a30" stroke-width="1.5" style="margin-bottom: 8px;"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                <p class="lead-caption" style="margin-bottom: 10px;">WhatsApp follow-up requires Starter plan.</p>
+                <a href="{% url 'upgrade_required' %}" class="ls-btn text-xs py-1 px-3">Upgrade to unlock</a>
+            </div>
+            {% endif %}
         </section>
 
         {% if has_ai_scoring %}

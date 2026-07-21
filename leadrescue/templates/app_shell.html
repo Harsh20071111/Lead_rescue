@@ -220,7 +220,13 @@
                 <a href="{% url 'dashboard:home' %}">Dashboard</a>
                 <a href="{% url 'leads:list' %}">Leads</a>
                 <a href="{% url 'properties:list' %}">Properties</a>
+                {% with agency=request.user.agent_profile.agency %}
+                {% if agency.plan_tier != 'free' %}
                 <a href="{% url 'imports:import_upload' %}">Imports</a>
+                {% else %}
+                <a href="{% url 'upgrade_required' %}" style="opacity:.5;">Imports &#128274;</a>
+                {% endif %}
+                {% endwith %}
             </div>
         </div>
         <div class="ls-nav-actions">
@@ -230,8 +236,8 @@
             <a href="{% url 'leads:create' %}" class="ls-top-button">Create Lead</a>
             {% if request.user.agent_profile %}
             {% with plan=request.user.agent_profile.agency.plan_tier %}
-            <a href="{% url 'billing_home' %}" class="ls-plan-badge" style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 14px;border-radius:999px;font-size:12px;font-weight:700;text-decoration:none;letter-spacing:.5px;{% if plan == 'growth' %}background:#d1fae5;color:#065f46;text-transform:uppercase;{% else %}background:#fef3c7;color:#92400e;{% endif %}">
-                {% if plan == 'growth' %}Growth{% else %}Basic{% endif %}
+            <a href="{% url 'billing_home' %}" class="ls-plan-badge" style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 14px;border-radius:999px;font-size:12px;font-weight:700;text-decoration:none;letter-spacing:.5px;{% if plan == 'growth' %}background:#d1fae5;color:#065f46;text-transform:uppercase;{% elif plan == 'free' %}background:#f3f4f6;color:#374151;{% else %}background:#fef3c7;color:#92400e;{% endif %}">
+                {% if plan == 'growth' %}Growth{% elif plan == 'free' %}Free{% else %}Starter{% endif %}
                 {% if plan != 'growth' %}<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>{% endif %}
             </a>
             {% endwith %}
