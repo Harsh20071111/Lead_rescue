@@ -160,32 +160,24 @@
             min-height: 40px;
             font-size: 13px;
             padding: 0 14px;
+            border-radius: 8px;
         }
 
-        /* Horizontal scrollable KPI cards */
+        /* Mobile KPI grid */
         .metric-grid {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scroll-snap-type: x mandatory;
-            padding-bottom: 4px;
             margin-bottom: 16px;
         }
 
         .metric-card {
-            flex: 0 0 260px;
-            scroll-snap-align: start;
-            min-height: 110px;
-            padding: 14px;
+            min-height: 100px;
+            padding: 14px 12px;
         }
 
         .metric-value {
             font-size: 24px;
-        }
-
-        .metric-card:nth-child(n+4) {
-            display: none;
         }
 
         /* Collapsible sections */

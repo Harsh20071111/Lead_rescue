@@ -441,7 +441,7 @@
         /* Mobile filter bar - sticky below top bar */
         .leads-filter-bar {
             position: sticky;
-            top: 56px;
+            top: 0;
             z-index: 30;
             background: var(--panel);
             padding: 8px 0;
@@ -450,6 +450,31 @@
             gap: 8px;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
+        }
+        
+        .leads-filter-bar::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .metric-grid {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+            padding-bottom: 4px;
+        }
+        
+        .metric-grid::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .metric-card {
+            flex: 0 0 220px;
+            scroll-snap-align: start;
+            min-height: 100px;
+            padding: 14px 12px;
         }
         
         .leads-filter-bar .ls-btn {

@@ -18,12 +18,13 @@
 
     {% block extra_css %}{% endblock %}
 </head>
-<body class="antialiased" style="font-family: 'Inter', sans-serif; background-color: #FAF8F4;">
+<body class="antialiased" style="font-family: 'Inter', sans-serif; background-color: #FAF8F4;" hx-ext="head-support">
 
     {% block content %}{% endblock %}
 
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx-ext-head-support@2.0.1/head-support.js"></script>
 
     <!-- Alpine.js (for interactive components) -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>

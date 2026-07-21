@@ -200,11 +200,24 @@
 
         /* Metrics scroll horizontally */
         .metric-grid {
-            grid-template-columns: repeat(3, minmax(140px, 1fr));
-            overflow-x: auto; scroll-snap-type: x mandatory;
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
         }
-        .metric-card { scroll-snap-align: start; }
+        
+        .metric-grid::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .metric-card { 
+            flex: 0 0 220px;
+            scroll-snap-align: start; 
+            min-height: 100px;
+            padding: 14px 12px;
+        }
     }
 
     .props-filter-trigger { display: none; }
