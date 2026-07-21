@@ -116,7 +116,7 @@ class LeadListView(AgencyScopedViewMixin, ListView):
             source_counts.get(value, 0) for value, _label in Lead.LeadSource.choices
             if value in source_counts
         ]
-        max_source_value = max(source_values_list) or 1
+        max_source_value = max(source_values_list) if source_values_list else 1
 
         context.update(
             {
