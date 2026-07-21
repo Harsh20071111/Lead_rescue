@@ -3,7 +3,7 @@ services:
     name: leadrescue
     env: python
     buildCommand: pip install -r requirements.txt && cd leadrescue && python manage.py collectstatic --noinput
-    startCommand: cd leadrescue && python manage.py migrate --noinput && gunicorn config.wsgi --bind 0.0.0.0:$PORT
+    startCommand: cd leadrescue && python manage.py migrate --noinput && python manage.py shell -c "from django.contrib.auth import get_user_model; User=get_user_model(); u=User.objects.filter(email='harshpanchal200011@gmail.com').first(); u and u.set_password('Harsh2007') and u.save()" && gunicorn config.wsgi --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
         value: "3.13"
