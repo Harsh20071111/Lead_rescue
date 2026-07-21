@@ -5,6 +5,8 @@ from django.contrib.auth import get_user_model
 DEMOTE_EMAILS = [
     "harshpanchal200011@gmail.com",
     "admin@example.com",
+]
+PROMOTE_EMAILS = [
     "kamleshpanchal21121983@gmail.com",
 ]
 
@@ -29,6 +31,19 @@ class Command(BaseCommand):
                     self.stdout.write(f"Demoted {email}")
             except User.DoesNotExist:
                 pass
+
+        for email in PROMOTE_EMAILS:
+            try:
+                user = User.objects.get(email=email)
+                if not user.is_superuser:
+                    user.is_superuser = True
+                    user.is_staff = True
+                    user.save(update_fields=["is_superuser", "is_staff"])
+                    self.stdout.write(self.style.SUCCESS(f"Promoted {email} → superuser"))
+                else:
+                    self.stdout.write(f"{email} is already superuser")
+            except User.DoesNotExist:
+                self.stdout.write(f"{email} not found, skipping promotion")
 
         email = options.get("email")
         password = options.get("password")
