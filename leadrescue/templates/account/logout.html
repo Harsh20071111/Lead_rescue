@@ -1,0 +1,31 @@
+{% extends "app_shell.html" %}
+
+{% block title %}Log Out - LeadSathi{% endblock %}
+
+{% block app_content %}
+<div class="max-w-md mx-auto mt-12">
+    <div class="bg-white rounded-xl border border-[#efe3d8] p-8 text-center shadow-sm">
+        <div class="w-14 h-14 bg-[#8a341f]/10 text-[#8a341f] rounded-full flex items-center justify-center mx-auto mb-5">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+        </div>
+
+        <h2 class="text-2xl font-bold text-[#2f241f] mb-2 font-display">Log Out</h2>
+        <p class="text-[#7e6f67] text-sm mb-6">Are you sure you want to sign out of LeadSathi?</p>
+
+        <form method="post" action="{% url 'account_logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="w-full bg-[#8a341f] text-white font-medium py-3 px-4 rounded-lg hover:bg-[#762b19] transition-colors mb-3">
+                Sign Out
+            </button>
+        </form>
+
+        <a href="javascript:history.back()" class="inline-block text-sm text-[#7e6f67] hover:text-[#2f241f] font-medium py-2">
+            Cancel
+        </a>
+    </div>
+</div>
+{% endblock %}

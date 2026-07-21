@@ -2,13 +2,9 @@
 {% comment %}
   Bottom tab bar for mobile navigation.
   5 items: Dashboard, Leads, Properties, Follow-ups (Tasks), More (opens bottom sheet).
-
-  Include in base.html or page templates:
-    {% include "components/bottom_nav.html" %}
 {% endcomment %}
 
 {% with url_name=request.resolver_match.url_name namespace=request.resolver_match.namespace %}
-{# Determine active state for each nav item #}
 {% with is_dashboard_active=False is_leads_active=False is_properties_active=False is_tasks_active=False is_more_active=False %}
   {% if namespace == "dashboard" or url_name == "home" and namespace == "core" %}
     {% with is_dashboard_active=True %}{% endwith %}
@@ -20,17 +16,10 @@
     {% with is_tasks_active=True %}{% endwith %}
   {% endif %}
 
-  {# Fallback: check URL path for dashboard #}
   {% if request.path == "/dashboard/" or request.path == "/" and namespace == "core" %}
     {% with is_dashboard_active=True %}{% endwith %}
   {% endif %}
 
-  {# Navigation items data #}
-  {% with nav_items='dashboard,leads,properties,tasks,more' %}
-    {% with nav_labels='Dashboard,Leads,Properties,Follow-ups,More' %}
-      {% with nav_urls='/dashboard/,/leads/,/properties/,/tasks/,' %}
-        {% with nav_active=is_dashboard_active|add:","|add:is_leads_active|add:","|add:is_properties_active|add:","|add:is_tasks_active|add:","|add:is_more_active %}
-          {% with nav_url_parts=nav_urls|cut:" " %}
 <div
   x-data="{
     moreOpen: false,
@@ -39,14 +28,30 @@
       if (url === '/dashboard/') return this.currentPath === '/dashboard/' || this.currentPath === '/';
       if (url === '/tasks/') return this.currentPath === '/tasks/';
       return this.currentPath.startsWith(url);
+    },
+    closeMenu() {
+      this.moreOpen = false;
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
     }
   }"
   x-init="
     $watch('$store.navRefresh', () => { currentPath = window.location.pathname; });
     $watch('moreOpen', (open) => {
-      document.body.style.overflow = open ? 'hidden' : '';
-      document.body.style.position = open ? 'fixed' : '';
-      document.body.style.width = open ? '100%' : '';
+      if (open) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+      }
+    });
+    window.addEventListener('htmx:beforeSwap', () => {
+      moreOpen = false;
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
     });
   "
   class="ls-bottom-nav md:hidden"
@@ -65,7 +70,7 @@
       hx-push-url="true"
       hx-indicator="#nav-loading"
       aria-label="Dashboard"
-      @click="currentPath = '/dashboard/'"
+      @click="closeMenu(); currentPath = '/dashboard/'"
     >
       <svg class="ls-bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="3" y="3" width="7" height="7" rx="1"></rect>
@@ -86,7 +91,7 @@
       hx-push-url="true"
       hx-indicator="#nav-loading"
       aria-label="Leads"
-      @click="currentPath = '/leads/'"
+      @click="closeMenu(); currentPath = '/leads/'"
     >
       <svg class="ls-bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
@@ -107,7 +112,7 @@
       hx-push-url="true"
       hx-indicator="#nav-loading"
       aria-label="Properties"
-      @click="currentPath = '/properties/'"
+      @click="closeMenu(); currentPath = '/properties/'"
     >
       <svg class="ls-bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -126,7 +131,7 @@
       hx-push-url="true"
       hx-indicator="#nav-loading"
       aria-label="Follow-ups"
-      @click="currentPath = '/tasks/'"
+      @click="closeMenu(); currentPath = '/tasks/'"
     >
       <svg class="ls-bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M9 11l3 3L22 4"></path>
@@ -135,13 +140,14 @@
       <span class="ls-bottom-nav-label">Follow-ups</span>
     </a>
 
-    {# More — opens bottom sheet, NOT a link #}
+    {# More — opens bottom sheet #}
     <button
+      type="button"
       class="ls-bottom-nav-item touch-target"
       :class="{ 'ls-bottom-nav-active': moreOpen }"
       @click="moreOpen = !moreOpen"
       aria-label="More options"
-      aria-expanded="moreOpen"
+      :aria-expanded="moreOpen.toString()"
       aria-controls="more-sheet"
     >
       <svg class="ls-bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -160,7 +166,7 @@
   <div
     x-show="moreOpen"
     x-cloak
-    @keydown.escape.window="moreOpen = false"
+    @keydown.escape.window="closeMenu()"
     role="dialog"
     aria-modal="true"
     aria-label="More options"
@@ -176,7 +182,7 @@
     {# Backdrop #}
     <div
       class="ls-sheet-backdrop"
-      @click="moreOpen = false"
+      @click="closeMenu()"
       aria-hidden="true"
     ></div>
 
@@ -189,10 +195,9 @@
       x-transition:leave="transition ease-in duration-250"
       x-transition:leave-start="translate-y-0"
       x-transition:leave-end="translate-y-full"
-      @click.away="moreOpen = false"
     >
       {# Drag handle #}
-      <div class="ls-sheet-handle" aria-hidden="true">
+      <div class="ls-sheet-handle" aria-hidden="true" @click="closeMenu()">
         <div class="ls-sheet-handle-bar"></div>
       </div>
 
@@ -200,7 +205,8 @@
       <div class="ls-sheet-header">
         <h3 class="ls-sheet-title">Menu</h3>
         <button
-          @click="moreOpen = false"
+          type="button"
+          @click="closeMenu()"
           class="ls-sheet-close touch-target"
           aria-label="Close menu"
         >
@@ -221,7 +227,7 @@
             hx-get="/accounts/team/"
             hx-target="body"
             hx-push-url="true"
-            @click="moreOpen = false; currentPath = '/accounts/team/'"
+            @click="closeMenu(); currentPath = '/accounts/team/'"
           >
             <div class="ls-more-item-left">
               <svg class="ls-more-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -245,7 +251,7 @@
             hx-get="/imports/upload/"
             hx-target="body"
             hx-push-url="true"
-            @click="moreOpen = false; currentPath = '/imports/upload/'"
+            @click="closeMenu(); currentPath = '/imports/upload/'"
           >
             <div class="ls-more-item-left">
               <svg class="ls-more-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -268,7 +274,7 @@
             hx-get="/settings/whatsapp/"
             hx-target="body"
             hx-push-url="true"
-            @click="moreOpen = false; currentPath = '/settings/whatsapp/'"
+            @click="closeMenu(); currentPath = '/settings/whatsapp/'"
           >
             <div class="ls-more-item-left">
               <svg class="ls-more-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -288,7 +294,7 @@
             hx-get="/billing/"
             hx-target="body"
             hx-push-url="true"
-            @click="moreOpen = false; currentPath = '/billing/'"
+            @click="closeMenu(); currentPath = '/billing/'"
           >
             <div class="ls-more-item-left">
               <svg class="ls-more-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -306,35 +312,30 @@
           <div class="ls-more-divider" aria-hidden="true"></div>
 
           {# Logout #}
-          <a
-            href="/accounts/logout/"
-            class="ls-more-item touch-target ls-more-item-danger"
-            hx-get="/accounts/logout/"
-            hx-target="body"
-            hx-push-url="true"
-            @click="moreOpen = false; currentPath = '/accounts/logout/'"
-          >
-            <div class="ls-more-item-left">
-              <svg class="ls-more-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                <polyline points="16 17 21 12 16 7"></polyline>
-                <line x1="21" y1="12" x2="9" y2="12"></line>
+          <form method="post" action="{% url 'account_logout' %}" class="w-full">
+            {% csrf_token %}
+            <button
+              type="submit"
+              class="ls-more-item touch-target ls-more-item-danger w-full border-0 bg-transparent cursor-pointer text-left font-inherit"
+              @click="closeMenu()"
+            >
+              <div class="ls-more-item-left">
+                <svg class="ls-more-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span class="ls-more-item-label">Logout</span>
+              </div>
+              <svg class="ls-more-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
               </svg>
-              <span class="ls-more-item-label">Logout</span>
-            </div>
-            <svg class="ls-more-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </a>
+            </button>
+          </form>
         </div>
       </div>
     </div>
   </div>
 </div>
-  {% endwith %}
-  {% endwith %}
-  {% endwith %}
-  {% endwith %}
-  {% endwith %}
 {% endwith %}
 {% endwith %}
