@@ -328,10 +328,6 @@
             display: none;
         }
 
-        /* Hide avatar on mobile (More sheet has logout) */
-        .ls-avatar-wrapper {
-            display: none;
-        }
 
         /* Show mobile-only action buttons */
         .ls-mobile-actions {
@@ -437,9 +433,15 @@
                             {{ request.user.email|default:request.user.username }}
                         </p>
                     </div>
-                    <form method="post" action="{% url 'account_logout' %}">
+                    <a href="{% url 'accounts:team_list' %}" role="menuitem" tabindex="-1">Team</a>
+                    {% if request.user.agent_profile.agency.plan_tier != 'free' %}
+                    <a href="{% url 'imports:import_upload' %}" role="menuitem" tabindex="-1">Imports</a>
+                    {% endif %}
+                    <a href="{% url 'whatsapp:settings' %}" role="menuitem" tabindex="-1">WhatsApp</a>
+                    <a href="{% url 'billing_home' %}" role="menuitem" tabindex="-1">Billing</a>
+                    <form method="post" action="{% url 'account_logout' %}" style="margin: 0;">
                         {% csrf_token %}
-                        <button type="submit" role="menuitem" tabindex="-1">Log out</button>
+                        <button type="submit" role="menuitem" tabindex="-1" style="color: var(--ls-red);">Log out</button>
                     </form>
                 </div>
             </div>
