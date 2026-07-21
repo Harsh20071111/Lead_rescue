@@ -4,7 +4,6 @@ import re
 import pandas as pd
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from kombu.exceptions import OperationalError
 
 from .models import ImportJob
 from .tasks import process_import_job
@@ -35,16 +34,13 @@ def _read_headers_from_bytes(file_bytes, filename):
 
 def _queue_import_job(job):
     try:
-        process_import_job.delay(job.id)
+        process_import_job.apply(kwargs={"job_id": job.id})
     except Exception as e:
-        logger.error(f"Failed to queue import job {job.id}: {e}")
-        from django.conf import settings
-        if settings.DEBUG:
-            logger.warning(f"Processing import job {job.id} inline due to broker failure.")
-            process_import_job(job.id)
-        else:
+        logger.error(f"Failed to process import job {job.id}: {e}")
+        job.refresh_from_db()
+        if job.status != ImportJob.Status.FAILED:
             job.status = ImportJob.Status.FAILED
-            job.error_log.append({"row": 0, "error": f"Task queue (Redis) unavailable: {e}. Please check REDIS_URL."})
+            job.error_log.append({"row": 0, "error": str(e)})
             job.save(update_fields=['status', 'error_log'])
 
 # ──────────────────────────────────────────────
