@@ -8,7 +8,7 @@ class Agency(models.Model):
     class PlanTier(models.TextChoices):
         FREE = "free", "Free"
         STARTER = "starter", "Starter"
-        PRO = "pro", "Pro"
+        GROWTH = "growth", "Growth"
 
     class WhatsAppStatus(models.TextChoices):
         NOT_CONNECTED = "not_connected", "Not connected"

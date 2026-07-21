@@ -27,6 +27,14 @@ class TeamListView(OwnerRequiredMixin, ListView):
         context["pending_invites"] = AgentInvite.objects.filter(
             agency=self.agency, status=AgentInvite.Status.PENDING
         ).order_by("-created_at")
+        
+        from apps.billing.entitlements import get_limit
+        max_agents = get_limit(self.agency, "max_agents")
+        current_count = self.agency.agents.filter(is_active=True).count()
+        context["max_agents"] = max_agents if max_agents is not None else "unlimited"
+        context["current_agents"] = current_count
+        context["can_invite"] = max_agents is None or current_count < max_agents
+        
         return context
 
 
@@ -35,7 +43,23 @@ class AgentInviteView(OwnerRequiredMixin, FormView):
     form_class = AgentInviteForm
     success_url = reverse_lazy("accounts:team_list")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from apps.billing.entitlements import get_limit
+        max_agents = get_limit(self.agency, "max_agents")
+        current_count = self.agency.agents.filter(is_active=True).count()
+        context["max_agents"] = max_agents if max_agents is not None else "unlimited"
+        context["current_agents"] = current_count
+        context["can_invite"] = max_agents is None or current_count < max_agents
+        return context
+
     def form_valid(self, form):
+        from apps.billing.entitlements import is_within_limit
+        current_count = self.agency.agents.filter(is_active=True).count()
+        if not is_within_limit(self.agency, "max_agents", current_count):
+            form.add_error(None, "You've reached your plan's agent limit (3). Upgrade to Growth for unlimited agents.")
+            return self.form_invalid(form)
+
         invite = form.save(commit=False)
         invite.agency = self.agency
         invite.invited_by = self.agent_profile
@@ -106,6 +130,12 @@ class InviteAcceptView(FormView):
 
     def form_valid(self, form):
         from django.db import transaction
+        from apps.billing.entitlements import is_within_limit
+
+        current_count = self.invite.agency.agents.filter(is_active=True).count()
+        if not is_within_limit(self.invite.agency, "max_agents", current_count):
+            messages.error(self.request, "This agency has reached its maximum agent limit.")
+            return redirect("accounts:login")
         
         with transaction.atomic():
             data = form.cleaned_data

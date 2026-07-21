@@ -1,0 +1,28 @@
+{% extends "app_shell.html" %}
+
+{% block title %}Upgrade Requested - LeadSathi{% endblock %}
+
+{% block app_content %}
+<div class="max-w-lg mx-auto mt-12">
+    <div class="bg-white rounded-xl border border-[#efe3d8] p-8 text-center">
+        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+        </div>
+
+        <h2 class="text-2xl font-bold text-[#2f241f] mb-2">Upgrade Request Received</h2>
+        <p class="text-[#7e6f67] mb-6">
+            Your upgrade request has been submitted. We'll send you a payment link shortly.
+        </p>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-8 text-sm text-amber-800 text-left">
+            <strong>Note:</strong> Payment links are generated manually. You'll receive the link via email/WhatsApp once it's ready.
+        </div>
+
+        <a href="{% url 'billing_home' %}" class="w-full inline-block bg-[#b56a30] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#9e5a28] transition-colors text-center">
+            Back to Billing
+        </a>
+    </div>
+</div>
+{% endblock %}

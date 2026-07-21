@@ -1,0 +1,39 @@
+{% extends "app_shell.html" %}
+
+{% block title %}Upgrade to {{ plan_label }} - LeadSathi{% endblock %}
+
+{% block app_content %}
+<div class="max-w-lg mx-auto mt-12">
+    <div class="bg-white rounded-xl border border-[#efe3d8] p-8 text-center">
+        <div class="w-16 h-16 bg-copper-gold/10 text-copper-gold rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+            </svg>
+        </div>
+
+        <h2 class="text-2xl font-bold text-[#2f241f] mb-2">Upgrade to {{ plan_label }}</h2>
+        <p class="text-[#7e6f67] mb-6">
+            You're requesting an upgrade from <strong>{{ request.user.agent_profile.agency.get_plan_tier_display }}</strong> to <strong>{{ plan_label }}</strong>.
+        </p>
+
+        <div class="bg-[#f7f1eb] rounded-lg p-6 mb-8 text-left">
+            <div class="flex justify-between items-center text-lg">
+                <span class="text-[#2f241f] font-medium">{{ plan_label }} Plan</span>
+                <span class="text-[#b56a30] font-bold">₹{{ amount|floatformat:0 }}</span>
+            </div>
+            <p class="text-sm text-[#7e6f67] mt-1">One-time payment (renewal via new link each billing period)</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="w-full bg-[#b56a30] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#9e5a28] transition-colors cursor-pointer">
+                Request Upgrade — ₹{{ amount|floatformat:0 }}
+            </button>
+        </form>
+
+        <a href="{% url 'billing_home' %}" class="block mt-4 text-sm text-[#7e6f67] hover:text-[#2f241f] transition-colors">
+            Back to Billing
+        </a>
+    </div>
+</div>
+{% endblock %}

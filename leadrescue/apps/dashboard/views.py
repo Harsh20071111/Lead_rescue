@@ -5,6 +5,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.utils import timezone
 from django.views.generic import TemplateView
+from django.utils.decorators import method_decorator
+
+from apps.billing.decorators import require_feature
 
 from apps.accounts.models import AgentProfile
 from apps.leads.models import Activity, Lead, Task
@@ -151,6 +154,7 @@ class DashboardHomeView(LoginRequiredMixin, TemplateView):
             if value in status_counts_data
         ]
 
+        from apps.billing.entitlements import has_feature
         context.update(
             {
                 "agency_name": agency.name,
@@ -158,6 +162,8 @@ class DashboardHomeView(LoginRequiredMixin, TemplateView):
                 or self.request.user.email
                 or self.request.user.username,
                 "is_owner": is_owner,
+                "has_ai_scoring": has_feature(agency, "ai_lead_scoring"),
+                "has_advanced_analytics": has_feature(agency, "advanced_analytics"),
                 "stats": {
                     "total_leads": total_leads_count,
                     "new_leads": new_leads_count,
@@ -199,3 +205,13 @@ class DashboardHomeView(LoginRequiredMixin, TemplateView):
             }
         )
         return context
+
+
+@method_decorator(require_feature("ai_lead_scoring"), name="dispatch")
+class HotLeadsWidgetView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/partials/hot_leads_widget.html"
+
+
+@method_decorator(require_feature("advanced_analytics"), name="dispatch")
+class AdvancedAnalyticsView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/advanced_analytics.html"

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Upgrade Required - LeadSathi{% endblock %}
+
+{% block content %}
+<div class="min-h-[60vh] flex flex-col items-center justify-center p-4">
+    <div class="ls-card text-center max-w-md w-full p-8">
+        <div class="w-16 h-16 bg-copper-gold/10 text-copper-gold rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+            </svg>
+        </div>
+        
+        <h2 class="text-2xl font-display font-medium text-obsidian-900 mb-4">
+            Available on Growth Plan
+        </h2>
+        
+        <p class="text-obsidian-600 mb-8">
+            This feature requires the Growth plan. Upgrade your agency to unlock AI lead scoring, advanced analytics, and unlimited agents.
+        </p>
+        
+        <a href="{% url 'billing_upgrade' plan='growth' %}" class="ls-btn-primary w-full">
+            Upgrade to Growth
+        </a>
+        
+        <a href="javascript:history.back()" class="block mt-4 text-sm text-obsidian-500 hover:text-obsidian-700 transition-colors">
+            Go back
+        </a>
+    </div>
+</div>
+{% endblock %}

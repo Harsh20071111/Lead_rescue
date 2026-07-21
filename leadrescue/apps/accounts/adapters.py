@@ -107,20 +107,28 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
                     pass
 
             if invite:
-                # Attach to existing agency via invite
-                agent_profile = AgentProfile.objects.create(
-                    user=user,
-                    agency=invite.agency,
-                    role="agent",
-                    phone="N/A",
-                )
-                invite.status = AgentInvite.Status.ACCEPTED
-                invite.save(update_fields=["status"])
-                if "invite_token" in request.session:
-                    del request.session["invite_token"]
-                    
-                logger.info("Attached Google user %s to Agency '%s' via invite", user.email, invite.agency.name)
-            else:
+                from apps.billing.entitlements import is_within_limit
+                current_count = invite.agency.agents.filter(is_active=True).count()
+                
+                if not is_within_limit(invite.agency, "max_agents", current_count):
+                    messages.error(request, "This agency has reached its maximum agent limit.")
+                    invite = None
+                else:
+                    # Attach to existing agency via invite
+                    agent_profile = AgentProfile.objects.create(
+                        user=user,
+                        agency=invite.agency,
+                        role="agent",
+                        phone="N/A",
+                    )
+                    invite.status = AgentInvite.Status.ACCEPTED
+                    invite.save(update_fields=["status"])
+                    if "invite_token" in request.session:
+                        del request.session["invite_token"]
+                        
+                    logger.info("Attached Google user %s to Agency '%s' via invite", user.email, invite.agency.name)
+
+            if not invite:
                 # Normal organic signup, create new agency
                 name = user.get_full_name() or user.email.split("@")[0]
 

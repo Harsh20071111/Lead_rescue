@@ -277,6 +277,26 @@
                 </div>
             </div>
         </section>
+
+        {% if has_ai_scoring %}
+        <section class="side-card fade-in" style="--delay: 340ms">
+            <h2 class="section-title" style="margin-bottom: 14px;">Hot Leads</h2>
+            <div hx-get="{% url 'dashboard:hot_leads_widget' %}" hx-trigger="load">
+                <div class="dash-caption text-center py-4">Loading AI scores...</div>
+            </div>
+        </section>
+        {% else %}
+        <section class="side-card fade-in" style="--delay: 340ms">
+            <div class="text-center py-4">
+                <div class="w-10 h-10 bg-copper-gold/10 text-copper-gold rounded-full flex items-center justify-center mx-auto mb-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <h3 class="text-sm font-medium text-obsidian-900 mb-1">AI Lead Scoring</h3>
+                <p class="text-xs text-obsidian-500 mb-4">Identify your hottest prospects automatically.</p>
+                <a href="{% url 'upgrade_required' %}" class="ls-btn text-xs py-1 px-3">Available on Growth</a>
+            </div>
+        </section>
+        {% endif %}
     </aside>
 </div>
 {% endblock %}

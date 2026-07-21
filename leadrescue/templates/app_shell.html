@@ -126,6 +126,54 @@
         font-family: "Cormorant Garamond", serif;
         font-size: 18px;
         font-weight: 600;
+        cursor: pointer;
+        border: none;
+        outline: none;
+    }
+    
+    .ls-avatar:hover {
+        background: #dfd1c3;
+    }
+
+    .ls-avatar-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .ls-avatar-dropdown {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: calc(100% + 8px);
+        background: #ffffff;
+        border: 1px solid var(--ls-border);
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(47, 36, 31, 0.08);
+        min-width: 160px;
+        z-index: 50;
+        overflow: hidden;
+    }
+    
+    .ls-avatar-dropdown.show {
+        display: block;
+        animation: fade-in 200ms ease;
+    }
+    
+    .ls-avatar-dropdown a, .ls-avatar-dropdown button {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 10px 16px;
+        color: var(--ls-text);
+        text-decoration: none;
+        font-size: 14px;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .ls-avatar-dropdown a:hover, .ls-avatar-dropdown button:hover {
+        background: var(--ls-soft);
     }
 
     .ls-main {
@@ -180,12 +228,35 @@
                 <input class="ls-search" type="search" name="q" value="{{ request.GET.q }}" placeholder="Search leads, properties...">
             </form>
             <a href="{% url 'leads:create' %}" class="ls-top-button">Create Lead</a>
+            {% with plan=request.user.agent_profile.agency.plan_tier %}
+            <a href="{% url 'billing_home' %}" class="ls-plan-badge" style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 14px;border-radius:999px;font-size:12px;font-weight:700;text-decoration:none;text-transform:uppercase;letter-spacing:.5px;
+                {% if plan == 'growth' %}background:#d1fae5;color:#065f46{% else %}background:#fef3c7;color:#92400e{% endif %}">
+                {{ plan }}
+                {% if plan != 'growth' %}<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>{% endif %}
+            </a>
+            {% endwith %}
             <span class="ls-bell" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                     <path d="M12 22a2.6 2.6 0 0 0 2.45-1.75h-4.9A2.6 2.6 0 0 0 12 22Zm7-5.2-1.6-1.9V10a5.4 5.4 0 0 0-4.2-5.25V3a1.2 1.2 0 1 0-2.4 0v1.75A5.4 5.4 0 0 0 6.6 10v4.9L5 16.8V18h14v-1.2Z"/>
                 </svg>
             </span>
-            <span class="ls-avatar">{{ request.user.email|default:request.user.username|slice:":2"|upper }}</span>
+            <div class="ls-avatar-wrapper">
+                <button type="button" class="ls-avatar" id="profile-menu-button" aria-expanded="false" aria-haspopup="true">
+                    {{ request.user.email|default:request.user.username|slice:":2"|upper }}
+                </button>
+                <div class="ls-avatar-dropdown" role="menu" aria-orientation="vertical" aria-labelledby="profile-menu-button" tabindex="-1" id="profile-dropdown">
+                    <div style="padding: 12px 16px; border-bottom: 1px solid var(--ls-border);">
+                        <p style="font-size: 12px; font-weight: 600; margin: 0; color: var(--ls-muted);">Signed in as</p>
+                        <p style="font-size: 14px; font-weight: 500; margin: 2px 0 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" role="none">
+                            {{ request.user.email|default:request.user.username }}
+                        </p>
+                    </div>
+                    <form method="post" action="{% url 'account_logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" role="menuitem" tabindex="-1">Log out</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </nav>
@@ -214,4 +285,25 @@
     {% endif %}
     {% block app_content %}{% endblock %}
 </main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var profileBtn = document.getElementById('profile-menu-button');
+        var dropdown = document.getElementById('profile-dropdown');
+        if (profileBtn && dropdown) {
+            profileBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+                var isExpanded = profileBtn.getAttribute('aria-expanded') === 'true';
+                profileBtn.setAttribute('aria-expanded', !isExpanded);
+            });
+            document.addEventListener('click', function(e) {
+                if (!profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                    profileBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

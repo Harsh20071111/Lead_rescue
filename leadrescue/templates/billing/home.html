@@ -1,0 +1,61 @@
+{% extends "app_shell.html" %}
+
+{% block title %}Billing - LeadSathi{% endblock %}
+
+{% block app_content %}
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold text-[#2f241f] mb-6">Billing & Plan</h1>
+
+    <div class="bg-white rounded-xl border border-[#efe3d8] p-6 mb-8">
+        <h2 class="text-lg font-bold text-[#2f241f] mb-4">Current Plan</h2>
+        <div class="flex items-center justify-between">
+            <div>
+                <span class="text-3xl font-bold text-[#b56a30]">{{ current_plan_label }}</span>
+                <p class="text-sm text-[#7e6f67] mt-1">
+                    {% if agency.plan_tier == 'free' %}3 agents, basic features
+                    {% elif agency.plan_tier == 'starter' %}3 agents, basic features
+                    {% elif agency.plan_tier == 'growth' %}Unlimited agents, AI scoring, advanced analytics
+                    {% endif %}
+                </p>
+            </div>
+            {% if can_upgrade %}
+                <a href="{% url 'billing_upgrade' plan='growth' %}" class="bg-[#b56a30] text-white font-bold py-2.5 px-5 rounded-lg hover:bg-[#9e5a28] transition-colors text-sm">
+                    Upgrade to Growth
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if upgrade_requests %}
+        <div class="bg-white rounded-xl border border-[#efe3d8] p-6">
+            <h2 class="text-lg font-bold text-[#2f241f] mb-4">Upgrade History</h2>
+            <div class="space-y-3">
+                {% for req in upgrade_requests %}
+                    <div class="flex items-center justify-between py-3 border-b border-[#efe3d8] last:border-0">
+                        <div>
+                            <span class="font-medium text-[#2f241f]">Upgrade to {{ req.get_requested_plan_display }}</span>
+                            <span class="text-sm text-[#7e6f67] ml-2">₹{{ req.amount|floatformat:0 }}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-medium px-2.5 py-0.5 rounded-full
+                                {% if req.status == 'ACTIVATED' %}bg-emerald-100 text-emerald-700
+                                {% elif req.status == 'PAID' %}bg-blue-100 text-blue-700
+                                {% elif req.status == 'LINK_SENT' %}bg-amber-100 text-amber-700
+                                {% elif req.status == 'PENDING' %}bg-gray-100 text-gray-600
+                                {% elif req.status == 'CANCELLED' %}bg-red-100 text-red-600
+                                {% endif %}">
+                                {{ req.get_status_display }}
+                            </span>
+                            <span class="text-xs text-[#7e6f67]">{{ req.created_at|date:"d M Y" }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="bg-white rounded-xl border border-[#efe3d8] p-6 text-center text-[#7e6f67]">
+            No upgrade requests yet.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

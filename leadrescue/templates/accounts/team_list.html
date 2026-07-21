@@ -198,6 +198,19 @@
                     <strong>Pending Invites</strong>
                     <span class="team-caption">{{ pending_invites|length }} pending</span>
                 </div>
+                <div class="activity-item" style="border-top: 1px solid var(--line); padding-top: 14px;">
+                    <strong>Seat Limit</strong>
+                    <span class="team-caption">
+                        {% if max_agents == "unlimited" %}
+                            Unlimited agents
+                        {% else %}
+                            {{ current_agents }} / {{ max_agents }} used
+                        {% endif %}
+                    </span>
+                    {% if not can_invite %}
+                    <a href="{% url 'upgrade_required' %}" class="ls-btn text-xs py-1 px-3" style="min-height: 28px; margin-top: 8px;">Upgrade to Growth</a>
+                    {% endif %}
+                </div>
             </div>
         </section>
     </aside>

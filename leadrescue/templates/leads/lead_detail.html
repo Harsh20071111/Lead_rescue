@@ -252,6 +252,24 @@
                 <button class="ls-btn ls-btn-green" style="width: 100%;">Send WhatsApp follow-up</button>
             </form>
         </section>
+
+        {% if has_ai_scoring %}
+        <section class="side-card fade-in" style="--delay: 380ms">
+            <h2 class="section-title">AI Lead Score</h2>
+            <div class="dash-caption text-center py-4">AI Score Loading...</div>
+        </section>
+        {% else %}
+        <section class="side-card fade-in" style="--delay: 380ms">
+            <div class="text-center py-4">
+                <div class="w-10 h-10 bg-copper-gold/10 text-copper-gold rounded-full flex items-center justify-center mx-auto mb-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <h3 class="text-sm font-medium text-obsidian-900 mb-1">AI Lead Scoring</h3>
+                <p class="text-xs text-obsidian-500 mb-4">Analyze intent automatically.</p>
+                <a href="{% url 'upgrade_required' %}" class="ls-btn text-xs py-1 px-3">Available on Growth</a>
+            </div>
+        </section>
+        {% endif %}
     </aside>
 </div>
 {% endblock %}

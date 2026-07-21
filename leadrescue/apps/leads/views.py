@@ -166,14 +166,21 @@ class LeadDetailView(AgencyScopedViewMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        from apps.matching.services import match_properties_for_lead
+        from apps.billing.entitlements import has_feature
+        context["has_ai_scoring"] = has_feature(self.agency, "ai_lead_scoring")
 
+        try:
+            from apps.matching.services import match_properties_for_lead
+            property_qs = self.scope_queryset_for_profile(Property.objects.all())
+            context["matching_properties"] = match_properties_for_lead(self.object, qs=property_qs)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).error("Matching error: %s", e)
+            context["matching_properties"] = []
+            context["matching_error"] = True
         activities = Activity.objects.for_agency(self.agency).filter(
             lead=self.object
         ).select_related("agent__user").order_by("-created_at")
-
-        property_qs = self.scope_queryset_for_profile(Property.objects.all())
-        matching_properties = match_properties_for_lead(self.object, qs=property_qs)
 
         context.update(
             {
@@ -189,7 +196,6 @@ class LeadDetailView(AgencyScopedViewMixin, DetailView):
                 if self.is_owner()
                 else None,
                 "is_owner": self.is_owner(),
-                "matching_properties": matching_properties,
             }
         )
         return context
