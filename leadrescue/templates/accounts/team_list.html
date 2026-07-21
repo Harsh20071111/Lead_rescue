@@ -105,6 +105,52 @@
         .team-head { flex-direction: column; }
         .side-stack { grid-template-columns: 1fr; }
     }
+
+    @media (max-width: 767px) {
+        .team-page { grid-template-columns: 1fr; gap: 16px; }
+        .team-head { flex-direction: column; gap: 12px; }
+        .team-title { font-size: 24px; }
+        .team-side { display: none; }
+
+        /* Agent cards instead of table rows */
+        .agent-row {
+            display: flex;
+            gap: 12px;
+            padding: 14px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: var(--panel);
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .agent-avatar-mobile {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--copy);
+            flex-shrink: 0;
+        }
+
+        .agent-info { flex: 1; min-width: 0; }
+        .agent-name { font-size: 15px; font-weight: 600; color: var(--copy); }
+        .agent-role { font-size: 12px; color: var(--muted); }
+
+        .agent-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .agent-actions .ls-btn {
+            min-height: 36px;
+            font-size: 12px;
+        }
+    }
 </style>
 {% endblock %}
 

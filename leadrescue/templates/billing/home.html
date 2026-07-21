@@ -111,6 +111,18 @@
         .plan-row { flex-direction: column; align-items: flex-start !important; gap: 16px; }
         .history-item { flex-direction: column; align-items: flex-start !important; gap: 10px; }
     }
+
+    @media (max-width: 767px) {
+        .billing-page { max-width: 100%; padding: 16px; }
+        .billing-card { padding: 16px; }
+        .plan-row { flex-direction: column; gap: 12px; }
+
+        .history-item {
+            flex-direction: column;
+            gap: 8px;
+            padding: 12px;
+        }
+    }
 </style>
 {% endblock %}
 

@@ -2,6 +2,27 @@
 
 {% block title %}WhatsApp Settings - LeadSathi{% endblock %}
 
+{% block extra_css %}
+{{ block.super }}
+<style>
+    @media (max-width: 767px) {
+        .wa-page { grid-template-columns: 1fr; gap: 16px; }
+        .wa-head { flex-direction: column; gap: 12px; }
+        .wa-title { font-size: 24px; }
+        .wa-side { display: none; }
+
+        .wa-form-card { padding: 16px; }
+        .wa-form-card input,
+        .wa-form-card select,
+        .wa-form-card textarea {
+            width: 100%;
+            min-height: 44px;
+            font-size: 16px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block app_content %}
 <div class="mb-6 flex flex-col justify-between gap-4 md:flex-row">
     <div>

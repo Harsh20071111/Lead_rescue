@@ -139,6 +139,75 @@
         .prop-thumb { width: 80px; height: 56px; }
         .carousel-btn { width: 20px; height: 20px; font-size: 14px; }
     }
+
+    /* ── Mobile ≤ 767px ─────────────────────────────── */
+    @media (max-width: 767px) {
+        .props-page { grid-template-columns: 1fr; }
+
+        .props-head { flex-direction: column; gap: 12px; }
+        .props-title { font-size: 24px; }
+
+        /* Hide sidebar and import button */
+        .side-stack { display: none; }
+        .props-actions .ls-btn:first-child { display: none; }
+
+        /* Mobile filter trigger */
+        .props-filter-trigger {
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            width: 100%; min-height: 44px; padding: 0 14px; margin-bottom: 12px;
+            border: 1px solid var(--line); border-radius: 8px;
+            background: var(--panel); color: var(--copy);
+            font-size: 14px; font-weight: 500; text-decoration: none;
+            cursor: pointer; transition: background 160ms ease;
+        }
+        .props-filter-trigger:active { background: #f5ede5; }
+        .props-filter-trigger svg { width: 18px; height: 18px; color: var(--primary); }
+
+        /* Collapsible filter panel */
+        .filter-card { display: none; margin-bottom: 12px; }
+        .filter-card.is-open { display: block; }
+
+        /* Mobile property cards */
+        .prop-list .prop-row {
+            display: flex !important;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: var(--panel);
+            margin-bottom: 10px;
+            min-height: auto;
+            grid-template-columns: unset;
+        }
+        .prop-list .prop-row:hover { background: var(--panel); transform: none; }
+
+        .prop-thumb {
+            width: 80px !important; height: 80px !important;
+            border-radius: 8px; flex-shrink: 0;
+        }
+
+        /* Info div gets flex grow */
+        .prop-list .prop-row > div:nth-child(2) { flex: 1; min-width: 0; }
+
+        /* Hide status and Edit button; keep Open */
+        .prop-list .prop-row > .prop-meta { display: none; }
+        .prop-list .prop-row > .ls-btn:not(.ls-btn-primary) { display: none; }
+        .prop-list .prop-row > .ls-btn.ls-btn-primary {
+            position: absolute; bottom: 12px; right: 12px;
+            min-height: 32px; padding: 0 12px; font-size: 12px;
+        }
+        .prop-list .prop-row { position: relative; }
+
+        /* Metrics scroll horizontally */
+        .metric-grid {
+            grid-template-columns: repeat(3, minmax(140px, 1fr));
+            overflow-x: auto; scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .metric-card { scroll-snap-align: start; }
+    }
+
+    .props-filter-trigger { display: none; }
 </style>
 {% endblock %}
 
@@ -177,6 +246,11 @@
                 <div class="props-caption">Photos uploaded</div>
             </article>
         </section>
+
+        <button type="button" class="props-filter-trigger" onclick="document.querySelector('.filter-card').classList.toggle('is-open')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            Filters
+        </button>
 
         <section class="filter-card fade-in" style="--delay: 260ms">
             <form method="get" class="filter-grid">

@@ -135,7 +135,7 @@
   // ==================================================
   // FAQ ACCORDION
   // ==================================================
-  const faqToggles = document.querySelectorAll(".faq-toggle");
+  var faqToggles = document.querySelectorAll(".faq-toggle");
 
   faqToggles.forEach(function (toggle) {
     toggle.addEventListener("click", function () {
@@ -144,7 +144,6 @@
       var chevron = item.querySelector(".faq-chevron");
       var isOpen = content.style.maxHeight !== "0px" && content.style.maxHeight !== "";
 
-      // Close all other FAQ items
       document.querySelectorAll(".faq-item").forEach(function (otherItem) {
         if (otherItem !== item) {
           var otherContent = otherItem.querySelector(".faq-content");
@@ -154,7 +153,6 @@
         }
       });
 
-      // Toggle current item
       if (isOpen) {
         content.style.maxHeight = "0px";
         chevron.style.transform = "rotate(0deg)";
@@ -164,4 +162,175 @@
       }
     });
   });
+
+  // ==================================================
+  // PULL-TO-REFRESH
+  // ==================================================
+  var PULL_THRESHOLD = 70;
+
+  function createPTRIndicator() {
+    var indicator = document.createElement("div");
+    indicator.className = "ptr-indicator";
+    indicator.innerHTML =
+      '<div class="ptr-spinner">' +
+        '<svg class="ptr-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7e6f67" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+          '<polyline points="23 4 23 10 17 10"></polyline>' +
+          '<path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>' +
+        '</svg>' +
+      '</div>' +
+      '<span class="ptr-text">Pull to refresh</span>';
+    document.body.appendChild(indicator);
+    return indicator;
+  }
+
+  function initPullToRefresh() {
+    var containers = document.querySelectorAll("[data-ptr-container]");
+    if (!containers.length) return;
+
+    var indicator = createPTRIndicator();
+    var arrow = indicator.querySelector(".ptr-arrow");
+    var text = indicator.querySelector(".ptr-text");
+
+    containers.forEach(function (container) {
+      var startY = 0;
+      var pulling = false;
+      var refreshing = false;
+
+      container.style.overscrollBehaviorY = "contain";
+      container.style.webkitOverflowScrolling = "touch";
+
+      container.addEventListener("touchstart", function (e) {
+        if (refreshing) return;
+        if (container.scrollTop > 0) return;
+        startY = e.touches[0].clientY;
+        pulling = true;
+      }, { passive: true });
+
+      container.addEventListener("touchmove", function (e) {
+        if (!pulling || refreshing) return;
+        var currentY = e.touches[0].clientY;
+        var distance = currentY - startY;
+
+        if (distance < 0 || container.scrollTop > 0) {
+          pulling = false;
+          indicator.classList.remove("ptr-visible");
+          return;
+        }
+
+        var progress = Math.min(distance / PULL_THRESHOLD, 1);
+        indicator.classList.add("ptr-visible");
+        arrow.style.transform = "rotate(" + (progress * 180) + "deg)";
+
+        if (distance >= PULL_THRESHOLD) {
+          text.textContent = "Release to refresh";
+          arrow.classList.add("ptr-rotate");
+        } else {
+          text.textContent = "Pull to refresh";
+          arrow.classList.remove("ptr-rotate");
+        }
+
+        if (distance > 0 && distance < 150) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+
+      container.addEventListener("touchend", function () {
+        if (!pulling || refreshing) return;
+        pulling = false;
+
+        var pullDistance = parseInt(indicator.style.transform
+          ? indicator.style.transform.replace(/[^0-9]/g, "") : "0", 10) || 0;
+
+        var currentText = text.textContent;
+        if (currentText === "Release to refresh") {
+          refreshing = true;
+          indicator.classList.add("ptr-loading");
+          text.textContent = "Refreshing...";
+          arrow.style.transform = "";
+
+          var refreshUrl = container.getAttribute("data-ptr-url") || window.location.href;
+          var targetId = container.getAttribute("data-ptr-container");
+
+          if (typeof htmx !== "undefined") {
+            htmx.ajax("GET", refreshUrl, {
+              target: targetId ? "#" + targetId : "body",
+              swap: "innerHTML"
+            });
+          } else {
+            window.location.reload();
+          }
+        } else {
+          indicator.classList.remove("ptr-visible");
+          arrow.style.transform = "";
+        }
+      });
+    });
+
+    document.addEventListener("htmx:afterSwap", function () {
+      refreshing = false;
+      indicator.classList.remove("ptr-loading", "ptr-visible");
+      text.textContent = "Pull to refresh";
+      arrow.style.transform = "";
+    });
+  }
+
+  initPullToRefresh();
+
+  // ==================================================
+  // INFINITE SCROLL SENTINEL
+  // ==================================================
+  function initInfiniteScroll() {
+    var sentinels = document.querySelectorAll("[data-infinite-scroll]");
+    if (!sentinels.length) return;
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+
+        var el = entry.target;
+        var hxGet = el.getAttribute("hx-get");
+        var hxTarget = el.getAttribute("hx-target");
+        var hxSwap = el.getAttribute("hx-swap") || "beforeend";
+
+        if (!hxGet) return;
+
+        observer.unobserve(el);
+
+        var spinner = document.createElement("div");
+        spinner.className = "ls-infinite-scroll-spinner";
+        spinner.style.cssText =
+          "display:flex;justify-content:center;padding:16px;opacity:0.7;";
+        spinner.innerHTML =
+          '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b56a30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:ptr-spin 800ms linear infinite;">' +
+            '<line x1="12" y1="2" x2="12" y2="6"></line>' +
+            '<line x1="12" y1="18" x2="12" y2="22"></line>' +
+            '<line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>' +
+            '<line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>' +
+            '<line x1="2" y1="12" x2="6" y2="12"></line>' +
+            '<line x1="18" y1="12" x2="22" y2="12"></line>' +
+            '<line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>' +
+            '<line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>' +
+          '</svg>';
+        el.parentNode.insertBefore(spinner, el);
+
+        if (typeof htmx !== "undefined") {
+          htmx.ajax("GET", hxGet, {
+            target: hxTarget || "body",
+            swap: hxSwap
+          });
+        }
+
+        document.addEventListener("htmx:afterSwap", function handler() {
+          spinner.remove();
+          document.removeEventListener("htmx:afterSwap", handler);
+        });
+      });
+    }, { rootMargin: "200px" });
+
+    sentinels.forEach(function (el) {
+      observer.observe(el);
+    });
+  }
+
+  initInfiniteScroll();
 })();

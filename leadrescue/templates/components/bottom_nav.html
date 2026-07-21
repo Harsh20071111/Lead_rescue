@@ -1,0 +1,333 @@
+{% load static %}
+{% comment %}
+  Bottom tab bar for mobile navigation.
+  5 items: Dashboard, Leads, Properties, Follow-ups (Tasks), More (opens bottom sheet).
+
+  Include in base.html or page templates:
+    {% include "components/bottom_nav.html" %}
+{% endcomment %}
+
+{% with url_name=request.resolver_match.url_name namespace=request.resolver_match.namespace %}
+{# Determine active state for each nav item #}
+{% with is_dashboard_active=False is_leads_active=False is_properties_active=False is_tasks_active=False is_more_active=False %}
+  {% if namespace == "dashboard" or url_name == "home" and namespace == "core" %}
+    {% with is_dashboard_active=True %}{% endwith %}
+  {% elif namespace == "leads" and url_name != "tasks" %}
+    {% with is_leads_active=True %}{% endwith %}
+  {% elif namespace == "properties" %}
+    {% with is_properties_active=True %}{% endwith %}
+  {% elif namespace == "leads" and url_name == "tasks" %}
+    {% with is_tasks_active=True %}{% endwith %}
+  {% endif %}
+
+  {# Fallback: check URL path for dashboard #}
+  {% if request.path == "/dashboard/" or request.path == "/" and namespace == "core" %}
+    {% with is_dashboard_active=True %}{% endwith %}
+  {% endif %}
+
+  {# Navigation items data #}
+  {% with nav_items='dashboard,leads,properties,tasks,more' %}
+    {% with nav_labels='Dashboard,Leads,Properties,Follow-ups,More' %}
+      {% with nav_urls='/dashboard/,/leads/,/properties/,/tasks/,' %}
+        {% with nav_active=is_dashboard_active|add:","|add:is_leads_active|add:","|add:is_properties_active|add:","|add:is_tasks_active|add:","|add:is_more_active %}
+          {% with nav_url_parts=nav_urls|cut:" " %}
+<div
+  x-data="{
+    moreOpen: false,
+    currentPath: window.location.pathname,
+    isActive: function(url) {
+      if (url === '/dashboard/') return this.currentPath === '/dashboard/' || this.currentPath === '/';
+      if (url === '/tasks/') return this.currentPath === '/tasks/';
+      return this.currentPath.startsWith(url);
+    }
+  }"
+  x-init="$watch('$store.navRefresh', () => { currentPath = window.location.pathname; })"
+  class="ls-bottom-nav md:hidden"
+  role="navigation"
+  aria-label="Mobile navigation"
+>
+  {# Tab bar #}
+  <div class="ls-bottom-nav-inner">
+    {# Dashboard #}
+    <a
+      href="/dashboard/"
+      class="ls-bottom-nav-item touch-target"
+      :class="{ 'ls-bottom-nav-active': isActive('/dashboard/') }"
+      hx-get="/dashboard/"
+      hx-target="body"
+      hx-push-url="true"
+      hx-indicator="#nav-loading"
+      aria-label="Dashboard"
+      @click="currentPath = '/dashboard/'"
+    >
+      <svg class="ls-bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+        <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+        <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+        <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+      </svg>
+      <span class="ls-bottom-nav-label">Dashboard</span>
+    </a>
+
+    {# Leads #}
+    <a
+      href="/leads/"
+      class="ls-bottom-nav-item touch-target"
+      :class="{ 'ls-bottom-nav-active': isActive('/leads/') && currentPath !== '/tasks/' }"
+      hx-get="/leads/"
+      hx-target="body"
+      hx-push-url="true"
+      hx-indicator="#nav-loading"
+      aria-label="Leads"
+      @click="currentPath = '/leads/'"
+    >
+      <svg class="ls-bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+      </svg>
+      <span class="ls-bottom-nav-label">Leads</span>
+    </a>
+
+    {# Properties #}
+    <a
+      href="/properties/"
+      class="ls-bottom-nav-item touch-target"
+      :class="{ 'ls-bottom-nav-active': isActive('/properties/') }"
+      hx-get="/properties/"
+      hx-target="body"
+      hx-push-url="true"
+      hx-indicator="#nav-loading"
+      aria-label="Properties"
+      @click="currentPath = '/properties/'"
+    >
+      <svg class="ls-bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      <span class="ls-bottom-nav-label">Properties</span>
+    </a>
+
+    {# Follow-ups (Tasks) #}
+    <a
+      href="/tasks/"
+      class="ls-bottom-nav-item touch-target"
+      :class="{ 'ls-bottom-nav-active': isActive('/tasks/') }"
+      hx-get="/tasks/"
+      hx-target="body"
+      hx-push-url="true"
+      hx-indicator="#nav-loading"
+      aria-label="Follow-ups"
+      @click="currentPath = '/tasks/'"
+    >
+      <svg class="ls-bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M9 11l3 3L22 4"></path>
+        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+      </svg>
+      <span class="ls-bottom-nav-label">Follow-ups</span>
+    </a>
+
+    {# More — opens bottom sheet, NOT a link #}
+    <button
+      class="ls-bottom-nav-item touch-target"
+      :class="{ 'ls-bottom-nav-active': moreOpen }"
+      @click="moreOpen = !moreOpen"
+      aria-label="More options"
+      aria-expanded="moreOpen"
+      aria-controls="more-sheet"
+    >
+      <svg class="ls-bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="1"></circle>
+        <circle cx="19" cy="12" r="1"></circle>
+        <circle cx="5" cy="12" r="1"></circle>
+      </svg>
+      <span class="ls-bottom-nav-label">More</span>
+    </button>
+  </div>
+
+  {# HTMX loading indicator (hidden) #}
+  <div id="nav-loading" class="htmx-indicator fixed top-0 left-0 right-0 z-50 h-0.5 bg-[#b56a30]" style="display:none;"></div>
+
+  {# ── More Bottom Sheet ────────────────────────────── #}
+  <div
+    x-show="moreOpen"
+    x-cloak
+    @keydown.escape.window="moreOpen = false"
+    role="dialog"
+    aria-modal="true"
+    aria-label="More options"
+    id="more-sheet"
+    class="ls-sheet-overlay"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-250"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+  >
+    {# Backdrop #}
+    <div
+      class="ls-sheet-backdrop"
+      @click="moreOpen = false"
+      aria-hidden="true"
+    ></div>
+
+    {# Panel #}
+    <div
+      class="ls-sheet-panel"
+      x-transition:enter="transition ease-out duration-300"
+      x-transition:enter-start="translate-y-full"
+      x-transition:enter-end="translate-y-0"
+      x-transition:leave="transition ease-in duration-250"
+      x-transition:leave-start="translate-y-0"
+      x-transition:leave-end="translate-y-full"
+      @click.away="moreOpen = false"
+    >
+      {# Drag handle #}
+      <div class="ls-sheet-handle" aria-hidden="true">
+        <div class="ls-sheet-handle-bar"></div>
+      </div>
+
+      {# Header #}
+      <div class="ls-sheet-header">
+        <h3 class="ls-sheet-title">Menu</h3>
+        <button
+          @click="moreOpen = false"
+          class="ls-sheet-close touch-target"
+          aria-label="Close menu"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      {# Scrollable menu items #}
+      <div class="ls-sheet-body">
+        <div class="ls-more-menu">
+          {# Team #}
+          <a
+            href="/accounts/team/"
+            class="ls-more-item touch-target"
+            hx-get="/accounts/team/"
+            hx-target="body"
+            hx-push-url="true"
+            @click="moreOpen = false; currentPath = '/accounts/team/'"
+          >
+            <div class="ls-more-item-left">
+              <svg class="ls-more-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <span class="ls-more-item-label">Team</span>
+            </div>
+            <svg class="ls-more-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </a>
+
+          {# Import (only if not free plan) #}
+          {% if request.user.agent_profile.agency.plan_tier != 'free' %}
+          <a
+            href="/imports/upload/"
+            class="ls-more-item touch-target"
+            hx-get="/imports/upload/"
+            hx-target="body"
+            hx-push-url="true"
+            @click="moreOpen = false; currentPath = '/imports/upload/'"
+          >
+            <div class="ls-more-item-left">
+              <svg class="ls-more-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <span class="ls-more-item-label">Import</span>
+            </div>
+            <svg class="ls-more-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </a>
+          {% endif %}
+
+          {# WhatsApp #}
+          <a
+            href="/settings/whatsapp/"
+            class="ls-more-item touch-target"
+            hx-get="/settings/whatsapp/"
+            hx-target="body"
+            hx-push-url="true"
+            @click="moreOpen = false; currentPath = '/settings/whatsapp/'"
+          >
+            <div class="ls-more-item-left">
+              <svg class="ls-more-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+              </svg>
+              <span class="ls-more-item-label">WhatsApp</span>
+            </div>
+            <svg class="ls-more-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </a>
+
+          {# Billing #}
+          <a
+            href="/billing/"
+            class="ls-more-item touch-target"
+            hx-get="/billing/"
+            hx-target="body"
+            hx-push-url="true"
+            @click="moreOpen = false; currentPath = '/billing/'"
+          >
+            <div class="ls-more-item-left">
+              <svg class="ls-more-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                <line x1="1" y1="10" x2="23" y2="10"></line>
+              </svg>
+              <span class="ls-more-item-label">Billing</span>
+            </div>
+            <svg class="ls-more-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </a>
+
+          {# Divider #}
+          <div class="ls-more-divider" aria-hidden="true"></div>
+
+          {# Logout #}
+          <a
+            href="/accounts/logout/"
+            class="ls-more-item touch-target ls-more-item-danger"
+            hx-get="/accounts/logout/"
+            hx-target="body"
+            hx-push-url="true"
+            @click="moreOpen = false; currentPath = '/accounts/logout/'"
+          >
+            <div class="ls-more-item-left">
+              <svg class="ls-more-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              <span class="ls-more-item-label">Logout</span>
+            </div>
+            <svg class="ls-more-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  {% endwith %}
+  {% endwith %}
+  {% endwith %}
+  {% endwith %}
+  {% endwith %}
+{% endwith %}
+{% endwith %}

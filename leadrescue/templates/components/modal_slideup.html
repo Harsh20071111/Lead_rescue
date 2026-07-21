@@ -1,0 +1,77 @@
+{% comment %}
+  Full-screen slide-up form modal for Add/Edit forms.
+
+  Usage:
+    {% include "components/modal_slideup.html" with modal_id="add-lead-modal" modal_title="Add Lead" %}
+
+  Inside, wrap form content in the sheet body area.
+  The caller should provide the form content via the `content` block or inline.
+{% endcomment %}
+
+<div
+  x-data="{ open: false }"
+  id="{{ modal_id|default:'slideup-modal' }}"
+  x-show="open"
+  x-cloak
+  @keydown.escape.window="open = false"
+  role="dialog"
+  aria-modal="true"
+  aria-label="{{ modal_title|default:'Form' }}"
+  class="ls-sheet-overlay"
+  x-transition:enter="transition ease-out duration-300"
+  x-transition:enter-start="opacity-0"
+  x-transition:enter-end="opacity-100"
+  x-transition:leave="transition ease-in duration-250"
+  x-transition:leave-start="opacity-100"
+  x-transition:leave-end="opacity-0"
+>
+  {% comment %} Backdrop {% endcomment %}
+  <div
+    class="ls-sheet-backdrop"
+    @click="open = false"
+    aria-hidden="true"
+  ></div>
+
+  {% comment %} Panel — max-height 95dvh for forms {% endcomment %}
+  <div
+    class="ls-sheet-panel ls-modal-panel"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="translate-y-full"
+    x-transition:enter-end="translate-y-0"
+    x-transition:leave="transition ease-in duration-250"
+    x-transition:leave-start="translate-y-0"
+    x-transition:leave-end="translate-y-full"
+  >
+    {% comment %} Drag handle {% endcomment %}
+    <div class="ls-sheet-handle" aria-hidden="true">
+      <div class="ls-sheet-handle-bar"></div>
+    </div>
+
+    {% comment %} Header {% endcomment %}
+    <div class="ls-sheet-header ls-modal-header">
+      <h3 class="ls-sheet-title">{{ modal_title|default:'' }}</h3>
+      <button
+        @click="open = false"
+        class="ls-sheet-close touch-target"
+        aria-label="Close modal"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    {% comment %} Scrollable form body {% endcomment %}
+    <div class="ls-sheet-body ls-modal-body">
+      {{ content|default:'' }}
+    </div>
+
+    {% comment %} Sticky footer for form actions (optional) {% endcomment %}
+    {% if show_footer|default:False %}
+    <div class="ls-modal-footer">
+      {{ footer_content|default:'' }}
+    </div>
+    {% endif %}
+  </div>
+</div>

@@ -67,6 +67,50 @@
     .fade-in { animation: fade-up 520ms cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--delay, 0ms); }
     @keyframes fade-up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
     @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } .ls-btn { transition: none; } }
+
+    @media (max-width: 767px) {
+        .form-page {
+            max-width: 100%;
+        }
+        
+        .form-title {
+            font-size: 22px;
+        }
+        
+        .form-card {
+            padding: 16px;
+            border: none;
+            border-radius: 0;
+        }
+        
+        /* Full-width inputs on mobile */
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            min-height: 44px;
+            font-size: 16px; /* Prevents iOS zoom on focus */
+            padding: 10px 14px;
+        }
+        
+        /* Sticky save button */
+        .form-submit-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 35;
+            background: var(--panel);
+            border-top: 1px solid var(--line);
+            padding: 10px 16px;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom));
+        }
+        
+        .form-submit-bar .ls-btn {
+            width: 100%;
+            min-height: 48px;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -83,7 +127,7 @@
                 {% for error in field.errors %}<ul class="errorlist"><li>{{ error }}</li></ul>{% endfor %}
             </div>
         {% endfor %}
-        <div style="display: flex; gap: 12px; padding-top: 8px;">
+        <div class="form-submit-bar" style="display: flex; gap: 12px; padding-top: 8px;">
             <button class="ls-btn ls-btn-primary">Save</button>
             <a href="{% if object %}{% url 'leads:detail' object.pk %}{% else %}{% url 'leads:list' %}{% endif %}" class="ls-btn">Cancel</a>
         </div>

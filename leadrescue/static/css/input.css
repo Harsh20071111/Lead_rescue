@@ -3,3 +3,484 @@
 @tailwind utilities;
 
 /* LeadSathi base styles */
+
+/* ── Alpine.js FOUC prevention ─────────────────────── */
+[x-cloak] { display: none !important; }
+
+/* ── LeadSathi Mobile Design Tokens ────────────────── */
+:root {
+  --ls-primary: #b56a30;
+  --ls-muted: #7e6f67;
+  --ls-bg: #FAF8F4;
+  --ls-panel: #fffaf6;
+  --ls-border: #efe3d8;
+  --ls-copy: #2f241f;
+  --ls-green: #1F6F4A;
+  --ls-red: #8A341F;
+  --ls-nav-height: 3.5rem;
+  --ls-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ── Safe Area Utilities ───────────────────────────── */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+.pb-nav-safe { padding-bottom: calc(var(--ls-nav-height) + env(safe-area-inset-bottom, 0px)); }
+
+/* ── Tap Target Utility ────────────────────────────── */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* ── Bottom Nav ────────────────────────────────────── */
+.ls-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: var(--ls-panel);
+  border-top: 1px solid var(--ls-border);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (min-width: 768px) {
+  .ls-bottom-nav { display: none; }
+}
+
+.ls-bottom-nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: var(--ls-nav-height);
+}
+
+.ls-bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex: 1;
+  height: var(--ls-nav-height);
+  padding: 6px 0;
+  background: none;
+  border: none;
+  color: var(--ls-muted);
+  text-decoration: none;
+  position: relative;
+  transition: color 200ms ease;
+  cursor: pointer;
+}
+
+.ls-bottom-nav-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  stroke-width: 1.8;
+}
+
+.ls-bottom-nav-label {
+  font-size: 0.625rem;
+  line-height: 1;
+  font-weight: 500;
+}
+
+.ls-bottom-nav-active {
+  color: var(--ls-primary);
+}
+
+.ls-bottom-nav-active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 2px;
+  background: var(--ls-primary);
+  border-radius: 0 0 2px 2px;
+}
+
+/* ── Bottom Sheet ──────────────────────────────────── */
+.ls-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.ls-sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.ls-sheet-panel {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 85dvh;
+  background: var(--ls-panel);
+  border-radius: 1rem 1rem 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.ls-modal-panel {
+  max-height: 95dvh;
+}
+
+.ls-sheet-handle {
+  display: flex;
+  justify-content: center;
+  padding: 12px 0 4px;
+}
+
+.ls-sheet-handle-bar {
+  width: 36px;
+  height: 4px;
+  background: var(--ls-border);
+  border-radius: 2px;
+}
+
+.ls-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 12px;
+  border-bottom: 1px solid var(--ls-border);
+}
+
+.ls-sheet-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--ls-copy);
+  margin: 0;
+}
+
+.ls-sheet-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--ls-muted);
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.ls-sheet-close:hover {
+  background: var(--ls-border);
+}
+
+.ls-sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.ls-modal-header {
+  padding: 8px 16px 12px;
+  border-bottom: 1px solid var(--ls-border);
+}
+
+.ls-modal-body {
+  padding: 16px;
+}
+
+.ls-modal-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--ls-border);
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+/* ── More Menu (inside bottom sheet) ───────────────── */
+.ls-more-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.ls-more-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--ls-border);
+  color: var(--ls-copy);
+  text-decoration: none;
+  font-size: 15px;
+  transition: background 160ms ease;
+}
+
+.ls-more-item:hover {
+  background: rgba(181, 106, 48, 0.04);
+}
+
+.ls-more-item:active {
+  background: rgba(181, 106, 48, 0.08);
+}
+
+.ls-more-item:last-child {
+  border-bottom: none;
+}
+
+.ls-more-item-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ls-more-item-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--ls-muted);
+  flex-shrink: 0;
+}
+
+.ls-more-item-label {
+  font-weight: 500;
+}
+
+.ls-more-item-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--ls-muted);
+  opacity: 0.5;
+}
+
+.ls-more-item-danger {
+  color: var(--ls-red);
+}
+
+.ls-more-item-danger .ls-more-item-icon {
+  color: var(--ls-red);
+}
+
+.ls-more-divider {
+  height: 1px;
+  background: var(--ls-border);
+  margin: 4px 0;
+}
+
+/* ── Pull-to-Refresh ───────────────────────────────── */
+.ptr-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  transform: translateY(-100%);
+  transition: transform 200ms ease;
+  background: var(--ls-panel);
+  border-bottom: 1px solid var(--ls-border);
+}
+
+.ptr-indicator.ptr-visible {
+  transform: translateY(0);
+}
+
+.ptr-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ptr-arrow {
+  transition: transform 200ms ease;
+}
+
+.ptr-arrow.ptr-rotate {
+  transform: rotate(180deg);
+}
+
+.ptr-text {
+  font-size: 12px;
+  color: var(--ls-muted);
+  margin-top: 4px;
+}
+
+.ptr-loading .ptr-arrow {
+  animation: ptr-spin 800ms linear infinite;
+}
+
+@keyframes ptr-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── Swipeable List Items ──────────────────────────── */
+.swipeable-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.swipeable-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.swipeable-track::-webkit-scrollbar {
+  display: none;
+}
+
+.swipe-content {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  position: relative;
+  z-index: 1;
+  background: var(--ls-panel);
+  border: 1px solid var(--ls-border);
+  border-radius: 8px;
+  transition: transform 200ms ease;
+}
+
+.swipe-action {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+  width: 80px;
+  justify-content: center;
+}
+
+.swipe-action.ls-swipe-left {
+  background: var(--ls-green);
+}
+
+.swipe-action.ls-swipe-right {
+  background: var(--ls-primary);
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* ── Mobile Cards ──────────────────────────────────── */
+.ls-card-mobile {
+  border: 1px solid var(--ls-border);
+  border-radius: 8px;
+  background: var(--ls-panel);
+  padding: 14px;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.ls-card-mobile:active {
+  transform: scale(0.98);
+}
+
+.ls-card-mobile + .ls-card-mobile {
+  margin-top: 10px;
+}
+
+/* ── FAB (Floating Action Button) ──────────────────── */
+.ls-fab {
+  position: fixed;
+  bottom: calc(var(--ls-nav-height) + env(safe-area-inset-bottom, 0px) + 16px);
+  right: 16px;
+  z-index: 35;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--ls-primary);
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(181, 106, 48, 0.35);
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.ls-fab:active {
+  transform: scale(0.92);
+}
+
+.ls-fab:hover {
+  box-shadow: 0 6px 20px rgba(181, 106, 48, 0.45);
+}
+
+@media (min-width: 768px) {
+  .ls-fab { display: none; }
+}
+
+/* ── Mobile Form Styles ────────────────────────────── */
+.ls-input-mobile {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--ls-border);
+  border-radius: 8px;
+  font-size: 16px;
+  color: var(--ls-copy);
+  background: #fff;
+  outline: none;
+  transition: border-color 160ms ease;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.ls-input-mobile:focus {
+  border-color: var(--ls-primary);
+  box-shadow: 0 0 0 3px rgba(181, 106, 48, 0.12);
+}
+
+.ls-input-mobile::placeholder {
+  color: var(--ls-muted);
+  opacity: 0.7;
+}
+
+/* Prevent iOS zoom on input focus */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="password"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}

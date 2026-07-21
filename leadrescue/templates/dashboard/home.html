@@ -55,6 +55,7 @@
     }
 
     .dash-actions { display: flex; gap: 12px; padding-top: 2px; }
+    .dash-action-strip { display: none; }
 
     .ls-btn {
         display: inline-flex; align-items: center; justify-content: center;
@@ -120,6 +121,126 @@
         .dash-head { flex-direction: column; }
         .metric-grid, .chart-grid, .side-stack { grid-template-columns: 1fr; }
     }
+
+    @media (max-width: 767px) {
+        .dash-page {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .dash-head {
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .dash-title {
+            font-size: 24px;
+        }
+
+        /* Hide desktop action buttons */
+        .dash-actions {
+            display: none;
+        }
+
+        /* Action strip - quick action bar */
+        .dash-action-strip {
+            display: flex;
+            gap: 10px;
+            padding: 12px 0;
+            margin-bottom: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .dash-action-strip .ls-btn {
+            flex-shrink: 0;
+            min-height: 40px;
+            font-size: 13px;
+            padding: 0 14px;
+        }
+
+        /* Horizontal scrollable KPI cards */
+        .metric-grid {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+            padding-bottom: 4px;
+            margin-bottom: 16px;
+        }
+
+        .metric-card {
+            flex: 0 0 260px;
+            scroll-snap-align: start;
+            min-height: 110px;
+            padding: 14px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+        }
+
+        .metric-card:nth-child(n+4) {
+            display: none;
+        }
+
+        /* Collapsible sections */
+        .dash-section-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 12px 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .dash-section-toggle .section-title {
+            margin: 0;
+        }
+
+        .dash-section-toggle .toggle-icon {
+            transition: transform 200ms ease;
+            color: var(--muted);
+        }
+
+        .dash-section-toggle[aria-expanded="false"] .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .dash-collapsible-content {
+            overflow: hidden;
+            transition: max-height 300ms ease, opacity 200ms ease;
+        }
+
+        .dash-collapsible-content.collapsed {
+            max-height: 0 !important;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Charts grid single column on mobile */
+        .chart-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .chart-card {
+            min-height: auto;
+        }
+
+        /* Side stack single column */
+        .side-stack {
+            grid-template-columns: 1fr;
+        }
+
+        /* Activity card full width */
+        .activity-card {
+            padding: 14px;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -136,6 +257,13 @@
                 <a class="ls-btn ls-btn-primary" href="{% url 'leads:create' %}">Create Lead</a>
             </div>
         </header>
+
+        <nav class="dash-action-strip">
+            <a class="ls-btn ls-btn-primary" href="{% url 'leads:create' %}">+ New Lead</a>
+            <a class="ls-btn" href="{% url 'properties:create' %}">+ Property</a>
+            <a class="ls-btn" href="{% url 'accounts:team_invite' %}">Invite Agent</a>
+            <a class="ls-btn" href="{% url 'leads:tasks' %}">Follow-ups</a>
+        </nav>
 
         <section class="metric-grid">
             {% with t=trends.total_leads %}
@@ -188,6 +316,12 @@
             {% endwith %}
         </section>
 
+        <section class="chart-grid-wrap fade-in" style="--delay: 480ms">
+            <button class="dash-section-toggle" aria-expanded="true" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); this.nextElementSibling.classList.toggle('collapsed');">
+                <h2 class="section-title">Analytics</h2>
+                <svg class="toggle-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="dash-collapsible-content">
         <section class="chart-grid">
             <article class="chart-card fade-in" style="--delay: 480ms">
                 <div class="chart-card-head">
@@ -216,6 +350,8 @@
                 </div>
                 <div class="chart-legend" id="sourceLegend"></div>
             </article>
+        </section>
+            </div>
         </section>
 
         <section class="activity-card fade-in" style="--delay: 600ms">

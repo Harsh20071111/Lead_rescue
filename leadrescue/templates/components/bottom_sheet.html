@@ -1,0 +1,72 @@
+{% comment %}
+  Reusable Alpine.js bottom sheet component.
+
+  Usage:
+    {% include "components/bottom_sheet.html" with sheet_id="filter-sheet" %}
+
+  Inside the sheet_id div, callers put their content:
+    <div x-data="{ open: false }" id="filter-sheet" ...>
+      ... their content ...
+    </div{% endcomment %}
+
+<div
+  x-data="{ open: false }"
+  id="{{ sheet_id|default:'bottom-sheet' }}"
+  x-show="open"
+  x-cloak
+  @keydown.escape.window="open = false"
+  role="dialog"
+  aria-modal="true"
+  aria-label="{{ sheet_title|default:'Sheet' }}"
+  class="ls-sheet-overlay"
+  x-transition:enter="transition ease-out duration-300"
+  x-transition:enter-start="opacity-0"
+  x-transition:enter-end="opacity-100"
+  x-transition:leave="transition ease-in duration-250"
+  x-transition:leave-start="opacity-100"
+  x-transition:leave-end="opacity-0"
+>
+  {% comment %} Backdrop {% endcomment %}
+  <div
+    class="ls-sheet-backdrop"
+    @click="open = false"
+    aria-hidden="true"
+  ></div>
+
+  {% comment %} Panel {% endcomment %}
+  <div
+    class="ls-sheet-panel"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="translate-y-full"
+    x-transition:enter-end="translate-y-0"
+    x-transition:leave="transition ease-in duration-250"
+    x-transition:leave-start="translate-y-0"
+    x-transition:leave-end="translate-y-full"
+    @click.away="open = false"
+  >
+    {% comment %} Drag handle {% endcomment %}
+    <div class="ls-sheet-handle" aria-hidden="true">
+      <div class="ls-sheet-handle-bar"></div>
+    </div>
+
+    {% comment %} Header {% endcomment %}
+    <div class="ls-sheet-header">
+      <h3 class="ls-sheet-title">{{ sheet_title|default:'' }}</h3>
+      <button
+        @click="open = false"
+        class="ls-sheet-close touch-target"
+        aria-label="Close sheet"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    {% comment %} Scrollable body {% endcomment %}
+    <div class="ls-sheet-body">
+      {{ content|default:'' }}
+    </div>
+  </div>
+</div>

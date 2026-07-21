@@ -265,7 +265,7 @@
 
     .lead-row {
         display: grid;
-        grid-template-columns: 56px minmax(0, 1fr) auto auto auto;
+        grid-template-columns: 56px minmax(0, 1fr) auto;
         gap: 16px;
         align-items: center;
         min-height: 90px;
@@ -301,6 +301,8 @@
         font-size: 14px;
         white-space: nowrap;
     }
+
+    .lead-row-actions { display: none; }
 
     .import-card {
         margin-top: 24px;
@@ -411,20 +413,95 @@
         .side-stack {
             grid-template-columns: 1fr;
         }
+    }
 
-        .lead-row {
-            grid-template-columns: 48px minmax(0, 1fr) auto;
+    /* === MOBILE-FIRST ADDITIONS === */
+    @media (max-width: 767px) {
+        .leads-page {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        
+        .leads-head {
+            flex-direction: column;
             gap: 12px;
-            padding: 14px 0;
         }
-
-        .lead-icon {
-            width: 48px;
-            height: 48px;
+        
+        .leads-title {
+            font-size: 24px;
         }
-
-        .lead-assignee {
-            grid-column: 2 / -1;
+        
+        /* Hide desktop-only elements on mobile */
+        .import-card,
+        .leads-side,
+        .leads-actions { 
+            display: none; 
+        }
+        
+        /* Mobile filter bar - sticky below top bar */
+        .leads-filter-bar {
+            position: sticky;
+            top: 56px;
+            z-index: 30;
+            background: var(--panel);
+            padding: 8px 0;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .leads-filter-bar .ls-btn {
+            flex-shrink: 0;
+            min-height: 36px;
+            font-size: 13px;
+        }
+        
+        /* Lead cards for mobile */
+        .lead-row {
+            display: block;
+            padding: 14px 16px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: var(--panel);
+            margin-bottom: 10px;
+        }
+        
+        .lead-row-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 4px;
+        }
+        
+        .lead-row-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--copy);
+        }
+        
+        .lead-row-meta {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+        
+        .lead-row-assignee {
+            display: none;
+        }
+        
+        .lead-row-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--line);
+        }
+        
+        .lead-row-actions .ls-btn {
+            flex: 1;
+            min-height: 40px;
+            font-size: 13px;
         }
     }
 </style>
@@ -447,6 +524,15 @@
                 <a class="ls-btn ls-btn-primary" href="{% url 'leads:create' %}">Create Lead</a>
             </div>
         </header>
+
+        <nav class="leads-filter-bar">
+            <a class="ls-btn ls-btn-primary" href="{% url 'leads:list' %}">All</a>
+            <a class="ls-btn" href="{% url 'leads:list' %}?status=new">New</a>
+            <a class="ls-btn" href="{% url 'leads:list' %}?status=contacted">Contacted</a>
+            <a class="ls-btn" href="{% url 'leads:list' %}?status=qualified">Qualified</a>
+            <a class="ls-btn" href="{% url 'leads:list' %}?status=site_visit">Site Visit</a>
+            <a class="ls-btn" href="{% url 'leads:list' %}?status=converted">Converted</a>
+        </nav>
 
         <section class="metric-grid">
             <article class="metric-card fade-in" style="--delay: 70ms">
@@ -523,29 +609,33 @@
                         <div class="lead-icon" aria-hidden="true" style="background:{{ bg_color }}; color:#fff; font-weight:700; font-size:18px;">
                             {{ lead.name|avatar_initials }}
                         </div>
-                        <div>
-                            <a class="lead-name" href="{% url 'leads:detail' lead.pk %}">{{ lead.name }}</a>
-                            <div class="lead-meta">
-                                {{ lead.phone }}{% if lead.preferred_bhk %} · Preferred: {{ lead.get_preferred_bhk_display }}{% endif %}{% if lead.budget_max %} · Budget: {{ lead.budget_max|inr_compact }}{% elif lead.budget %} · Budget: {{ lead.budget }}{% endif %}
+                        <div class="lead-row-text">
+                            <div class="lead-row-grid">
+                                <a class="lead-name lead-row-name" href="{% url 'leads:detail' lead.pk %}">{{ lead.name }}</a>
+                                <span class="lead-assignee lead-row-assignee">
+                                    {% if lead.assigned_agent %}
+                                        {{ lead.assigned_agent.user.first_name|default:lead.assigned_agent.user.email }}
+                                    {% else %}
+                                        Unassigned
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="lead-meta lead-row-meta">
+                                {{ lead.phone }}{% if lead.preferred_bhk %} · {{ lead.get_preferred_bhk_display }}{% endif %}{% if lead.budget_max %} · {{ lead.budget_max|inr_compact }}{% elif lead.budget %} · {{ lead.budget }}{% endif %}
                                 {% if lead.status %} · <span class="status-badge" style="background:{{ lead.status|status_color }}15; color:{{ lead.status|status_color }}">{{ lead.get_status_display }}</span>{% endif %}
                             </div>
+                            <div class="lead-row-actions">
+                                <a class="ls-btn" href="{% url 'leads:edit' lead.pk %}">{% if lead.assigned_agent %}Edit{% else %}Assign{% endif %}</a>
+                                <a class="ls-btn ls-btn-primary" href="{% url 'leads:detail' lead.pk %}">Open</a>
+                            </div>
                         </div>
-                        <div class="lead-assignee">
-                            {% if lead.assigned_agent %}
-                                Assigned to {{ lead.assigned_agent.user.first_name|default:lead.assigned_agent.user.email }}
-                            {% else %}
-                                Unassigned
-                            {% endif %}
-                        </div>
-                        <a class="ls-btn" href="{% url 'leads:edit' lead.pk %}">{% if lead.assigned_agent %}Edit{% else %}Assign{% endif %}</a>
-                        <a class="ls-btn ls-btn-primary" href="{% url 'leads:detail' lead.pk %}">Open</a>
                     </article>
                 {% empty %}
                     <article class="lead-row">
                         <div class="lead-icon" aria-hidden="true">
                             <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8c.5-3.5 3.4-6 7-6s6.5 2.5 7 6H5Z"/></svg>
                         </div>
-                        <div>
+                        <div class="lead-row-text">
                             <div class="lead-name">No leads found.</div>
                             <div class="lead-meta">Create or import leads to fill this list.</div>
                         </div>

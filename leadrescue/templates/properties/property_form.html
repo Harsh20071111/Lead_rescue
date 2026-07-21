@@ -106,13 +106,43 @@
     .fade-in { animation: fade-up 520ms cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--delay, 0ms); }
     @keyframes fade-up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
     @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } .ls-btn { transition: none; } }
+
+    /* ── Mobile ≤ 767px ─────────────────────────────── */
+    @media (max-width: 767px) {
+        .form-page { max-width: 100%; }
+        .form-title { font-size: 22px; }
+        .form-card { padding: 16px; border: none; border-radius: 0; }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; min-height: 44px; font-size: 16px; padding: 10px 14px;
+        }
+
+        .form-submit-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 35;
+            background: var(--panel); border-top: 1px solid var(--line);
+            padding: 10px 16px;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom));
+        }
+        .form-submit-bar .ls-btn { width: 100%; min-height: 48px; }
+
+        /* Hide inline submit buttons on mobile */
+        .form-submit-inline { display: none; }
+
+        /* Bottom padding so content isn't hidden behind fixed bar */
+        .form-page { padding-bottom: 80px; }
+
+        /* Existing images card */
+        .form-card + .form-card { margin-top: 16px; }
+    }
+
+    .form-submit-bar { display: none; }
 </style>
 {% endblock %}
 
 {% block app_content %}
 <div class="form-page">
     <h1 class="form-title fade-in">{% if object %}Edit property{% else %}Create property{% endif %}</h1>
-    <form method="post" enctype="multipart/form-data" class="form-card fade-in" style="--delay: 70ms;">
+    <form id="property-form" method="post" enctype="multipart/form-data" class="form-card fade-in" style="--delay: 70ms;">
         {% csrf_token %}
 
         {% for field in form %}
@@ -139,7 +169,7 @@
             </div>
         {% endfor %}
 
-        <div style="display: flex; gap: 12px; padding-top: 8px;">
+        <div class="form-submit-inline" style="display: flex; gap: 12px; padding-top: 8px;">
             <button class="ls-btn ls-btn-primary">Save</button>
             <a href="{% if object %}{% url 'properties:detail' object.pk %}{% else %}{% url 'properties:list' %}{% endif %}" class="ls-btn">Cancel</a>
         </div>
@@ -174,6 +204,10 @@
             </div>
         </div>
     {% endif %}
+</div>
+
+<div class="form-submit-bar">
+    <button type="submit" form="property-form" class="ls-btn ls-btn-primary">Save</button>
 </div>
 
 <script>

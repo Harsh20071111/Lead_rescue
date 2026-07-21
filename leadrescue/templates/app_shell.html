@@ -202,6 +202,173 @@
     }
     @keyframes slide-in { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     .animate-slide-in { animation: slide-in 400ms cubic-bezier(.2,.8,.2,1) both; }
+
+    /* ── Alpine.js x-cloak ── */
+    [x-cloak] { display: none !important; }
+
+    /* ── Mobile-only top-bar action buttons (hidden on desktop) ── */
+    .ls-mobile-actions {
+        display: none;
+    }
+
+    .ls-mobile-icon-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 999px;
+        border: none;
+        background: transparent;
+        color: var(--ls-text);
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .ls-mobile-icon-btn:active {
+        background: var(--ls-soft);
+    }
+
+    /* ── Mobile search overlay ── */
+    .ls-search-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 45;
+        background: var(--ls-nav);
+        border-bottom: 1px solid var(--ls-border);
+        padding: 8px 16px;
+        transform: translateY(-100%);
+        transition: transform 250ms cubic-bezier(.4,0,.2,1);
+    }
+
+    .ls-search-overlay.is-open {
+        transform: translateY(0);
+    }
+
+    .ls-search-overlay-inner {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ls-search-overlay input {
+        flex: 1;
+        height: 44px;
+        border: 1px solid var(--ls-border);
+        border-radius: 999px;
+        background: #ffffff;
+        color: var(--ls-text);
+        font-size: 15px;
+        padding: 0 16px;
+        outline: none;
+    }
+
+    .ls-search-overlay input:focus {
+        border-color: var(--ls-primary);
+    }
+
+    .ls-search-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border: none;
+        background: transparent;
+        color: var(--ls-muted);
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    /* ── FAB (Floating Action Button) ── */
+    .ls-fab {
+        display: none;
+    }
+
+    /* ── 767px mobile breakpoint ── */
+    @media (max-width: 767px) {
+        .ls-shell-nav {
+            height: 56px;
+        }
+
+        .ls-shell-inner {
+            padding: 0 12px;
+        }
+
+        .ls-brand span {
+            display: none;
+        }
+
+        .ls-nav-links {
+            display: none;
+        }
+
+        .ls-search {
+            display: none;
+        }
+
+        .ls-top-button {
+            display: none;
+        }
+
+        .ls-bell {
+            display: none;
+        }
+
+        .ls-plan-badge {
+            display: none;
+        }
+
+        /* Show mobile-only action buttons */
+        .ls-mobile-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: auto;
+        }
+
+        /* Slim down main content for bottom tab bar */
+        .ls-main {
+            padding: 16px 16px calc(3.5rem + env(safe-area-inset-bottom) + 16px);
+        }
+
+        /* FAB visible on mobile */
+        .ls-fab {
+            display: inline-flex;
+            position: fixed;
+            bottom: calc(3.5rem + env(safe-area-inset-bottom) + 20px);
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 999px;
+            background: var(--ls-primary);
+            color: #ffffff;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 14px rgba(181, 106, 48, 0.35);
+            z-index: 40;
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: transform 150ms ease, box-shadow 150ms ease;
+        }
+
+        .ls-fab:active {
+            transform: scale(0.92);
+            box-shadow: 0 2px 8px rgba(181, 106, 48, 0.25);
+        }
+
+        .ls-fab svg {
+            width: 26px;
+            height: 26px;
+        }
+
+        /* Toast above tab bar */
+        #toast-container {
+            z-index: 60 !important;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -264,9 +431,46 @@
                     </form>
                 </div>
             </div>
+            {# ── Mobile-only top bar actions ── #}
+            <div class="ls-mobile-actions">
+                <button type="button" class="ls-mobile-icon-btn" @click="$dispatch('toggle-mobile-search')" aria-label="Search">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                    </svg>
+                </button>
+                <a href="{% url 'leads:create' %}" class="ls-mobile-icon-btn" aria-label="Create Lead">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M12 5v14m-7-7h14"/>
+                    </svg>
+                </a>
+            </div>
         </div>
     </div>
 </nav>
+
+{# ── Mobile search overlay (Alpine.js) ── #}
+<div class="ls-search-overlay"
+     x-data="{ open: false }"
+     @toggle-mobile-search.window="open = !open; if (open) { $nextTick(() => $refs.mobileSearchInput.focus()); }"
+     :class="{ 'is-open': open }"
+     x-cloak>
+    <div class="ls-search-overlay-inner">
+        <form action="{% url 'leads:list' %}" method="get" style="display:flex;flex:1;gap:8px;">
+            <input x-ref="mobileSearchInput" type="search" name="q" value="{{ request.GET.q }}" placeholder="Search leads, properties..." autocomplete="off">
+            <button type="submit" class="ls-mobile-icon-btn" aria-label="Submit search" style="flex-shrink:0;">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                </svg>
+            </button>
+        </form>
+        <button type="button" class="ls-search-close" @click="open = false" aria-label="Close search">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M18 6 6 18M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+</div>
+
 <main class="ls-main">
     {% if messages %}
         <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2">
@@ -291,6 +495,19 @@
         </script>
     {% endif %}
     {% block app_content %}{% endblock %}
+
+    {# ── Mobile FAB (Floating Action Button) ── #}
+    <a href="{% url 'leads:create' %}" class="ls-fab" aria-label="Create Lead">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 5v14m-7-7h14"/>
+        </svg>
+    </a>
+
+    {# ── Bottom navigation (mobile tab bar) ── #}
+    {% include "components/bottom_nav.html" %}
+
+    {# ── Modal container for slide-up forms (loaded via HTMX) ── #}
+    <div id="modal-container"></div>
 </main>
 
 <script>
