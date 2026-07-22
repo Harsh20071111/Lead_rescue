@@ -162,7 +162,7 @@
         <div class="form-group">
             <label>Brochure PDF</label>
             <input type="file" id="id_brochure_file" accept=".pdf" style="width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 5px; font-size: 14px; color: var(--copy); background: #fff; box-sizing: border-box;">
-            <p class="helptext">Upload a brochure PDF for WhatsApp bot delivery. (Max 50MB)</p>
+            <p class="helptext">Upload a brochure PDF for WhatsApp bot delivery. (Max 60MB)</p>
         </div>
 
         <div class="form-group">
@@ -295,8 +295,8 @@
                 alert("You can only upload up to 10 images.");
                 return;
             }
-            if(brochure && brochure.size > 50 * 1024 * 1024) {
-                alert("Brochure is larger than 50MB.");
+            if(brochure && brochure.size > 60 * 1024 * 1024) {
+                alert("Brochure is larger than 60MB.");
                 return;
             }
 
@@ -313,16 +313,16 @@
                 if(!sigRes.ok) throw new Error("Failed to get signature. Are you logged in?");
                 const sigData = await sigRes.json();
 
-                let totalSize = 0;
+                let totalSizeAllFiles = 0;
                 const filesToUpload = [];
                 
                 for(let i=0; i<images.length; i++) {
                     filesToUpload.push({file: images[i], type: "image"});
-                    totalSize += images[i].size;
+                    totalSizeAllFiles += images[i].size;
                 }
                 if(brochure) {
                     filesToUpload.push({file: brochure, type: "raw"});
-                    totalSize += brochure.size;
+                    totalSizeAllFiles += brochure.size;
                 }
 
                 let imageIds = [];
@@ -330,46 +330,71 @@
                 let currentUploadedBytes = 0;
 
                 const uploadWithProgress = (fileObj) => {
-                    return new Promise((resolve, reject) => {
-                        const xhr = new XMLHttpRequest();
-                        xhr.open("POST", `https://api.cloudinary.com/v1_1/${sigData.cloud_name}/auto/upload`);
-                        
-                        let lastLoaded = 0;
-                        xhr.upload.onprogress = (e) => {
-                            if (e.lengthComputable) {
-                                currentUploadedBytes += (e.loaded - lastLoaded);
-                                lastLoaded = e.loaded;
-                                const pct = Math.min(Math.round((currentUploadedBytes / totalSize) * 100), 100);
-                                progressBar.style.width = pct + "%";
-                                statusText.innerText = `Uploading files... ${pct}%`;
-                            }
-                        };
-                        
-                        xhr.onload = () => {
-                            if (xhr.status >= 200 && xhr.status < 300) {
-                                const resp = JSON.parse(xhr.responseText);
-                                resolve({ type: fileObj.type, public_id: resp.public_id });
-                            } else {
-                                let errMsg = `Failed to upload ${fileObj.file.name}. `;
-                                try {
-                                    const resp = JSON.parse(xhr.responseText);
-                                    errMsg += (resp.error && resp.error.message) ? resp.error.message : xhr.statusText;
-                                } catch(e) {
-                                    errMsg += xhr.statusText;
+                    return new Promise(async (resolve, reject) => {
+                        const file = fileObj.file;
+                        const totalSize = file.size;
+                        const chunkSize = 6 * 1024 * 1024; // 6MB chunks
+                        const uploadId = Math.random().toString(36).substring(2, 15);
+                        let start = 0;
+                        const url = `https://api.cloudinary.com/v1_1/${sigData.cloud_name}/auto/upload`;
+
+                        while (start < totalSize) {
+                            const end = Math.min(start + chunkSize, totalSize);
+                            const chunk = file.slice(start, end);
+                            
+                            const fd = new FormData();
+                            fd.append("file", chunk, file.name);
+                            fd.append("api_key", sigData.api_key);
+                            fd.append("timestamp", sigData.timestamp);
+                            fd.append("signature", sigData.signature);
+                            fd.append("folder", sigData.folder);
+
+                            try {
+                                const result = await new Promise((res, rej) => {
+                                    const xhr = new XMLHttpRequest();
+                                    xhr.open("POST", url);
+                                    xhr.setRequestHeader("X-Unique-Upload-Id", uploadId);
+                                    xhr.setRequestHeader("Content-Range", `bytes ${start}-${end - 1}/${totalSize}`);
+                                    
+                                    let lastLoaded = 0;
+                                    xhr.upload.onprogress = (e) => {
+                                        if (e.lengthComputable) {
+                                            currentUploadedBytes += (e.loaded - lastLoaded);
+                                            lastLoaded = e.loaded;
+                                            const pct = Math.min(Math.round((currentUploadedBytes / totalSizeAllFiles) * 100), 100);
+                                            progressBar.style.width = pct + "%";
+                                            statusText.innerText = `Uploading files... ${pct}%`;
+                                        }
+                                    };
+                                    
+                                    xhr.onload = () => {
+                                        if (xhr.status >= 200 && xhr.status < 300) {
+                                            res(JSON.parse(xhr.responseText));
+                                        } else {
+                                            let errMsg = `Failed to upload ${file.name}. `;
+                                            try {
+                                                const resp = JSON.parse(xhr.responseText);
+                                                errMsg += (resp.error && resp.error.message) ? resp.error.message : xhr.statusText;
+                                            } catch(e) {
+                                                errMsg += xhr.statusText;
+                                            }
+                                            rej(errMsg);
+                                        }
+                                    };
+                                    xhr.onerror = () => rej("Network error");
+                                    xhr.send(fd);
+                                });
+                                
+                                if (end >= totalSize) {
+                                    resolve({ type: fileObj.type, public_id: result.public_id });
+                                    return;
                                 }
-                                reject(errMsg);
+                                start = end;
+                            } catch (err) {
+                                reject(err);
+                                return;
                             }
-                        };
-                        xhr.onerror = () => reject("Network error");
-                        
-                        const fd = new FormData();
-                        fd.append("file", fileObj.file);
-                        fd.append("api_key", sigData.api_key);
-                        fd.append("timestamp", sigData.timestamp);
-                        fd.append("signature", sigData.signature);
-                        fd.append("folder", sigData.folder);
-                        
-                        xhr.send(fd);
+                        }
                     });
                 };
 
