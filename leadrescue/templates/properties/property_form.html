@@ -350,7 +350,14 @@
                                 const resp = JSON.parse(xhr.responseText);
                                 resolve({ type: fileObj.type, public_id: resp.public_id });
                             } else {
-                                reject(`Failed to upload ${fileObj.file.name}`);
+                                let errMsg = `Failed to upload ${fileObj.file.name}. `;
+                                try {
+                                    const resp = JSON.parse(xhr.responseText);
+                                    errMsg += (resp.error && resp.error.message) ? resp.error.message : xhr.statusText;
+                                } catch(e) {
+                                    errMsg += xhr.statusText;
+                                }
+                                reject(errMsg);
                             }
                         };
                         xhr.onerror = () => reject("Network error");
