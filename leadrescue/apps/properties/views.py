@@ -2,7 +2,10 @@ from django.db.models import Q
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+import time
+import cloudinary
+import cloudinary.utils
 
 from apps.core.mixins import AgencyScopedViewMixin
 from apps.leads.models import Lead
@@ -170,3 +173,26 @@ class DeleteImageView(AgencyScopedViewMixin, View):
         image = get_object_or_404(prop.images.all(), pk=image_id)
         image.delete()
         return HttpResponse(status=200)
+
+class CloudinarySignatureView(AgencyScopedViewMixin, View):
+    def get(self, request, *args, **kwargs):
+        timestamp = int(time.time())
+        folder = request.GET.get("folder", "properties")
+        
+        params_to_sign = {
+            "timestamp": timestamp,
+            "folder": folder,
+        }
+        
+        signature = cloudinary.utils.api_sign_request(
+            params_to_sign,
+            cloudinary.config().api_secret
+        )
+        
+        return JsonResponse({
+            "signature": signature,
+            "timestamp": timestamp,
+            "api_key": cloudinary.config().api_key,
+            "cloud_name": cloudinary.config().cloud_name,
+            "folder": folder,
+        })

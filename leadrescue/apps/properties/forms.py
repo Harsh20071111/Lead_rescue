@@ -11,53 +11,14 @@ from apps.properties.models import Property, PropertyImage
 logger = logging.getLogger(__name__)
 
 
-class MultipleFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True
-
-    def value_from_datadict(self, data, files, name):
-        if hasattr(files, 'getlist'):
-            return files.getlist(name)
-        value = files.get(name)
-        if value:
-            return [value]
-        return []
-
-
-class MultipleFileField(forms.FileField):
-    widget = MultipleFileInput
-
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault("widget", MultipleFileInput(attrs={
-            "multiple": True,
-            "accept": ".jpg,.jpeg,.png,.webp"
-        }))
-        super().__init__(*args, **kwargs)
-
-    def clean(self, data, initial=None):
-        single_file_clean = super().clean
-        if isinstance(data, (list, tuple)):
-            result = [single_file_clean(d, initial) for d in data]
-        else:
-            result = single_file_clean(data, initial)
-        return result
-
-
 class PropertyForm(forms.ModelForm):
     amenities_text = forms.CharField(
         required=False,
         label="Amenities",
         help_text="Comma-separated amenities, for example: Gym, Parking",
     )
-    images = MultipleFileField(
-        required=False,
-        label="Property Images",
-        help_text="Select up to 10 images (max 5MB each, JPG/PNG/WebP only).",
-    )
-    brochure_file = forms.FileField(
-        required=False,
-        label="Brochure PDF",
-        help_text="Upload a brochure PDF for WhatsApp bot delivery.",
-    )
+    uploaded_images = forms.CharField(required=False, widget=forms.HiddenInput)
+    uploaded_brochure = forms.CharField(required=False, widget=forms.HiddenInput)
 
     class Meta:
         model = Property
@@ -108,44 +69,7 @@ class PropertyForm(forms.ModelForm):
         value = self.cleaned_data["amenities_text"]
         return [item.strip() for item in value.split(",") if item.strip()]
 
-    def clean_images(self):
-        files = self.cleaned_data.get("images")
 
-        if not files:
-            return []
-
-        if not isinstance(files, (list, tuple)):
-            files = [files]
-
-        if len(files) > 10:
-            raise ValidationError("You can upload a maximum of 10 images at once.")
-
-        valid_extensions = [".jpg", ".jpeg", ".png", ".webp"]
-        max_size = 5 * 1024 * 1024
-
-        validated = []
-        for f in files:
-            ext = os.path.splitext(f.name)[1].lower()
-            if ext not in valid_extensions:
-                raise ValidationError(
-                    f"Invalid file type '{ext}' for {f.name}. Only JPG, PNG, and WebP are allowed."
-                )
-            if f.size > max_size:
-                raise ValidationError(f"File {f.name} exceeds the 5MB size limit.")
-
-            try:
-                f.seek(0)
-                img = Image.open(f)
-                img.verify()
-                f.seek(0)
-            except (IOError, SyntaxError, UnidentifiedImageError):
-                raise ValidationError(
-                    f"File {f.name} is corrupted or not a valid image."
-                )
-
-            validated.append(f)
-
-        return validated
 
     def save(self, commit=True):
         property_obj = super().save(commit=False)
@@ -155,46 +79,25 @@ class PropertyForm(forms.ModelForm):
         if not self.is_owner:
             property_obj.assigned_agent = self.agent_profile
 
-        brochure = self.cleaned_data.get("brochure_file")
+        brochure = self.cleaned_data.get("uploaded_brochure")
         if brochure:
-            brochure.seek(0)
-            result = uploader.upload(
-                brochure,
-                resource_type="raw",
-                folder="brochures",
-                timeout=60,
-            )
-            property_obj.brochure_pdf = result.get("public_id")
+            property_obj.brochure_pdf = brochure
 
         if commit:
             property_obj.save()
 
-            uploaded_images = self.cleaned_data.get("images", [])
-            failed_count = 0
-            for idx, img in enumerate(uploaded_images):
+            uploaded_images = self.data.getlist("uploaded_images")
+            for idx, public_id in enumerate(uploaded_images):
+                if not public_id.strip():
+                    continue
+                is_primary = idx == 0 and not property_obj.images.exists()
                 try:
-                    is_primary = idx == 0 and not property_obj.images.exists()
-                    img.seek(0)
-                    result = uploader.upload(
-                        img,
-                        resource_type="image",
-                        folder="property_images",
-                        timeout=60,
-                    )
                     PropertyImage.objects.create(
                         property=property_obj,
-                        image=result.get("public_id"),
+                        image=public_id,
                         is_primary=is_primary,
                     )
                 except Exception as e:
-                    logger.exception("Failed to upload image %d for property %d: %s", idx, property_obj.pk, e)
-                    failed_count += 1
-
-            if failed_count and self._request:
-                total = len(uploaded_images)
-                messages.warning(
-                    self._request,
-                    f"{failed_count} of {total} image(s) failed to upload. The property was created.",
-                )
+                    logger.exception("Failed to save image record %s for property %d: %s", public_id, property_obj.pk, e)
 
         return property_obj

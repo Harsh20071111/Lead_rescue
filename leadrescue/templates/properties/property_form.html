@@ -146,28 +146,45 @@
         {% csrf_token %}
 
         {% for field in form %}
-            <div class="form-group">
-                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-
-                {% if field.name == 'images' %}
-                    <label class="dropzone" id="dropzone-images">
-                        <input type="file" name="images" id="id_images"
-                               accept=".jpg,.jpeg,.png,.webp" multiple>
-                        <svg class="dropzone-icon" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                            <path d="M5 20h14V9h-4V4H5v16Zm9-14.5L17.5 9H14V5.5ZM11 17v-4H8l4-4 4 4h-3v4h-2Z"/>
-                        </svg>
-                        <span class="dropzone-text">Click or drag to upload images</span>
-                        <span class="dropzone-hint">JPG, PNG, WebP — max 5MB each, up to 10 files</span>
-                    </label>
-                    <div id="image-previews" class="image-grid"></div>
-                {% else %}
-                    {{ field }}
+            <div class="form-group" {% if field.is_hidden %}style="display:none;"{% endif %}>
+                {% if not field.is_hidden %}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                 {% endif %}
+                
+                {{ field }}
 
-                {% if field.help_text %}<p class="helptext">{{ field.help_text }}</p>{% endif %}
+                {% if field.help_text and not field.is_hidden %}<p class="helptext">{{ field.help_text }}</p>{% endif %}
                 {% for error in field.errors %}<ul class="errorlist"><li>{{ error }}</li></ul>{% endfor %}
             </div>
         {% endfor %}
+
+        <!-- Manual File Inputs for Direct Upload -->
+        <div class="form-group">
+            <label>Brochure PDF</label>
+            <input type="file" id="id_brochure_file" accept=".pdf" style="width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 5px; font-size: 14px; color: var(--copy); background: #fff; box-sizing: border-box;">
+            <p class="helptext">Upload a brochure PDF for WhatsApp bot delivery. (Max 50MB)</p>
+        </div>
+
+        <div class="form-group">
+            <label>Property Images</label>
+            <label class="dropzone" id="dropzone-images">
+                <input type="file" id="id_images" accept=".jpg,.jpeg,.png,.webp" multiple>
+                <svg class="dropzone-icon" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                    <path d="M5 20h14V9h-4V4H5v16Zm9-14.5L17.5 9H14V5.5ZM11 17v-4H8l4-4 4 4h-3v4h-2Z"/>
+                </svg>
+                <span class="dropzone-text">Click or drag to upload images</span>
+                <span class="dropzone-hint">JPG, PNG, WebP — max 5MB each, up to 10 files</span>
+            </label>
+            <div id="image-previews" class="image-grid"></div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div id="upload-progress-container" style="display: none; margin-top: 16px; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 6px;">
+            <label id="upload-status-text" style="font-size: 13px; font-weight: 500; color: var(--copy);">Uploading files...</label>
+            <div style="width: 100%; height: 8px; background: #efe3d8; border-radius: 4px; overflow: hidden; margin-top: 6px;">
+                <div id="upload-progress-bar" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.3s;"></div>
+            </div>
+        </div>
 
         <div class="form-submit-inline" style="display: flex; gap: 12px; padding-top: 8px;">
             <button class="ls-btn ls-btn-primary">Save</button>
@@ -213,8 +230,13 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const imageInput = document.getElementById("id_images");
+        const brochureInput = document.getElementById("id_brochure_file");
         const previewContainer = document.getElementById("image-previews");
         const dropzone = document.getElementById("dropzone-images");
+        const form = document.getElementById("property-form");
+        const progressContainer = document.getElementById("upload-progress-container");
+        const progressBar = document.getElementById("upload-progress-bar");
+        const statusText = document.getElementById("upload-status-text");
 
         if (!imageInput || !previewContainer) return;
 
@@ -252,6 +274,146 @@
                 updatePreviews();
             });
         }
+
+        form.addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const images = imageInput.files;
+            const brochure = brochureInput.files ? brochureInput.files[0] : null;
+            
+            if (images.length === 0 && !brochure) {
+                form.submit();
+                return;
+            }
+            
+            for(let i=0; i<images.length; i++){
+                if(images[i].size > 5 * 1024 * 1024) {
+                    alert("Image " + images[i].name + " is larger than 5MB.");
+                    return;
+                }
+            }
+            if(images.length > 10) {
+                alert("You can only upload up to 10 images.");
+                return;
+            }
+            if(brochure && brochure.size > 50 * 1024 * 1024) {
+                alert("Brochure is larger than 50MB.");
+                return;
+            }
+
+            const buttons = document.querySelectorAll("button[type='submit'], .form-submit-inline .ls-btn");
+            buttons.forEach(btn => {
+                btn.style.opacity = "0.5";
+                btn.style.pointerEvents = "none";
+            });
+            progressContainer.style.display = "block";
+            statusText.innerText = "Requesting secure upload signature...";
+
+            try {
+                const sigRes = await fetch("{% url 'properties:cloudinary_signature' %}?folder=properties");
+                if(!sigRes.ok) throw new Error("Failed to get signature. Are you logged in?");
+                const sigData = await sigRes.json();
+
+                let totalSize = 0;
+                const filesToUpload = [];
+                
+                for(let i=0; i<images.length; i++) {
+                    filesToUpload.push({file: images[i], type: "image"});
+                    totalSize += images[i].size;
+                }
+                if(brochure) {
+                    filesToUpload.push({file: brochure, type: "raw"});
+                    totalSize += brochure.size;
+                }
+
+                let imageIds = [];
+                let brochureId = null;
+                let currentUploadedBytes = 0;
+
+                const uploadWithProgress = (fileObj) => {
+                    return new Promise((resolve, reject) => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open("POST", `https://api.cloudinary.com/v1_1/${sigData.cloud_name}/auto/upload`);
+                        
+                        let lastLoaded = 0;
+                        xhr.upload.onprogress = (e) => {
+                            if (e.lengthComputable) {
+                                currentUploadedBytes += (e.loaded - lastLoaded);
+                                lastLoaded = e.loaded;
+                                const pct = Math.min(Math.round((currentUploadedBytes / totalSize) * 100), 100);
+                                progressBar.style.width = pct + "%";
+                                statusText.innerText = `Uploading files... ${pct}%`;
+                            }
+                        };
+                        
+                        xhr.onload = () => {
+                            if (xhr.status >= 200 && xhr.status < 300) {
+                                const resp = JSON.parse(xhr.responseText);
+                                resolve({ type: fileObj.type, public_id: resp.public_id });
+                            } else {
+                                reject(`Failed to upload ${fileObj.file.name}`);
+                            }
+                        };
+                        xhr.onerror = () => reject("Network error");
+                        
+                        const fd = new FormData();
+                        fd.append("file", fileObj.file);
+                        fd.append("api_key", sigData.api_key);
+                        fd.append("timestamp", sigData.timestamp);
+                        fd.append("signature", sigData.signature);
+                        fd.append("folder", sigData.folder);
+                        
+                        xhr.send(fd);
+                    });
+                };
+
+                statusText.innerText = "Uploading files... 0%";
+                for(let fileObj of filesToUpload) {
+                    const result = await uploadWithProgress(fileObj);
+                    if (result.type === "image") {
+                        imageIds.push(result.public_id);
+                    } else {
+                        brochureId = result.public_id;
+                    }
+                }
+
+                statusText.innerText = "Saving property...";
+                progressBar.style.width = "100%";
+                
+                const uploadedImagesInputs = document.querySelectorAll("input[name='uploaded_images']");
+                if (uploadedImagesInputs.length > 0) {
+                    const formGroup = uploadedImagesInputs[0].parentNode;
+                    uploadedImagesInputs.forEach(i => i.remove());
+                    imageIds.forEach(id => {
+                        const inp = document.createElement("input");
+                        inp.type = "hidden";
+                        inp.name = "uploaded_images";
+                        inp.value = id;
+                        formGroup.appendChild(inp);
+                    });
+                }
+
+                if (brochureId) {
+                    const brochureInp = document.querySelector("input[name='uploaded_brochure']");
+                    if (brochureInp) brochureInp.value = brochureId;
+                }
+
+                // Remove actual files from form payload
+                imageInput.removeAttribute("name");
+                brochureInput.removeAttribute("name");
+
+                form.submit();
+
+            } catch (err) {
+                console.error(err);
+                alert(err);
+                buttons.forEach(btn => {
+                    btn.style.opacity = "1";
+                    btn.style.pointerEvents = "auto";
+                });
+                progressContainer.style.display = "none";
+            }
+        });
+
     });
 </script>
 {% endblock %}
