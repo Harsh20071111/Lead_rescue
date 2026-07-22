@@ -623,12 +623,12 @@
 
         <section class="fade-in" style="--delay: 380ms">
             <div class="recent-head">
-                <h2 class="section-title">Recent</h2>
-                <span class="leads-caption">Updated moments ago</span>
+                <h2 class="section-title">Lead Directory</h2>
+                <span class="leads-caption">Showing page {{ page_obj.number|default:1 }}</span>
             </div>
 
             <div class="lead-list">
-                {% for lead in leads|slice:":4" %}
+                {% for lead in leads %}
                     <article class="lead-row">
                         {% avatar_bg lead.id as bg_color %}
                         <div class="lead-icon" aria-hidden="true" style="background:{{ bg_color }}; color:#fff; font-weight:700; font-size:18px;">
@@ -667,6 +667,18 @@
                     </article>
                 {% endfor %}
             </div>
+            
+            {% if is_paginated %}
+            <div style="margin-top: 24px; display: flex; justify-content: center; gap: 8px;">
+                {% if page_obj.has_previous %}
+                    <a class="ls-btn" href="?page={{ page_obj.previous_page_number }}{% for key, value in filters.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Previous</a>
+                {% endif %}
+                <span style="display:flex; align-items:center; font-size:14px; color:var(--muted); padding:0 12px;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}
+                    <a class="ls-btn" href="?page={{ page_obj.next_page_number }}{% for key, value in filters.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a>
+                {% endif %}
+            </div>
+            {% endif %}
         </section>
 
         {% if has_data_import %}
