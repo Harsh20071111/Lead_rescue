@@ -369,7 +369,13 @@
                                     
                                     xhr.onload = () => {
                                         if (xhr.status >= 200 && xhr.status < 300) {
-                                            res(JSON.parse(xhr.responseText));
+                                            if (end >= totalSize) {
+                                                // Final chunk — parse the full response from Cloudinary
+                                                res(JSON.parse(xhr.responseText));
+                                            } else {
+                                                // Intermediate chunk — Cloudinary returns empty body, just continue
+                                                res({});
+                                            }
                                         } else {
                                             let errMsg = `Failed to upload ${file.name}. `;
                                             try {
