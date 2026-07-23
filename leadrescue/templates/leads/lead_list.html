@@ -629,7 +629,7 @@
 
             <div class="lead-list">
                 {% for lead in leads %}
-                    <article class="lead-row">
+                    <article class="lead-row" style="cursor: pointer;" onclick="if(!event.target.closest('a')) { window.location.href='{% url 'leads:detail' lead.pk %}'; }">
                         {% avatar_bg lead.id as bg_color %}
                         <div class="lead-icon" aria-hidden="true" style="background:{{ bg_color }}; color:#fff; font-weight:700; font-size:18px;">
                             {{ lead.name|avatar_initials }}
