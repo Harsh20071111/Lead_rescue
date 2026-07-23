@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /accounts/
+Disallow: /dashboard/
+Disallow: /harsh-admin/
+Disallow: /billing/
+Disallow: /imports/
+
+Sitemap: https://lead-rescue-bmaa.onrender.com/sitemap.xml
