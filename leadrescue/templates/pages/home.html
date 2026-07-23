@@ -9,48 +9,6 @@
     html {
         scroll-behavior: smooth;
     }
-
-    /* Mobile overrides for inline-styled elements */
-    @media (max-width: 767px) {
-        /* Hero: darker gradient overlay for better text readability on small screens */
-        .hero-overlay {
-            background: linear-gradient(to bottom, rgba(28,28,26,0.9) 0%, rgba(28,28,26,0) 40%, rgba(28,28,26,0) 100%) !important;
-        }
-        /* Pricing "Most Popular" badge - smaller on mobile */
-        .pricing-badge {
-            padding: 2px 10px;
-            font-size: 0.625rem;
-        }
-        /* Section headings - scale down on mobile */
-        section h2 {
-            font-size: 1.5rem !important;
-            line-height: 1.3 !important;
-        }
-        /* Problem section stats */
-        section .text-3xl {
-            font-size: 1.5rem !important;
-        }
-        /* FAQ toggle buttons - reduce padding on mobile */
-        .faq-toggle {
-            padding: 1rem 1.25rem !important;
-        }
-        .faq-toggle span {
-            font-size: 1rem !important;
-        }
-        /* WhatsApp phone mockup - prevent overflow */
-        #whatsapp-automation .max-w-sm {
-            max-width: 100% !important;
-            padding: 0 0.5rem;
-        }
-        /* Dashboard showcase - reduce inner padding */
-        .rounded-2xl.shadow-2xl {
-            padding: 1.5rem !important;
-        }
-        /* Final CTA section */
-        section:last-of-type h2 {
-            font-size: 1.75rem !important;
-        }
-    }
 </style>
 {% endblock %}
 
@@ -77,20 +35,37 @@
     </div>
 </nav>
 
-<!-- ===== HERO VIDEO ===== -->
-<section class="relative flex items-center justify-center overflow-hidden" style="height: 60vh; min-height: 400px; max-height: 800px;">
+<!-- ===== HERO ===== -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden">
     <!-- Hero background with video and gradient overlay -->
     <div class="absolute inset-0 z-0 bg-charcoal overflow-hidden pointer-events-none">
-        <video class="w-full h-full object-cover opacity-90" autoplay loop muted playsinline>
+        <video class="w-full h-full object-cover opacity-80" autoplay loop muted playsinline>
             <source src="{% static 'videos/final-clip.mp4' %}" type="video/mp4">
         </video>
-        <!-- Top gradient just for the navbar readability -->
-        <div class="absolute inset-0 hero-overlay" style="background: linear-gradient(to bottom, rgba(28,28,26,0.8) 0%, rgba(28,28,26,0) 30%, rgba(28,28,26,0) 100%);"></div>
+        <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(28,28,26,0.88) 0%, rgba(28,28,26,0.55) 55%, rgba(28,28,26,0.25) 100%);"></div>
+    </div>
+    <div class="relative z-10 max-w-6xl mx-auto px-6 lg:px-8 text-center">
+        <h1 class="text-5xl md:text-6xl lg:text-7xl font-light leading-[1.1] mb-8" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">
+            Every missed follow-up is<br>a lost commission.
+        </h1>
+        <p class="text-lg md:text-xl font-normal max-w-3xl mx-auto mb-12 leading-relaxed" style="font-family: 'Inter', sans-serif; color: rgba(245,242,236,0.92);">
+            LeadSathi captures every inquiry on WhatsApp, asks the right questions automatically, and makes sure no lead goes cold — without your team changing how they already work.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="{% url 'accounts:signup' %}" class="px-8 py-4 text-base font-medium rounded-md transition-all duration-200 hover:-translate-y-1 shadow-lg inline-block" style="background-color: #1C1C1A; color: #FAF8F4; font-family: 'Inter', sans-serif; text-decoration: none;">
+                Start Free Trial
+            </a>
+            <a href="#whatsapp-automation" class="px-8 py-4 text-base font-medium rounded-md transition-all duration-200 hover:-translate-y-1 flex items-center gap-2 border-2" style="border-color: #FAF8F4; color: #FAF8F4; background-color: rgba(250,248,244,0.08); font-family: 'Inter', sans-serif; text-decoration: none;">
+                <!-- Eye icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                See How It Works
+            </a>
+        </div>
     </div>
 </section>
 
 <!-- ===== BUILT FOR ===== -->
-<section class="py-12 md:py-24 fade-in" style="background-color: #F5F2EC;">
+<section class="py-24 fade-in" style="background-color: #F5F2EC;">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <p class="text-center text-sm font-medium tracking-wider uppercase mb-16" style="color: #8B7355; font-family: 'Inter', sans-serif;">
             Built for the teams that power Indian real estate
@@ -122,30 +97,30 @@
 </section>
 
 <!-- ===== PROBLEM STORY ===== -->
-<section class="relative py-16 md:py-32 overflow-hidden fade-in">
+<section class="relative py-32 overflow-hidden fade-in">
     <div class="absolute inset-0 z-0">
         <div class="w-full h-full" style="background: linear-gradient(135deg, #6B5D4A 0%, #8B7355 50%, #A68B5B 100%);"></div>
         <div class="absolute inset-0" style="background-color: rgba(139,115,85,0.82);"></div>
     </div>
     <div class="relative z-10 max-w-6xl mx-auto px-6 lg:px-8">
-        <h2 class="text-2xl md:text-5xl lg:text-6xl font-light leading-tight mb-20 text-center" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">
+        <h2 class="text-4xl md:text-5xl lg:text-6xl font-light leading-tight mb-20 text-center" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">
             Great sales teams lose deals<br>they've already won.
         </h2>
         <div class="grid md:grid-cols-3 gap-12 lg:gap-16">
             <div class="text-center">
-                <div class="text-3xl md:text-6xl font-light mb-4" style="font-family: 'Cormorant Garamond', serif; color: #D4AF6A;">
+                <div class="text-5xl md:text-6xl font-light mb-4" style="font-family: 'Cormorant Garamond', serif; color: #D4AF6A;">
                     1 in <span class="countup" data-target="4" data-decimals="0">0</span>
                 </div>
                 <p class="text-base leading-relaxed" style="color: #F5F2EC; font-family: 'Inter', sans-serif;">Leads lost due to delayed or missed follow-up — an industry-wide pattern</p>
             </div>
             <div class="text-center">
-                <div class="text-3xl md:text-6xl font-light mb-4" style="font-family: 'Cormorant Garamond', serif; color: #D4AF6A;">
+                <div class="text-5xl md:text-6xl font-light mb-4" style="font-family: 'Cormorant Garamond', serif; color: #D4AF6A;">
                     <span class="countup" data-target="5" data-decimals="0">0</span> min
                 </div>
                 <p class="text-base leading-relaxed" style="color: #F5F2EC; font-family: 'Inter', sans-serif;">The window in which a fast reply meaningfully increases your conversion odds</p>
             </div>
             <div class="text-center">
-                <div class="text-3xl md:text-6xl font-light mb-4" style="font-family: 'Cormorant Garamond', serif; color: #D4AF6A;">
+                <div class="text-5xl md:text-6xl font-light mb-4" style="font-family: 'Cormorant Garamond', serif; color: #D4AF6A;">
                     <span class="countup" data-target="24" data-decimals="0">0</span> hrs
                 </div>
                 <p class="text-base leading-relaxed" style="color: #F5F2EC; font-family: 'Inter', sans-serif;">Average time Indian buyers wait before contacting a competing agency</p>
@@ -155,9 +130,9 @@
 </section>
 
 <!-- ===== SOLUTION TIMELINE ===== -->
-<section class="py-16 md:py-32 fade-in" style="background-color: #FAF8F4;">
+<section class="py-32 fade-in" style="background-color: #FAF8F4;">
     <div class="max-w-6xl mx-auto px-6 lg:px-8">
-        <h2 class="text-2xl md:text-5xl font-light leading-tight mb-20 text-center" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
+        <h2 class="text-4xl md:text-5xl font-light leading-tight mb-20 text-center" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
             How LeadSathi works —<br>from inquiry to site visit.
         </h2>
         <div class="relative">
@@ -214,9 +189,9 @@
 </section>
 
 <!-- ===== FEATURES ===== -->
-<section id="product" class="py-16 md:py-32 fade-in" style="background-color: #F5F2EC;">
+<section id="product" class="py-32 fade-in" style="background-color: #F5F2EC;">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        <h2 class="text-2xl md:text-5xl font-light leading-tight mb-20 text-center" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
+        <h2 class="text-4xl md:text-5xl font-light leading-tight mb-20 text-center" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
             Built for the rhythm of<br>real estate sales.
         </h2>
         <div class="grid md:grid-cols-2 gap-12">
@@ -257,9 +232,9 @@
 </section>
 
 <!-- ===== DASHBOARD SHOWCASE ===== -->
-<section class="py-16 md:py-32 fade-in" style="background-color: #FAF8F4;">
+<section class="py-32 fade-in" style="background-color: #FAF8F4;">
     <div class="max-w-6xl mx-auto px-6 lg:px-8">
-        <h2 class="text-2xl md:text-5xl font-light leading-tight mb-20 text-center" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
+        <h2 class="text-4xl md:text-5xl font-light leading-tight mb-20 text-center" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
             Your entire pipeline.<br>At a glance.
         </h2>
         <div class="p-10 lg:p-16 rounded-2xl shadow-2xl" style="background-color: #F5F2EC;">
@@ -356,9 +331,9 @@
 </section>
 
 <!-- ===== WHATSAPP AUTOMATION ===== -->
-<section id="whatsapp-automation" class="py-16 md:py-32 fade-in" style="background-color: #EEF0EC;">
+<section id="whatsapp-automation" class="py-32 fade-in" style="background-color: #EEF0EC;">
     <div class="max-w-6xl mx-auto px-6 lg:px-8">
-        <h2 class="text-2xl md:text-5xl font-light leading-tight mb-8 text-center" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
+        <h2 class="text-4xl md:text-5xl font-light leading-tight mb-8 text-center" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
             Meet your leads where<br>they already are.
         </h2>
         <p class="text-center text-lg mb-16 max-w-2xl mx-auto" style="color: #8B7355; font-family: 'Inter', sans-serif;">
@@ -412,9 +387,9 @@
 </section>
 
 <!-- ===== ROADMAP TEASER ===== -->
-<section class="py-16 md:py-32 fade-in" style="background-color: #1C1C1A;">
+<section class="py-32 fade-in" style="background-color: #1C1C1A;">
     <div class="max-w-6xl mx-auto px-6 lg:px-8">
-        <h2 class="text-2xl md:text-5xl font-light leading-tight mb-8 text-center" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">
+        <h2 class="text-4xl md:text-5xl font-light leading-tight mb-8 text-center" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">
             What's coming next.
         </h2>
         <p class="text-center text-lg mb-16 max-w-2xl mx-auto" style="color: #C4A882; font-family: 'Inter', sans-serif;">
@@ -441,9 +416,9 @@
 </section>
 
 <!-- ===== PRICING ===== -->
-<section id="pricing" class="py-16 md:py-32 fade-in" style="background-color: #F5F2EC;">
+<section id="pricing" class="py-32 fade-in" style="background-color: #F5F2EC;">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        <h2 class="text-2xl md:text-5xl font-light leading-tight mb-8 text-center" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
+        <h2 class="text-4xl md:text-5xl font-light leading-tight mb-8 text-center" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
             Simple pricing that<br>grows with you.
         </h2>
         <p class="text-center text-lg mb-16 max-w-2xl mx-auto" style="color: #8B7355; font-family: 'Inter', sans-serif;">
@@ -454,7 +429,7 @@
             <div class="relative p-10 rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" style="background-color: #FAF8F4;">
                 <h3 class="text-2xl font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Starter</h3>
                 <div class="mb-8">
-                    <span class="text-4xl md:text-5xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">₹2,499</span>
+                    <span class="text-5xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">₹2,499</span>
                     <span class="text-sm ml-1" style="color: #8B7355; font-family: 'Inter', sans-serif;">/month</span>
                 </div>
                 <ul class="space-y-4 mb-10">
@@ -490,7 +465,7 @@
                 </div>
                 <h3 class="text-2xl font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Growth</h3>
                 <div class="mb-8">
-                    <span class="text-4xl md:text-5xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">₹6,499</span>
+                    <span class="text-5xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">₹6,499</span>
                     <span class="text-sm ml-1" style="color: #8B7355; font-family: 'Inter', sans-serif;">/month</span>
                 </div>
                 <ul class="space-y-4 mb-10">
@@ -523,7 +498,7 @@
             <div class="relative p-10 rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" style="background-color: #FAF8F4;">
                 <h3 class="text-2xl font-normal mb-2" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Enterprise</h3>
                 <div class="mb-8">
-                    <span class="text-4xl md:text-5xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Custom</span>
+                    <span class="text-5xl font-light" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">Custom</span>
                     <span class="text-sm ml-1" style="color: #8B7355; font-family: 'Inter', sans-serif;">pricing</span>
                 </div>
                 <ul class="space-y-4 mb-10">
@@ -557,9 +532,9 @@
 </section>
 
 <!-- ===== FAQ ===== -->
-<section class="py-16 md:py-32 fade-in" style="background-color: #FAF8F4;">
+<section class="py-32 fade-in" style="background-color: #FAF8F4;">
     <div class="max-w-4xl mx-auto px-6 lg:px-8">
-        <h2 class="text-2xl md:text-5xl font-light leading-tight mb-20 text-center" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
+        <h2 class="text-4xl md:text-5xl font-light leading-tight mb-20 text-center" style="font-family: 'Cormorant Garamond', serif; color: #1C1C1A;">
             Answers for the questions<br>your team will ask.
         </h2>
         <div class="space-y-3" id="faq-container">
@@ -628,9 +603,9 @@
 </section>
 
 <!-- ===== FINAL CTA ===== -->
-<section class="py-16 md:py-32 fade-in" style="background-color: #1C1C1A;">
+<section class="py-32 fade-in" style="background-color: #1C1C1A;">
     <div class="max-w-4xl mx-auto px-6 lg:px-8 text-center">
-        <h2 class="text-2xl md:text-5xl lg:text-6xl font-light leading-tight mb-8" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">
+        <h2 class="text-4xl md:text-5xl lg:text-6xl font-light leading-tight mb-8" style="font-family: 'Cormorant Garamond', serif; color: #FAF8F4;">
             Stop losing leads to<br>slow follow-up.
         </h2>
         <p class="text-lg mb-12 max-w-2xl mx-auto" style="color: #C4A882; font-family: 'Inter', sans-serif;">
@@ -644,7 +619,7 @@
 </section>
 
 <!-- ===== FOOTER ===== -->
-<footer id="contact" class="py-12 md:py-20" style="background-color: #161614;">
+<footer id="contact" class="py-20" style="background-color: #161614;">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <div class="grid md:grid-cols-4 gap-12 mb-16">
             <div>
